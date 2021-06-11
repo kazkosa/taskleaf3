@@ -1,0 +1,11 @@
+<%= form_with model: trial, local: true do |f| %>
+  <div>
+    <%= f.label :title, 'Title' %>
+    <%= f.text_field :title %>
+  </div>
+  <div>
+    <%= f.label :body, 'Body' %>
+    <%= f.text_field :body %>
+  </div>
+  <%= f.submit "submit" %>
+<% end %>

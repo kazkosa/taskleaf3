@@ -1,0 +1,13 @@
+<table>
+  <% @trials.each do |trial| %>
+    <tr>
+      <td><%= trial.id %></td>
+      <td><%= trial.title %></td>
+      <td><%= link_to "Detail", trial_path(trial)%></td>
+      <td><%= link_to "Edit", edit_trial_path(trial) %></td>
+      <td><%= link_to "Delete", trial_path(trial) ,method: :delete %></td>
+    </tr>
+  <% end %>
+
+</table>
+<%= link_to "New",new_trial_path %>
