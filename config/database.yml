@@ -50,6 +50,6 @@ test:
 production:
   <<: *default
   database: taskleaf3_production
-  username: taskleaf3
+  username: root
   password: <%= ENV['DATABASE_PASSWORD'] %>
   socket: /tmp/mysql.sock
