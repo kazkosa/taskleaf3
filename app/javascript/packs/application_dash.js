@@ -18,16 +18,16 @@ const imagePath = (name) => images(name, true)
 
 require('jquery-ui-dist/jquery-ui');
 
-import '../stylesheets/application';
-import '../javascripts/application';
+import '../stylesheets/application_dash';
+import '../javascripts/application_dash';
 
 
-// // Bootstrap
-// import 'bootstrap';
-// $(function () {
-//   $('[data-toggle="tooltip"]').tooltip();
-//   $('[data-toggle="popover"]').popover();
-// })
+// Bootstrap
+import 'bootstrap';
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+  $('[data-toggle="popover"]').popover();
+})
 
 // Fontawesome
 import '@fortawesome/fontawesome-free/js/all';
