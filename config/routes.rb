@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'users/new'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   # get '/login', to: 'static_pages#login'
   # get '/signup', to: 'static_pages#signup'
@@ -15,6 +16,7 @@ Rails.application.routes.draw do
 
   resources 'trials'
   get '/static_pages' => 'static_pages#index'
+  get '/static_pages2' => 'static_pages2#index'
   get '/static_pages/tasks' => 'static_pages#tasks'
   get '/admin/login', to: 'admin/login#new'
   namespace :admin do
