@@ -61,3 +61,7 @@ gem 'materialize-sass'
 gem 'material_icons'
 
 gem 'pry-rails'
+
+group :production do
+  gem 'unicorn', '5.4.1'
+end
