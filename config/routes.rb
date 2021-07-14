@@ -1,10 +1,13 @@
 Rails.application.routes.draw do
-  get 'users/new'
+  # get 'users/new'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   # get '/login', to: 'static_pages#login'
   # get '/signup', to: 'static_pages#signup'
   get '/login' => 'login#new'
-  get '/signup' => 'signup#new'
+  # get '/signup' => 'signup#new'
+  get '/signup' => 'users#new'
+  post '/signup' => 'users#create'
+  resources :users
   root 'static_pages#index'
   # get     'trials'          => 'trials#index'
   # get     'trials/new'      => 'trials#new'
