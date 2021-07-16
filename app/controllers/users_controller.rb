@@ -1,5 +1,8 @@
 class UsersController < ApplicationController
   layout 'login', only: [:new, :create]
+  def index
+    @users = User.all
+  end
   def new
     # render :layout => "login"
     @user = User.new 
