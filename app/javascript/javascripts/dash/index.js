@@ -34,10 +34,10 @@ $(function() {
     action_nav: function() {
       return myNavFunction(this.id);
     },
-    ajax: {
-      url: "show_data.php?action=1",
-      modal: true
-    },
+    // ajax: {
+    //   url: "show_data.php?action=1",
+    //   modal: true
+    // },
     legend: [{
         type: "text",
         label: "Special event",

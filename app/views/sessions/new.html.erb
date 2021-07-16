@@ -1,5 +1,5 @@
 <section>
-  <div class="login-container">
+  <div class="login-container show">
     <div class="card-panel" style="">
       <h1></h1>
       <p>Login</p>
@@ -22,7 +22,15 @@
               <%= f.label :password, 'Password' %>
             </div>
           </div>
-
+          <div class="row2">
+            <div class="remember-check">
+              <%= f.label :remember_me do %>
+                <%= f.check_box :remember_me, class: "filled-in" %>
+                <span>Remember me</span>
+              <% end %>
+            </div>
+          </div>
+          <br/>
           <%# <input type="submit" value="Login" class="login_btn waves-effect waves-light btn-small cyan lighten-2"> %>
           <%= f.submit "submit", class:"login_btn waves-effect waves-light btn-small cyan lighten-2" %>
         <%# </form> %>
@@ -30,7 +38,7 @@
       </div>
     </div>
     <div class="card-panel append">
-      <p class="note">Don't have an account?&nbsp; <a href="/signup" >Sign up</a></p>
+      <p class="note">Don't have an account?&nbsp; <%= link_to "Sign up", signup_path %></p>
     </div>
   </div>
 <section>

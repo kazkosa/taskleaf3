@@ -67,7 +67,7 @@ group :production do
 end
 
 group :development, :test do
-  gem 'capistrano'
+  gem 'capistrano', '3.14.1'
   gem 'capistrano-rbenv'
   gem 'capistrano-bundler'
   gem 'capistrano-rails'
