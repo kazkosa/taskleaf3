@@ -1,0 +1,36 @@
+<table class="table table-bordered table-striped table-condensed">
+  <tr>
+    <th>id</th>
+    <td><%= user.id%></td>
+  </tr>
+  <tr>
+    <th>name</th>
+    <td>
+      <%= f.text_field :name, class: 'form-control' %>
+    </td>
+  </tr>
+  <tr>
+    <th>email</th>
+    <td>
+      <%= f.email_field :email, class: 'form-control' %>
+    </td>
+  </tr>
+  <tr>
+    <th>admin</th>
+    <td>
+      <%= f.select :admin, {'No': 0, 'Yes': 1},{selected: (!!user.admin)? 1:0 },{class: 'form-select'}  %>
+    </td>
+  </tr>
+  <tr>
+    <th>password</th>
+    <td>
+      <%= f.password_field :password, class: 'form-control' %>
+    </td>
+  </tr>
+  <tr>
+    <th>password confirmation</th>
+    <td>
+      <%= f.password_field :password_confirmation, class: 'form-control' %>
+    </td>
+  </tr>
+</table>

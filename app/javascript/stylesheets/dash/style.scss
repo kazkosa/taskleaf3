@@ -416,7 +416,8 @@ ul.sidebar-menu li a.active i {
     position: fixed;
     left: 0;
     right: 0;
-    z-index: 1002;
+    // z-index: 1002;
+    z-index: 2;
 }
 
 .black-bg {
@@ -3485,4 +3486,20 @@ ul.chat-available-user li a:hover {
 
 #copyrights a {
   color: #fff;
+}
+
+.alert {
+  position: fixed;
+  padding: 1rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  width: 100%;
+  z-index: 3;
+} 
+
+.alert-success {
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border-color: #badbcc;
 }

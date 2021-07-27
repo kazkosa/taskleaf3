@@ -22,13 +22,16 @@ Rails.application.routes.draw do
   # get     'trials/:id'      => 'trials#show'
 
   resources 'trials'
-  get '/static_pages' => 'static_pages#index'
+  get '/static_pages'   => 'static_pages#index'
   get '/static_pages2' => 'static_pages2#index'
   get '/static_pages/tasks' => 'static_pages#tasks'
-  get '/admin/login', to: 'admin/login#new'
+  get '/admin/'           =>  'admin#index'
+  get '/admin/login'      =>  'admin/sessions#new'
+  post '/admin/login'     => 'admin/sessions#create'
+  delete '/admin/logout'  => 'admin/sessions#destroy'
   namespace :admin do
-    resources :users, only: [:index]
+    resources :users
+    resources :managers
     resources :login, only: [:new]
   end
-  
 end
