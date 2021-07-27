@@ -1,0 +1,32 @@
+<table class="table table-bordered table-striped table-condensed">
+  <tr>
+    <th>id</th>
+    <td><%= manager.id%></td>
+  </tr>
+  <tr>
+    <th>acount name</th>
+    <td>
+      <%= f.text_field :login_id, class: 'form-control' %>
+    </td>
+  </tr>
+  <% if current_manager.admin %>
+    <tr>
+      <th>admin</th>
+      <td>
+        <%= f.select :admin, {'No': 0, 'Yes': 1},{selected: (!!manager.admin)? 1:0 },{class: 'form-select'}  %>
+      </td>
+    </tr>
+  <% end %>
+  <tr>
+    <th>password</th>
+    <td>
+      <%= f.password_field :password, class: 'form-control' %>
+    </td>
+  </tr>
+  <tr>
+    <th>password confirmation</th>
+    <td>
+      <%= f.password_field :password_confirmation, class: 'form-control' %>
+    </td>
+  </tr>
+</table>

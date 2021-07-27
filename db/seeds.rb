@@ -21,3 +21,10 @@ User.create!(name:  "Example User",
                password_confirmation: password
   )
 end
+
+Manager.create!(
+  login_id:               "admin",
+  password:               "password",
+  password_confirmation:  "password",
+  admin: true
+)

@@ -1,0 +1,69 @@
+<section id="container">
+  <%= render 'layouts/admin_sidebar' %>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <!--main content start-->
+  <section id="main-content">
+    <section class="wrapper">
+      <h3><i class="fa fa-angle-right"></i> Managers</h3>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="content-panel">
+            <h4><i class="fa fa-angle-right"></i>Manager list</h4>
+            <div style="margin: 0 10px 10px 0;text-align: right;">
+              <%= link_to "New", new_admin_manager_path, class:"btn btn-outline-secondary btn-sm"%>
+            </div>
+            <section id="unseen">
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th class="numeric">Account Id</th>
+                    <th class="numeric">Admin</th>
+                    <th class="numeric" colspan="2">Manage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @managers.each.each do |manager| %>
+                  <tr>
+                    <td><%= link_to manager.id, admin_manager_path(manager) %></td>
+                    <td><%= manager.login_id %></td>
+                    <td class="numeric">
+                      <%if manager.admin%>
+                        Yes
+                      <% else %>
+                        No
+                      <% end %>
+                    </td>
+                    <td class="numeric">
+                      <%if current_manager.id == manager.id || current_manager.admin %>
+                        <%= link_to "Edit", edit_admin_manager_path(manager) %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </td>
+                    <td class="numeric">
+                      <%if current_manager.id != manager.id && current_manager.admin%>
+                        <%= link_to "Delete", admin_manager_path(manager), method: :delete , data: { confirm: "You sure?" }%>
+                      <% else %>
+                        -
+                      <% end %>
+                    </td>
+                  </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </section>
+          </div>
+          <!-- /content-panel -->
+        </div>
+        <!-- /col-lg-4 -->
+      </div>
+      <!-- /row -->
+    </section>
+    <!-- /wrapper -->
+  </section>
+  <!-- /MAIN CONTENT -->
+  <!--main content end-->
+</section><!--/container-->

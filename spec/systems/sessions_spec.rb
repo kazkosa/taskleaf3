@@ -29,5 +29,4 @@ describe 'Session', type: :system  do
     click_link 'Log out'
     expect(current_path).to eq root_path
   end
-  
 end

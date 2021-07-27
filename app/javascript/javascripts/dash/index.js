@@ -78,3 +78,6 @@ function myNavFunction(id) {
   console.log('nav ' + nav + ' to: ' + to.month + '/' + to.year);
 }
 
+setTimeout(function() {
+  $('.alert-success').fadeOut();
+}, 5000);
