@@ -23,6 +23,7 @@
                     <th class="numeric">name</th>
                     <th class="numeric">email</th>
                     <th class="numeric">admin</th>
+                    <th class="numeric">activate</th>
                     <th class="numeric" colspan="2">manage</th>
                   </tr>
                 </thead>
@@ -39,34 +40,17 @@
                         No
                       <% end %>
                     </td>
+                    <td class="numeric">
+                      <%if user.activated%>
+                        Yes
+                      <% else %>
+                        No
+                      <% end %>
+                    </td>
                     <td><%= link_to "Edit", edit_admin_user_path(user) %></td>
                     <td><%= link_to "Delete", admin_user_path(user), method: :delete , data: { confirm: "You sure?" }%></td>
                   </tr>
                   <% end %>
-                  <%# <tr>
-                    <td>2</td>
-                    <td>Runa Kilbert</td>
-                    <td class="numeric">runa@mail.com</td>
-                    <td class="numeric">No</td>
-                    <td class="numeric">Edit</td>
-                    <td class="numeric">Delet</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>Yo Wang</td>
-                    <td class="numeric">wang22@mail.com</td>
-                    <td class="numeric">no</td>
-                    <td class="numeric">Edit</td>
-                    <td class="numeric">Delet</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>John Smith</td>
-                    <td class="numeric">jsmith@mail.com</td>
-                    <td class="numeric">Yes</td>
-                    <td class="numeric">Edit</td>
-                    <td class="numeric">Delet</td>
-                  </tr> %>
                 </tbody>
               </table>
             </section>

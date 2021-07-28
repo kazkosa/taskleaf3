@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   get '/admin/login'      =>  'admin/sessions#new'
   post '/admin/login'     => 'admin/sessions#create'
   delete '/admin/logout'  => 'admin/sessions#destroy'
+  resources :account_activations, only: [:edit]
   namespace :admin do
     resources :users
     resources :managers
