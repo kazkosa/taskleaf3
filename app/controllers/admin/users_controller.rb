@@ -47,6 +47,10 @@ class Admin::UsersController < AdminController
   private
 
   def user_params
-    params.require(:user).permit(:name, :email, :admin, :password, :password_confirmation)
+    if params[:user][:activated].to_i.zero?
+      params.require(:user).permit(:name, :email, :admin, :password, :password_confirmation).merge(activated: false, activated_at: nil)
+    else
+      params.require(:user).permit(:name, :email, :admin, :password, :password_confirmation).merge(activated: true, activated_at: Time.zone.now)
+    end
   end
 end

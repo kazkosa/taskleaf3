@@ -9,7 +9,7 @@ class Admin::SessionsController < AdminController
       admin_log_in manager
       redirect_back_or admin_url
     else
-      flash[:danger] = 'Invalid account id/password combination'
+      flash.now[:danger] = 'Invalid account id/password combination'
       render 'new'
     end
   end

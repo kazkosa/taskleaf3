@@ -32,6 +32,7 @@ describe 'AdminUsers', type: :system  do
     fill_in 'user[name]', with: 'test_user'
     fill_in 'user[email]', with: 'example@mail.com'
     find("#user_admin").find("option[value='0']").select_option
+    find("#user_activated").find("option[value='1']").select_option
     fill_in 'user[password]', with: 'password'
     fill_in 'user[password_confirmation]', with: 'password'
     click_button 'Create'

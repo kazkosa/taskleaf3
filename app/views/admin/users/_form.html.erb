@@ -22,6 +22,12 @@
     </td>
   </tr>
   <tr>
+    <th>activate</th>
+    <td>
+      <%= f.select :activated, {'No': 0, 'Yes': 1},{selected: (!!user.activated)? 1:0 },{class: 'form-select'}  %>
+    </td>
+  </tr>
+  <tr>
     <th>password</th>
     <td>
       <%= f.password_field :password, class: 'form-control' %>

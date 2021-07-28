@@ -32,7 +32,18 @@
                 <tr>
                   <th>admin</th>
                   <td>
-                    <%if @user.admin%>
+                    <%if @user.admin?%>
+                        Yes
+                      <% else %>
+                        No
+                      <% end %>
+                    </td>
+                  </td>
+                </tr>
+                <tr>
+                  <th>activated</th>
+                  <td>
+                    <%if @user.activated?%>
                         Yes
                       <% else %>
                         No
