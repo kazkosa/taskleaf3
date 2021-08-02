@@ -1,0 +1,23 @@
+<section>
+  <div class="login-container show">
+    <div class="card-panel" style="">
+      <h1></h1>
+      <p>Forgot Password</p>
+      <div class="row">
+        <%= form_with scope: :password_reset, url: password_resets_path, local: true , class: "col s12" do |f| %>
+          <div class="row">
+            <div class="input-field col s12">
+              <%= f.email_field :email, class: "validate" %>
+              <%= f.label :email, 'Email' %>
+            </div>
+          </div>
+          <br/>
+          <%= f.submit "submit", class:"login_btn waves-effect waves-light btn-small cyan lighten-2" %>
+        <% end %>
+      </div>
+    </div>
+    <div class="card-panel append">
+      <p class="note"><%= link_to "Back to Login", login_path %></p>
+    </div>
+  </div>
+<section>

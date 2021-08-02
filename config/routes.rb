@@ -25,11 +25,12 @@ Rails.application.routes.draw do
   get '/static_pages'   => 'static_pages#index'
   get '/static_pages2' => 'static_pages2#index'
   get '/static_pages/tasks' => 'static_pages#tasks'
+  resources :account_activations, only: [:edit]
+  resources :password_resets,     only: [:new, :create, :edit, :update]
   get '/admin/'           =>  'admin#index'
   get '/admin/login'      =>  'admin/sessions#new'
   post '/admin/login'     => 'admin/sessions#create'
   delete '/admin/logout'  => 'admin/sessions#destroy'
-  resources :account_activations, only: [:edit]
   namespace :admin do
     resources :users
     resources :managers

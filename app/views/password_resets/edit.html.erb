@@ -1,0 +1,27 @@
+<section>
+  <div class="login-container show">
+    <div class="card-panel" style="">
+      <h1></h1>
+      <p>Reset Password</p>
+      <div class="row">
+        <%= form_with model: @user, url: password_reset_path(params[:id]), local: true , class: "col s12" do |f| %>
+          <div class="row">
+            <div class="input-field col s12">
+              <%= f.password_field :password, class: "validate" %>
+              <%= f.label :password, 'New Password' %>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <%= f.password_field :password_confirm, class: "validate" %>
+              <%= f.label :password_confirm, 'Confirm New Password' %>
+            </div>
+          </div>
+          <br/>
+          <%= hidden_field_tag :email, @user.email %>
+          <%= f.submit "Update password", class:"login_btn waves-effect waves-light btn-small cyan lighten-2" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<section>

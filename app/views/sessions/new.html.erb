@@ -4,20 +4,15 @@
       <h1></h1>
       <p>Login</p>
       <div class="row">
-        <%# <form class="col s12"> %>
         <%= form_with scope: :session, url: login_path, local: true , class: "col s12" do |f| %>
           <div class="row">
             <div class="input-field col s12">
-              <%# <input id="email" type="email" class="validate"> %>
-              <%# <label for="email">Email</label> %>
               <%= f.email_field :email, class: "validate" %>
               <%= f.label :email, 'Email' %>
             </div>
           </div>
           <div class="row">
             <div class="input-field col s12">
-              <%# <input id="password" type="password" class="validate"> %>
-              <%# <label for="password">Password</label> %>
               <%= f.password_field :password, class: "validate" %>
               <%= f.label :password, 'Password' %>
             </div>
@@ -31,13 +26,13 @@
             </div>
           </div>
           <br/>
-          <%# <input type="submit" value="Login" class="login_btn waves-effect waves-light btn-small cyan lighten-2"> %>
           <%= f.submit "submit", class:"login_btn waves-effect waves-light btn-small cyan lighten-2" %>
-        <%# </form> %>
         <% end %>
       </div>
     </div>
     <div class="card-panel append">
+      <p class="note">Forgot password?&nbsp; <%= link_to "Reset Password", new_password_reset_path %></p>
+      <br/>
       <p class="note">Don't have an account?&nbsp; <%= link_to "Sign up", signup_path %></p>
     </div>
   </div>
