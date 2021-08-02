@@ -5,7 +5,7 @@ application up and running.
 
 Things you may want to cover:
 
-# TaskLeaf
+# TicketLine
 
 ## Overview
 This project is implemented to manage the tasks
@@ -40,7 +40,7 @@ http://localhost:3000/
 ## Install
 Clone the repository:
 ```bash
-git clone https://github.com/kazkosa/taskleaf2.git
+git clone https://github.com/kazkosa/taskleaf3.git
 ```
 Install the dependencies:
 
