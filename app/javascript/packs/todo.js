@@ -10,6 +10,9 @@ import Vue from 'vue/dist/vue.esm.js'
 import App from '../app.vue'
 import Router from './router/router'
 
+import '../stylesheets/todo';
+import '../javascripts/todo';
+
 // document.addEventListener('DOMContentLoaded', () => {
 //   const app = new Vue({
 //     render: h => h(App)
