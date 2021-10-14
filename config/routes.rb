@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   post '/signup' => 'users#create'
   resources :users
   root 'static_pages#index'
+  # root 'home#index'
+  get '/dashboard' => 'dashboard#index'
   # get     'trials'          => 'trials#index'
   # get     'trials/new'      => 'trials#new'
   # post    'trials'          => 'trials#create'
@@ -35,5 +37,10 @@ Rails.application.routes.draw do
     resources :users
     resources :managers
     resources :login, only: [:new]
+  end
+
+  namespace :api, format: 'json' do
+    resources :tasks, only: [:index, :create, :update]
+    resources :users, only: [:show]
   end
 end
