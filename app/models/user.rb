@@ -10,6 +10,9 @@ class User < ApplicationRecord
                     uniqueness: { case_sensitive: false }
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+  has_many :workspaces
+  has_many :projects
+  has_many :boards
 
   # Returns a random token
   def User.new_token

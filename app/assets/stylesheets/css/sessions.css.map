@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "../admin/sessions.scss"
+    ],
+    "names": [],
+    "file": "sessions.css"
+}
