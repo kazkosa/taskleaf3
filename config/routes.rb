@@ -42,5 +42,12 @@ Rails.application.routes.draw do
   namespace :api, format: 'json' do
     resources :tasks, only: [:index, :create, :update]
     resources :users, only: [:show]
+    resources :projects, only: [:index, :create, :update, :show, :destroy]
+    resources :boards, only: [:index, :create, :update, :show, :destroy]
+    # get '/static_pages'   => 'static_pages#index'
   end
+  get '/dashboard/' => 'dashboard#index'
+  get '/dashboard/mystation' => 'dashboard#index'
+  get '/dashboard/projects/:id' => 'dashboard#index'
+  get '/dashboard/boards/:id' => 'dashboard#index'
 end

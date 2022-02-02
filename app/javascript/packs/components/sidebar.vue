@@ -12,10 +12,10 @@
         </div>
         <ul class="menu-items">
           <li class="menu-items__item">
-            <a href="/dashboard" class="menu-items__item__link">
+            <router-link to="/" class="menu-items__item__link">
               <span class="icon"><i class="fas fa-home"></i></span>
               <span class="txt">HOME</span>
-            </a>
+            </router-link>
           </li>
           <li class="menu-items__item">
             <div class="menu-items__item__select-container">
@@ -33,31 +33,35 @@
             <ul class="projects">
               <li class="project" v-for="(item,index) in projects" v-bind:key="index">
                 <div class="project__head">
-                  <a class="project__head__link" @click="swProjectMenu(index)">
+                  <router-link :to="{ name: 'project', params: { id: item.id }}" class="project__head__link">
                     <div class="name">
                       <span class="icon_char">{{item.name[0]}}</span>
                       <span>{{item.name}}</span>
                     </div>
-                  
+                  </router-link>
+                  <div v-if="item.boards && item.boards.length" class="project__head__toggle" @click="swProjectMenu(index)">
                     <div class="btn-openclose" >
                       <span v-show="!isOpenProjects[index]"><i class="fas fa-chevron-down"></i></span>
                       <span v-show="isOpenProjects[index]"><i class="fas fa-chevron-up"></i></span>
                     </div>
-                  </a>
+                  </div>
                 </div>
 
                 <transition>
                   <ul class="boards" v-show="isOpenProjects[index]">
-                    <li class="board">
+                    <li class="board" v-for="(item2, index2) in item.boards" v-bind:key="'board' + index2">
+                      <span>{{item2.name}}</span>
+                    </li>
+                    <!-- <li class="board">
                       <span>board00</span>
                     </li>
                     <li class="board">
                       <span>board00</span>
-                    </li>
+                    </li> -->
                     <li class="board">
                       <a class="addbtn">
                         <span class="icon"><i class="fas fa-plus"></i></span>
-                        <span class="txt2">Add Board</span>
+                        <span class="txt2" @click="openFormBoardEdit(item.id)">Add Board</span>
                       </a>
                     </li>
                   </ul>
@@ -66,7 +70,7 @@
               <li class="project">
                 <a class="addbtn">
                   <span class="icon"><i class="fas fa-plus"></i></span>
-                  <span class="txt2">Add Project</span>
+                  <span class="txt2" @click="openFormProjectEdit">Add Project</span>
                 </a>
               </li>
             </ul>
@@ -80,13 +84,38 @@
 </template>
 <script>
 import selectWrapper from './selectWrapper'
+// import VueRouter from 'vue-router'
 
 export default {
   props: {
     currentUser: {
       type: Object,
       require: false
+    },
+    projects: {
+      type: Array,
+      require: false
+    },
+    targetOpenProjectid: {
+      type: Number,
+      require: false
     }
+  },
+  watch: {
+    "projects": {
+      handler: function(newVal, oldVal) {
+        this.initialize()
+      },
+      deep: true,
+      immediate: true
+    },
+    "targetOpenProjectid": {
+      handler: function(newVal, oldVal) {
+        this.initialize()
+      },
+      deep: true,
+      immediate: true
+    },
   },
   data: function () {
     return {
@@ -96,42 +125,44 @@ export default {
         {id:1, name: 'MySpace00'},
         {id:2, name: 'WorkSpace01'}
       ],
-      projects: [
-        {id:1, name: 'NS'},
-        {id:2, name: 'DGE'}
-      ],
       isOpenProjects: [],
       isOpenSidebar: true
-
     }
   },
   created: function() {
-    console.log(this.projects)
-    const _this =this
-    this.projects.forEach(function(v,k){
-
-      _this.isOpenProjects.push(false)
-      console.log(_this.isOpenProjects)
-
-    })
+    this.initialize()
   },
   beforeDestroy() {
   },
   
   methods: {
+    initialize: function() {
+      const _this =this
+      this.isOpenProjects = []
+      this.projects.forEach(function(v,k){
+        if ( _this.targetOpenProjectid && v.id === _this.targetOpenProjectid ) {
+          _this.isOpenProjects.push(true)
+        } else {
+          _this.isOpenProjects.push(false)
+        }
+        
+      })
+    },
     swProjectMenu: function(n) {
       console.log(n)
-      // if (this.)
       console.log(this.isOpenProjects)
-      // this.isOpenProjects[n] = !this.isOpenProjects[n]
-      
-      this.$set(this.isOpenProjects, n, !this.isOpenProjects[n]);
-
+      this.$set(this.isOpenProjects, n, !this.isOpenProjects[n])
       console.log(this.isOpenProjects)
     },
     opencloseSidebar: function() {
       this.isOpenSidebar = !this.isOpenSidebar
-    }
+    },
+    openFormProjectEdit: function() {
+      this.$emit('open-form-project-edit')
+    },
+    openFormBoardEdit: function(project_id) {
+      this.$emit('open-form-board-edit', project_id)
+    },
   },
   components: {
     'selectWrapper': selectWrapper,
@@ -239,11 +270,20 @@ export default {
           padding: 20px 0 0 0px;
           .project {
             &__head {
+              display: flex;
+              justify-content: space-between;
               &__link {
-                display: flex;
-                justify-content: space-between;
+                
                 padding: 0 5px 0 0;
                 border-radius: 10px;
+                width: 90%;
+              }
+              &__toggle {
+                
+                padding: 0 5px 0 0;
+                // border-radius: 10px;
+                width: 10%;
+                cursor: pointer;
               }
               
             }

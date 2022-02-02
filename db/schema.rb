@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_24_105000) do
+ActiveRecord::Schema.define(version: 2021_10_17_045927) do
+
+  create_table "boards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.bigint "owner_id"
+    t.bigint "project_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["owner_id"], name: "index_boards_on_owner_id"
+    t.index ["project_id"], name: "index_boards_on_project_id"
+  end
 
   create_table "managers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "login_id"
@@ -18,6 +29,17 @@ ActiveRecord::Schema.define(version: 2021_08_24_105000) do
     t.boolean "admin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.bigint "owner_id"
+    t.bigint "workspace_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["owner_id"], name: "index_projects_on_owner_id"
+    t.index ["workspace_id"], name: "index_projects_on_workspace_id"
   end
 
   create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -51,4 +73,17 @@ ActiveRecord::Schema.define(version: 2021_08_24_105000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  create_table "workspaces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name"
+    t.bigint "owner_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["owner_id"], name: "index_workspaces_on_owner_id"
+  end
+
+  add_foreign_key "boards", "projects"
+  add_foreign_key "boards", "users", column: "owner_id"
+  add_foreign_key "projects", "users", column: "owner_id"
+  add_foreign_key "projects", "workspaces"
+  add_foreign_key "workspaces", "users", column: "owner_id"
 end

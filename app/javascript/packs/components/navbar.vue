@@ -55,7 +55,6 @@ export default {
     window.addEventListener('click', this.closeDropDown);
   },
   created: function() {
-    console.log('test')
   },
   beforeDestroy() {
     window.removeEventListener('click', this.closeDropDown);
