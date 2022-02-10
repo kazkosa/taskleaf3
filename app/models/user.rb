@@ -11,8 +11,11 @@ class User < ApplicationRecord
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
   has_many :workspaces
-  has_many :projects
-  has_many :boards
+  # has_many :projects
+  # has_many :boards
+
+  has_many :project_members, dependent: :destroy
+  has_many :projects, through: :project_members
 
   # Returns a random token
   def User.new_token

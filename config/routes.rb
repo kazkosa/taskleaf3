@@ -36,12 +36,17 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users
     resources :managers
+    resources :projects
     resources :login, only: [:new]
   end
 
   namespace :api, format: 'json' do
     resources :tasks, only: [:index, :create, :update]
-    resources :users, only: [:show]
+    resources :users, only: [:index, :show] do
+      collection do
+        get :count
+      end
+    end
     resources :projects, only: [:index, :create, :update, :show, :destroy]
     resources :boards, only: [:index, :create, :update, :show, :destroy]
     # get '/static_pages'   => 'static_pages#index'
