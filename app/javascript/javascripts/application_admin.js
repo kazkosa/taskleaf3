@@ -10,3 +10,4 @@ import './dash/lib/zabuto_calendar.js';
 import './dash/lib/jquery.gritter.js';
 import './dash/lib/tasks.js';
 import './dash/index.js';
+import './project.js';

@@ -1,0 +1,50 @@
+<table class="table table-bordered table-striped table-condensed">
+  <tr>
+    <th><%= f.label :name, 'Name' %></th>
+    <td><%= f.text_field :name, required: true, class: 'form-control' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :description, 'Description' %></th>
+    <td><%= f.text_area :description,  class: 'form-control' %></td>
+  </div>
+  <tr>
+    <th>Member</th>
+    <td>
+      <label>Search for group members</label>
+      <input id="member_search" class="search-box form-control" type="text" placeholder="Name or Mail" onkeydown="return event.keyCode != 13;">
+      <ul class="search_result"></ul>
+      <table class="member-list table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Mail</th>
+            <th>Authority</th>
+            <th>Manage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if members && !members.empty? %>
+            <% members.each do |member_info_pj| %>
+              <tr class="member-list__sel-user">
+                <input class="user_ids" name="project[user_ids][]" type="hidden" value="<%=member_info_pj.user_id%>" >
+                <td class="member-list__sel-user__name"><%= member_info_pj.user.name %></td>
+                <td class="member-list__sel-user__email"><%= member_info_pj.user.email %></td>
+                <td class="member-list__sel-user__authority">
+                  <%= select_tag "project_member[roles][]", options_for_select(ProjectMember.roles, selected: member_info_pj.role_before_type_cast), {class: 'form-control', require: true} %>  
+                </td>
+                <td><span class="remove-member" data-user_id="<%= member_info_pj.user_id %>">削除</span></td>
+              </tr>
+            <% end %>
+          <% else %>
+          <tr class="nomembers">
+            <td colspan="4">No Members</td>
+          <tr>
+          <% end %>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+</table>
+<div style="text-align: center;">
+  <%= f.submit mode_text, class: "submit_project btn btn-outline-primary" %>
+</div>

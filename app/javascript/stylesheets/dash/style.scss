@@ -1087,8 +1087,7 @@ PANELS CONFIGURATIONS
 .content-panel {
 	background: #ffffff;
 	box-shadow: 0px 3px 2px #aab2bd;
-	padding-top: 15px;
-	padding-bottom: 5px;
+	padding: 15px 10px;
 }
 .content-panel h4 {
 	margin-left: 10px;
@@ -1951,6 +1950,29 @@ ul li {
 	background: #4ECDC4;
 	border-radius: 3px;
 	-webkit-border-radius: 3px;
+}
+
+.remove-member {
+  color: #0d6efd;
+  display: inline-block;
+  cursor: pointer;
+}
+.search_result {
+  padding: 20px 20px 10px;
+}
+.member-list__user {
+  display: flex;
+  &__name {
+    display: inline-block;
+    width: 300px;
+
+  }
+  .add-member {
+    cursor: pointer;
+    display: block;
+    margin: 10px;
+  }
+
 }
 
 /*LOGIN CONFIGURATION PAGE*/
@@ -3497,9 +3519,21 @@ ul.chat-available-user li a:hover {
   width: 100%;
   z-index: 3;
 } 
-
+.alert2 {
+  padding: 1rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  width: 100%;
+  z-index: 3;
+}
 .alert-success {
   color: #0f5132;
   background-color: #d1e7dd;
   border-color: #badbcc;
+}
+#error_explanation {
+  ul li {
+    color: #842029;
+  }
 }

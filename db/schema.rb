@@ -10,16 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_17_045927) do
+ActiveRecord::Schema.define(version: 2022_02_03_095256) do
 
   create_table "boards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
-    t.bigint "owner_id"
     t.bigint "project_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["owner_id"], name: "index_boards_on_owner_id"
     t.index ["project_id"], name: "index_boards_on_project_id"
   end
 
@@ -31,14 +29,22 @@ ActiveRecord::Schema.define(version: 2021_10_17_045927) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "project_members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "project_id"
+    t.bigint "user_id"
+    t.integer "role", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["project_id"], name: "index_project_members_on_project_id"
+    t.index ["user_id"], name: "index_project_members_on_user_id"
+  end
+
   create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
-    t.bigint "owner_id"
     t.bigint "workspace_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["owner_id"], name: "index_projects_on_owner_id"
     t.index ["workspace_id"], name: "index_projects_on_workspace_id"
   end
 
@@ -82,8 +88,8 @@ ActiveRecord::Schema.define(version: 2021_10_17_045927) do
   end
 
   add_foreign_key "boards", "projects"
-  add_foreign_key "boards", "users", column: "owner_id"
-  add_foreign_key "projects", "users", column: "owner_id"
+  add_foreign_key "project_members", "projects"
+  add_foreign_key "project_members", "users"
   add_foreign_key "projects", "workspaces"
   add_foreign_key "workspaces", "users", column: "owner_id"
 end
