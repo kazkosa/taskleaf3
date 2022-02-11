@@ -21,7 +21,7 @@ class Admin::ProjectsController < AdminController
     end
     if @project.save
       flash[:success] = "Project Created!"
-      redirect_to admin_project_url(@project), notice: "New Project Created"
+      redirect_to admin_project_url(@project)
     else
       render 'new'
     end

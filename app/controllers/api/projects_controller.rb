@@ -3,7 +3,8 @@ class Api::ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    @projects = Project.where(owner_id: current_user.id, workspace_id:nil).order('id ASC')
+    # @projects = Project.where(owner_id: current_user.id, workspace_id:nil).order('id ASC')
+    @projects = current_user.projects.order('id DESC')
   end
 
   # POST /project
@@ -42,6 +43,6 @@ class Api::ProjectsController < ApplicationController
   private
   # Never trust parameters from the scary internet, only allow the white list through.
   def project_params
-    params.fetch(:project, {}).permit(:name, :description).merge(owner_id: current_user.id)
+    params.fetch(:project, {}).permit(:name, :description)#.merge(owner_id: current_user.id)
   end
 end
