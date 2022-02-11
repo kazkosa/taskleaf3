@@ -1,7 +1,6 @@
 class Project < ApplicationRecord
   include ActiveModel::Validations
-  validates_with MemberValidator
-  # belongs_to :owner, class_name: "User"
+  validate :instance_validations, on: :create
   belongs_to :workspace, optional: true
   has_many :boards, foreign_key: :project_id, dependent: :destroy
   has_many :project_members, dependent: :destroy
@@ -26,5 +25,8 @@ class Project < ApplicationRecord
     else
       return true
     end
+  end
+  def instance_validations
+    validates_with ::MemberValidator
   end
 end
