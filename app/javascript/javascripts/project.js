@@ -1,5 +1,20 @@
 $(function(){
   //検索結果を表示
+  const type = $('.member-list').data('type');
+  let project_id= 0;
+  $('select[name="board[project_id]"]').on('change', function(){
+    if ($(this).val()) {
+      $('#member_search').prop('disabled', false)
+      project_id = parseInt($(this).val(), 10);
+    } else {
+      $('#member_search').val('')
+      $('#member_search').prop('disabled', true)
+    }
+  });
+  if (type === 'board') {
+    $('select[name="board[project_id]"]').trigger('change')
+  }
+
   function buildHTML_SearchResult(user){
     var html = `
       <li class="member-list__user">
@@ -33,7 +48,7 @@ $(function(){
       $.ajax({
         url: url,
         type:"GET",
-        data: {keyword: input, exist_user_ids: exist_user_ids},
+        data: {keyword: input, exist_user_ids: exist_user_ids, type, project_id},
         dataType: "json",
       })
       .done(function(result){
@@ -43,7 +58,7 @@ $(function(){
           $.ajax({
             url: url,
             type:"GET",
-            data: {keyword: input, exist_user_ids: exist_user_ids},
+            data: {keyword: input, exist_user_ids: exist_user_ids, type, project_id},
             dataType: "json",
           })
           .done(function(result){
@@ -80,10 +95,10 @@ $(function(){
     $('#member_search').trigger('keyup')
   });
 
-  function buildHTML_AddMember (id, name, email) {
+  function buildHTML_AddMember (id, name, email, type) {
     var html = `
       <tr class="member-list__sel-user">
-        <input class="user_ids" name="project[user_ids][]" type="hidden" value="${id}" >
+        <input class="user_ids" name="${type}[user_ids][]" type="hidden" value="${id}" >
         <td class="member-list__sel-user__name">
           ${name}
         </td>
@@ -91,7 +106,7 @@ $(function(){
           ${email}
         </td>
         <td class="member-list__sel-user__authority">
-          <select name="project_member[roles][]" class="form-control" >
+          <select name="${type}_member[roles][]" class="form-control" >
             <option value="0">owner</option>
             <option value="1">manager</option>
             <option value="2" selected>regular</option>
@@ -115,13 +130,9 @@ $(function(){
       $('.nomembers').remove();
     }
 
-    buildHTML_AddMember(selected_user_id, selected_user_name, selected_user_email);
+    buildHTML_AddMember(selected_user_id, selected_user_name, selected_user_email, type);
     $(this).parent().remove();
     
-  });
-
-  $('.submit_project').on('click', function(){
-
   });
   
 });

@@ -36,7 +36,10 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users
     resources :managers
-    resources :projects
+    resources :projects do
+      resources :boards, only: [:new]
+    end
+    resources :boards
     resources :login, only: [:new]
   end
 

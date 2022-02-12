@@ -11,12 +11,21 @@ class Api::UsersController < ApplicationController
   end
 
   def count
-    @count = User.where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where.not(id: exist_user_ids_params).count
+    if params[:type] == 'board' && params[:project_id] && params[:project_id].to_i
+      # @count = User.where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where.not(id: exist_user_ids_params).count
+      @count = User.joins(:project_members).where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where('project_members.project_id': params[:project_id]).where.not(id: exist_user_ids_params).count
+    else
+      @count = User.where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where.not(id: exist_user_ids_params).count
+    end
     render :count, status: :ok
   end
 
   def index
-    @users = User.where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where.not(id: exist_user_ids_params)
+    if params[:type] == 'board' && params[:project_id] && params[:project_id].to_i
+      @users = User.joins(:project_members).where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where('project_members.project_id': params[:project_id]).where.not(id: exist_user_ids_params)
+    else
+      @users = User.where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where.not(id: exist_user_ids_params)
+    end
     render :index, status: :ok
   end
 

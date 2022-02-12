@@ -6,28 +6,32 @@
   <!--main content start-->
   <section id="main-content">
     <section class="wrapper">
-      <h3><a href="/admin/projects" ><i class="fa fa-angle-right"></i> Projects</a></h3>
+      <h3><a href="/admin/boards" ><i class="fa fa-angle-right"></i> Boards</a></h3>
       <div class="row mt">
         <div class="col-lg-12">
           <div class="content-panel">
-            <h4><i class="fa fa-angle-right"></i>Project Infomation</h4>
+            <h4><i class="fa fa-angle-right"></i>Board Infomation</h4>
             <div style="margin: 0 10px 10px 0;text-align: right;">
-              <%= link_to "Edit", edit_admin_project_path(@project), class:"btn btn-outline-secondary btn-sm"%>
+              <%= link_to "Edit", edit_admin_board_path(@board), class:"btn btn-outline-secondary btn-sm"%>
             </div>
             <section id="unseen">
               <table class="table table-bordered table-striped table-condensed">
                 <tr>
                   <th>id</th>
-                  <td><%= @project.id%></td>
+                  <td><%= @board.id%></td>
                 </tr>
                 <tr>
-                  <th>project name</th>
-                  <td><%= @project.name%></td>
+                  <th>Project ID</th>
+                  <td><%= link_to @board.project.id, admin_project_path(@board.project) %></td>
+                </tr>
+                <tr>
+                  <th>Board name</th>
+                  <td><%= @board.name%></td>
                 </tr>
                 <tr>
                   <th>Description</th>
                   <td>
-                    <%= @project.description%>
+                    <%= @board.description%>
                   </td>
                 </tr>
                 <tr>
@@ -42,7 +46,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <% @project.project_members.each do |member_info_pj| %>
+                        <% @board.board_members.each do |member_info_pj| %>
                           <tr class="member-list__sel-user">
                             <td class="member-list__sel-user__name"><%= link_to member_info_pj.user.name, admin_user_path(member_info_pj.user) %></td>
                             <td class="member-list__sel-user__email"><%= member_info_pj.user.email %></td>
@@ -51,23 +55,6 @@
                         <% end %>
                       </tbody>
                     </table>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Board</th>
-                  <td>
-                    <% if !@project.boards.empty? %>
-                      <ul style="padding-left: 0;">
-                        <% @project.boards.each do |board| %>
-                          <li> - <%=link_to "#{board.name}", admin_board_path(board) %></li>
-                        <% end %>
-                      </ul>
-                    <% else %>
-                      -
-                    <% end %>
-                    <div style="margin: 0 10px 10px 0;text-align: right;">
-                      <%= link_to "Add Board", new_admin_project_board_path(@project), class:"btn btn-outline-secondary btn-sm"%>
-                    </div>
                   </td>
                 </tr>
               </table>
