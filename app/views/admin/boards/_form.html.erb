@@ -1,5 +1,15 @@
 <table class="table table-bordered table-striped table-condensed">
   <tr>
+    <th><%= f.label :project_id, 'Project' %></th>
+    <td>
+      <% if params[:project_id] %>
+        <%= f.select :project_id, Project.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {selected: params[:project_id], include_blank: ''}, { class: "form-control" }  %>
+      <% else %>
+        <%= f.select :project_id, Project.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {include_blank: ''}, { class: "form-control" }  %>
+      <% end %>
+    
+  </tr>
+  <tr>
     <th><%= f.label :name, 'Name' %></th>
     <td><%= f.text_field :name, required: true, class: 'form-control' %></td>
   </tr>
@@ -13,7 +23,7 @@
       <label>Search for group members</label>
       <input id="member_search" class="search-box form-control" type="text" placeholder="Name or Mail" onkeydown="return event.keyCode != 13;">
       <ul class="search_result"></ul>
-      <table class="member-list table" data-type="project">
+      <table class="member-list table" data-type="board">
         <thead>
           <tr>
             <th>Name</th>
@@ -26,11 +36,11 @@
           <% if members && !members.empty? %>
             <% members.each do |member_info_pj| %>
               <tr class="member-list__sel-user">
-                <input class="user_ids" name="project[user_ids][]" type="hidden" value="<%=member_info_pj.user_id%>" >
+                <input class="user_ids" name="board[user_ids][]" type="hidden" value="<%=member_info_pj.user_id%>" >
                 <td class="member-list__sel-user__name"><%= member_info_pj.user.name %></td>
                 <td class="member-list__sel-user__email"><%= member_info_pj.user.email %></td>
                 <td class="member-list__sel-user__authority">
-                  <%= select_tag "project_member[roles][]", options_for_select(ProjectMember.roles, selected: member_info_pj.role_before_type_cast), {class: 'form-control', require: true} %>  
+                  <%= select_tag "board_member[roles][]", options_for_select(ProjectMember.roles, selected: member_info_pj.role_before_type_cast), {class: 'form-control', require: true} %>  
                 </td>
                 <td><span class="remove-member" data-user_id="<%= member_info_pj.user_id %>">削除</span></td>
               </tr>

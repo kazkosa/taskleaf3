@@ -51,6 +51,36 @@
                     </td>
                   </td>
                 </tr>
+                <tr>
+                  <th>Join</th>
+                  <td>
+                    <% if !@user.projects.empty? %>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Projects</th>
+                            <th>Boards</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% @user.projects.each do |project| %>
+                          <tr>
+                            <td><%= link_to project.id, admin_project_path(project) %></td>
+                            <td>
+                              <ul style="margin:0;padding:0;">
+                                <% registered_boards(project, @user).each do |board| %>
+                                  <li><%= link_to board.id, admin_board_path(board.id) %></li>
+                                <% end %>
+                              </ul>
+                            </td>
+                          </tr>
+                          <% end %>
+                        </tbody>
+                        
+                      </table>
+                    <% end %>
+                  </td>
+                </tr>
               </table>
             </section>
           </div>

@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_03_095256) do
+ActiveRecord::Schema.define(version: 2022_02_12_005812) do
+
+  create_table "board_members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "board_id"
+    t.bigint "user_id"
+    t.integer "role", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["board_id"], name: "index_board_members_on_board_id"
+    t.index ["user_id"], name: "index_board_members_on_user_id"
+  end
 
   create_table "boards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
