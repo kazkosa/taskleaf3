@@ -13,7 +13,7 @@ class Admin::ManagersController < AdminController
   def create
     @manager = Manager.new(manager_params)
     if @manager.save
-      flash[:success] = "Welcome to the Task Leaf!"
+      flash[:success] = "Welcome to the TicketLine!"
       redirect_to admin_manager_url(@manager)
     else
       render 'new'
