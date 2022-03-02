@@ -5,6 +5,7 @@ import About from '../components/about.vue'
 import Contact from '../components/contact.vue'
 import Mystation from '../components/mystation.vue'
 import Project from '../components/project.vue'
+import ProjectMember from '../components/project-member.vue'
 import Board from '../components/board.vue'
 
 Vue.use(VueRouter)
@@ -20,8 +21,21 @@ export default new VueRouter({
     {
       path: '/projects/:id',
       name: 'project',
-      component: Project
+      component: Project,
+      children: [
+        {
+          path: 'members',
+          name: 'project-member',
+          component: Project,
+        },
+        {
+          path: 'setting',
+          name: 'project-setting',
+          component: Project,
+        }
+      ]
     },
+    
     {
       path: '/boards/:id',
       name: 'board',

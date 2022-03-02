@@ -1,0 +1,10 @@
+<h1>TicketLine</h1>
+
+<p>Hi <%= @to_user.name %>,</p>
+
+<p>
+<%= @from_user.name %> invited you to the project name: <%= @project.name %>.
+Click the button below to check.
+</p>
+
+<%= link_to "Confirm this project", dashboard_project_url(@project) %>

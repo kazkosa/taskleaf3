@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       # log_in @user
-      # flash[:success] = "Welcome to the Task Leaf!"
+      # flash[:success] = "Welcome to the TicketLine!"
       # redirect_to @user
       # UserMailer.account_activation(@user).deliver_now
       @user.send_activation_email

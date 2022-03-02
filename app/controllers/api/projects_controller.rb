@@ -10,7 +10,6 @@ class Api::ProjectsController < ApplicationController
   # POST /project
   def create
     @project = Project.new(project_params)
-
     if @project.save
       render :show, status: :created
     else
@@ -27,7 +26,7 @@ class Api::ProjectsController < ApplicationController
     if @project.update_attributes(project_params)
       render :show, status: :created
     else
-      render json: @book.errors, status: :unprocessable_entity
+      render json: @project.errors, status: :unprocessable_entity
     end
   end
 
@@ -40,9 +39,47 @@ class Api::ProjectsController < ApplicationController
     end
   end
 
+  def update_members
+    @project = Project.find(params[:id])
+    if @project.update(project_params_update) && @project.ensure_no_member
+      success = true
+      if project_params_update[:user_ids]
+        @project.project_members.each do |member|
+          index = project_params_update[:user_ids].index(member.user_id)
+          member.role = (project_member_params[:roles][index])
+
+          if member.save
+            sendmail_user_id = project_member_params[:sendmail_user_ids].find { |n| n == member.user_id}
+            @sendmail_user = sendmail_user_id && User.find(sendmail_user_id)
+            current_user.send_announcement_email_of_join_the_project_mail(@sendmail_user, @project) if @sendmail_user
+          else
+            success = false
+          end
+        end
+      end
+      if success
+        @members = @project.build_member
+        render :show, status: :created
+      else
+        render json: @project.errors, status: :unprocessable_entity
+      end
+    else
+      render json: @project.errors, status: :unprocessable_entity
+    end
+  end
+
   private
+
   # Never trust parameters from the scary internet, only allow the white list through.
   def project_params
-    params.fetch(:project, {}).permit(:name, :description)#.merge(owner_id: current_user.id)
+    params.fetch(:project, {}).permit(:name, :description).merge(user_ids: [current_user.id])
+  end
+
+  def project_params_update
+    params.require(:project).permit(user_ids: [] )
+  end
+
+  def project_member_params
+    params.require(:project_member).permit(roles: [], sendmail_user_ids: [])
   end
 end

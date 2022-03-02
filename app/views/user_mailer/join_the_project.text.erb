@@ -1,0 +1,6 @@
+Hi <%= @to_user.name %>,
+ 
+<%= @from_user.name %> invited you to the project name: <%= @project.name %>.
+Click the button below to check.
+
+<%= dashboard_project_url(@project) %>
