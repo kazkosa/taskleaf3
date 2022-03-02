@@ -3,7 +3,7 @@
       <div class="inner">
         <div class="header-logo-container">
           <a href="/dashboard" class="imgBox">
-            <img src="../../images/dashboards/common/logoTop2.png" alt="TicketLine">
+            <img src="../../images/dashboards/common/logoTop2.png" alt="TicketLine" width="160" height="37" class="logo-top">
           </a>
         </div>
 
@@ -19,7 +19,7 @@
                     <li class="basic-menu__item">
                       <a class="user-container">
                         <!-- <i class="fas fa-user-circle"></i> -->
-                        <span class="user-container__avatar">{{currentUser.name[0]}}</span>
+                        <span class="user-container__avatar">{{getInitial}}</span>
                         <span>{{currentUser.name}}</span>
                       </a>
                     </li>
@@ -51,6 +51,17 @@ export default {
       basicMenuOpen: false
     }
   },
+  computed: {
+    getInitial: function () {
+      if (this.currentUser.name) {
+        return this.currentUser.name.split(' ').map(function(n){
+            return n[0]
+        }).join('')
+      } else {
+        return ''
+      }
+    }
+  },
   mounted() {
     window.addEventListener('click', this.closeDropDown);
   },
@@ -73,16 +84,10 @@ export default {
       }
     }
   }
-
-
-  // components: {
-  //   'navbar': navbar
-  // }
-
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #header {
   position: fixed;
   z-index: 1;
@@ -98,7 +103,6 @@ export default {
   .inner {
     width: 100%;
     height: 100%;
-    // max-width: 1000px;
     .header-logo-container {
       display: block;
       .imgBox {
@@ -146,7 +150,7 @@ export default {
             }
             .basic-menu {
               background: #FFF;
-              width: 120px;
+              width: 180px;
               padding: 2px 2px;
               &__item {
                 a {
@@ -168,9 +172,6 @@ export default {
                   span {
                     font-size: 12px;
                   }
-                  // &__avatar 
-                  //   background-color: #2C7CFF;
-                  //   color: #FFF;
                 }
                 .user-container {
                    &__avatar {

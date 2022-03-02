@@ -26,6 +26,8 @@
             @update-project="updateProject"
             @open-confirm-project-delete="openConfirmProjectDelete"
             @open-confirm-board-delete="openConfirmBoardDelete"
+            @flash-on="flashOn"
+            @keypress.esc="closeModal"
           ></router-view>
         </div>
       </main>
@@ -59,6 +61,13 @@
       ></ModalBoardDelete>
 
 
+      <FlashMessage
+        :is-show="showFlash"
+        :message="flashMessage"
+        :type="flashType"
+        @flash-off="flashOff"
+      />
+
     </div>
   </div>
 </template>
@@ -70,6 +79,7 @@ import FormProjectEdit from './packs/components/FormProjectEdit'
 import FormBoardEdit from './packs/components/FormBoardEdit'
 import ModalProjectDelete from './packs/components/ModalProjectDelete'
 import ModalBoardDelete from './packs/components/ModalBoardDelete'
+import FlashMessage from './packs/components/FlashMessage'
 import axios from 'axios';
 
 export default {
@@ -98,7 +108,9 @@ export default {
       targetBoardIdFormBoard: 0,
       showConfirmBoardDelete: false,
       deleteBoardId: 0,
-
+      showFlash: false,
+      flashMessage: '',
+      flashType: ''
     }
   },
   components: {
@@ -107,7 +119,8 @@ export default {
     'FormProjectEdit': FormProjectEdit,
     'FormBoardEdit': FormBoardEdit,
     'ModalProjectDelete': ModalProjectDelete,
-    'ModalBoardDelete': ModalBoardDelete
+    'ModalBoardDelete': ModalBoardDelete,
+    'FlashMessage': FlashMessage
   },
   mounted: function () {
     this.initialize()
@@ -143,7 +156,6 @@ export default {
     },
     openFormProjectEdit: function(project_id) {
       this.showFormProjectEdit = true
-      console.log(project_id)
       this.editProjectId = project_id
     },
     openFormBoardEdit: function(projectid, boardid = 0) {
@@ -177,6 +189,15 @@ export default {
       this.showConfirmBoardDelete = true
       this.deleteBoardId = board_id
     },
+    flashOn: function(msg, type) {
+      this.showFlash = true
+      this.flashMessage = msg
+      this.flashType = type
+    },
+    flashOff: function() {
+      this.showFlash = false
+      this.flashMessage = ''
+    }
   }
 }
 </script>
@@ -257,7 +278,6 @@ p {
   .page-desc {
     font-size: 16px;
     text-align:left;
-    margin-left: 1rem;
     white-space: pre-wrap;
     @media screen and (min-width: 768px) {
       font-size: 18px;
@@ -272,7 +292,6 @@ p {
       @media screen and (min-width: 768px) {
         font-size: 18px;
       }
-
     }
   }
   .subsection{
@@ -406,5 +425,8 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.logo-top {
+  width: 160px;
 }
 </style>

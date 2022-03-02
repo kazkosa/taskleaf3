@@ -50,12 +50,21 @@ Rails.application.routes.draw do
         get :count
       end
     end
-    resources :projects, only: [:index, :create, :update, :show, :destroy]
+    resources :projects, only: [:index, :create, :update, :show, :destroy] do
+      resources :project_members,     only: [:index, :update]
+      member do
+        put :update_members
+      end
+    end
+    resources :project_members, only: [:update, :destroy]
     resources :boards, only: [:index, :create, :update, :show, :destroy]
     # get '/static_pages'   => 'static_pages#index'
   end
   get '/dashboard/' => 'dashboard#index'
   get '/dashboard/mystation' => 'dashboard#index'
-  get '/dashboard/projects/:id' => 'dashboard#index'
-  get '/dashboard/boards/:id' => 'dashboard#index'
+  get '/dashboard/projects' => 'dashboard#index'
+  get '/dashboard/projects/:id' => 'dashboard#index', as: 'dashboard_project'
+  get '/dashboard/projects/:id/members' => 'dashboard#index', as: 'dashboard_project_members'
+  get '/dashboard/projects/:id/setting' => 'dashboard#index', as: 'dashboard_project_setting'
+  get '/dashboard/boards/:id' => 'dashboard#index', as: 'dashboard_boards'
 end

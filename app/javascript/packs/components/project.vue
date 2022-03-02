@@ -8,45 +8,96 @@
         <p v-else class="page-desc page-desc-edit"><textarea v-model="project.description"></textarea></p>
       </div>
     </div>
-    <section class="subsection">
-      <h2>Board List</h2>
-      <ul class="project-list">
-        <li v-for="(item,index) in boards" v-bind:key="index" class="project-list__item">
-          <router-link :to="{ name: 'board', params: { id: item.id }}" class="project-list__item__link">
-            <div class="name">
-              <span class="icon_char">{{item.name[0]}}</span>
-              <span>{{item.name}}</span>
-            </div>
-          </router-link>
-          <div class="sw-cnt" @click.stop="toggleCntList(item.id)">
-            <i class="fas fa-ellipsis-v"></i>
-          </div>
-          <transition name="fade">
-            <ul v-if="item.id === selectedCntListId" class="cnt-list">
-              <li class="cnt-list__item" @click="openFormBoardEdit(project.id, item.id)">Edit</li>
-              <li class="cnt-list__item" @click="openConfirmBoardDelete(item.id)">Delete</li>
-            </ul>
-          </transition>
+    <section class="main-section">
+      <ul class="head-tab-list">
+        <!-- <li class="head-tab-list__tab"><h2>Board List</h2></li> -->
+        <li class="head-tab-list__tab" :class="openTabFlg[0]? 'is-active': ''" @click="selTab(0)">
+          <h2 v-if="openTabFlg[0]">Board List</h2>
+          <router-link v-else :to="{ name: 'project', params: { id: project.id } }" class="">Board List</router-link>
+        </li>
+        <li class="head-tab-list__tab" :class="openTabFlg[1]? 'is-active': ''"  @click="selTab(1)">
+          <h2 v-if="openTabFlg[1]">Member List</h2>
+          <router-link v-else :to="{ name: 'project-member', params: { id: project.id } }" class="">Member List</router-link>
+        </li>
+        <li class="head-tab-list__tab" :class="openTabFlg[2]? 'is-active': ''"  @click="selTab(2)">
+          <h2 v-if="openTabFlg[2]">Other Setting</h2>
+          <router-link v-else :to="{ name: 'project-setting', params: { id: project.id } }" class="">Other Setting</router-link>
+          
         </li>
       </ul>
 
-      <div class="cntrol-container">
-        <a class="addbtn" @click="openFormBoardEdit(project.id)">
-          <span class="icon"><i class="fas fa-plus"></i></span>
-          <span class="txt2">Create New Board</span>
-        </a>
-      </div>
+      <ul class="content-list">
+        <li v-if="openTabFlg[0]">
+          <ul class="project-list">
+            <li v-for="(item,index) in boards" v-bind:key="index" class="project-list__item">
+              <router-link :to="{ name: 'board', params: { id: item.id }}" class="project-list__item__link">
+                <div class="name">
+                  <span class="icon_char">{{item.name[0]}}</span>
+                  <span>{{item.name}}</span>
+                </div>
+              </router-link>
+              <div class="sw-cnt" @click.stop="toggleCntList(item.id)">
+                <i class="fas fa-ellipsis-v"></i>
+              </div>
+              <transition name="fade">
+                <ul v-if="item.id === selectedCntListId" class="cnt-list">
+                  <li class="cnt-list__item" @click="openFormBoardEdit(project.id, item.id)">Edit</li>
+                  <li class="cnt-list__item" @click="openConfirmBoardDelete(item.id)">Delete</li>
+                </ul>
+              </transition>
+            </li>
+          </ul>
+
+          <div class="cntrol-container">
+            <a class="addbtn" @click="openFormBoardEdit(project.id)">
+              <span class="icon"><i class="fas fa-plus"></i></span>
+              <span class="txt2">Create New Board</span>
+            </a>
+          </div>
+        </li>
+
+        <li  v-if="openTabFlg[1]">
+          <ProjectMember
+            :project="project"
+            :current-user="currentUser"
+            :members="members"
+            @open-form-add-project-member="openFormAddProjectMember"
+            @open-form-delete-project-member="openFormDeleteProjectMember"
+            @update-project-member="updateProjectMember"
+          />
+        </li>
+
+        <li  v-if="openTabFlg[2]">
+          Setting TBD
+        </li>
+
+
+      </ul>
     </section>
 
-    <section class="subsection">
-      <h2>Project Setting</h2>
-    </section>
 
-
+    <FormAddProjectMember
+      :is-show="showFormAddProjectMember"
+       :members="members"
+       :current-user="currentUser"
+      @close-modal="closeModal"
+      :project-id="editProjectId"
+      @update-project-member="updateProjectMember"
+      ></FormAddProjectMember>
+    <FormDeleteProjectMember
+      :is-show="showFormDeleteProjectMember"
+      :user="deleteMember"
+      @close-modal="closeModal"
+      :project="project"
+      @update-project-member="updateProjectMember"
+      ></FormDeleteProjectMember>
 
   </div>
 </template>
 <script>
+import ProjectMember from './project-member'
+import FormAddProjectMember from  './FormAddProjectMember'
+import FormDeleteProjectMember from  './FormDeleteProjectMember'
 import axios from 'axios';
 export default {
   props: {
@@ -63,21 +114,40 @@ export default {
       require: false
     }
   },
+  components: {
+    'ProjectMember': ProjectMember,
+    'FormAddProjectMember': FormAddProjectMember,
+    'FormDeleteProjectMember': FormDeleteProjectMember
+  },
+  computed: {
+    className: function () {
+      return this.message.split('').reverse().join('')
+    }
+  },
+
   data: function () {
     return {
       boards: [],
       project: {},
       editNameMode: false,
       editDescMode: false,
-      selectedCntListId: 0
+      selectedCntListId: 0,
+      openTabFlg: [false, false, false],
+      members: [],
+      showFormAddProjectMember: false,
+      editProjectId: 0,
+      showFormDeleteProjectMember: false,
+      deleteMember: {}
+      
     }
   },
   mounted() {
     window.addEventListener('click', this.closeEdit)
     window.addEventListener('click', this.closeCntList)
+    document.addEventListener('keydown', this.onKeyDown)
   },
   created: function() {
-    this.initialize()
+    // this.initialize()
     
   },
   beforeDestroy() {
@@ -87,25 +157,42 @@ export default {
   watch: {
     "projects": {
       handler: function(newVal, oldVal) {
-        this.initialize()
+        if (newVal.length) {
+          this.initialize()
+        }
       },
       deep: true,
       immediate: true
     },
+    '$route' : {
+      handler: function(newVal, oldVal) {
+        if (newVal.params.id !== oldVal.params.id) {
+          this.initialize()
+        }
+      },
+      // deep: true,
+      // immediate: true
+    }
   },
-  
   methods: {
     initialize: async function() {
-      const projectid = parseInt(this.$route.params.id)
-      this.fetchBoards(projectid)
-      // this.$emit('get-projectid-from-url', projectid)
+      const project_id = parseInt(this.$route.params.id)
+      this.fetchBoards(project_id)
+     
+      switch (this.$route.name) {
+        case 'project': this.selTab(0);break;
+        case 'project-member': 
+          this.selTab(1);
+        break;
+        case 'project-setting': this.selTab(2);break;
+        default: this.selTab(0);break;
+      }
      
     },
     openFormBoardEdit: function(projectid, boardid = 0 ) {
       this.$emit('open-form-board-edit', projectid, boardid)
     },
     fetchBoards: function(project_id) {
-      // console.log(project_id)
       this.$emit('get-projectid-from-url', project_id)
       axios.get('/api/projects/' + project_id).then((res) => {
         this.boards = res.data.boards
@@ -115,23 +202,19 @@ export default {
       });
     },
     editName: function() {
-      console.log('edit')
       this.editNameMode = true
     },
     
     editDesc: function() {
-      console.log('edit-desc')
       this.editDescMode = true
     },
     closeEdit: function(event) {
       let editFlg = false
       if (this.editNameMode && !this.$el.querySelector('.page-title-edit').contains(event.target)) {
-        console.log('edit-close')
         editFlg = true
         this.editNameMode = false
       }
       if (this.editDescMode && !this.$el.querySelector('.page-desc-edit').contains(event.target)) {
-        console.log('edit-desc-close')
         editFlg = true
         this.editDescMode = false
       }
@@ -143,7 +226,6 @@ export default {
     updateData: function() {
       axios.put('/api/projects/' + this.project.id, { project: this.project })
       .then((res) => {
-        console.log(res)
         this.$emit('update-project', this.project.id)
       }, (error) => {
         console.log(error);
@@ -156,18 +238,58 @@ export default {
       if (this.selectedCntListId && !this.$el.querySelector('.cnt-list').contains(event.target) && !this.$el.querySelector('.sw-cnt').contains(event.target)) {
         this.selectedCntListId = 0
       }
-
     },
     openConfirmBoardDelete: function (board_id) {
       this.$emit('open-confirm-board-delete', board_id)
 
     },
-  
+    selTab: function (tabid) {
+      this.openTabFlg.fill(false)
+      const project_id = parseInt(this.$route.params.id)
+      this.openTabFlg[tabid] = true
+      if (tabid === 1) {
+        this.fetchMembers(project_id);
+      }
+    },
+    fetchMembers: function(project_id) {
+      axios.get('/api/projects/' + project_id + '/project_members/').then((res) => {
+        this.members = res.data.project_members
+      }, (error) => {
+        console.log(error);
+      });
+
+    },
+    openFormAddProjectMember: function() {
+      this.editProjectId= parseInt(this.$route.params.id)
+      this.showFormAddProjectMember = true
+    },
+    updateProjectMember: function() {
+      this.fetchMembers(parseInt(this.$route.params.id))
+    },
+    closeModal: function() {
+      this.showFormAddProjectMember = false
+      this.editProjectId = 0
+      this.showFormDeleteProjectMember = false
+      this.deleteMemberId = 0
+    },
+    openFormDeleteProjectMember: function(user) {
+      this.deleteMember = user
+      this.showFormDeleteProjectMember = true
+    },
+    onKeyDown: function (event) {
+      if (event.key === 'Escape') {
+        this.closeModal()
+      }
+    }
   },
   beforeRouteUpdate (to, from, next) {
     this.fetchBoards(parseInt(to.params.id))
     next();
-  }
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.onKeyDown)
+  },
+  
 
 }
 </script>
@@ -236,6 +358,15 @@ export default {
           color: #000;
         }
       }
+    }
+  }
+  .head-tab-list {
+    display: flex;
+    h2 {
+      display: inline-block;
+    }
+    &__tab {
+      padding: 10px;
     }
   }
   

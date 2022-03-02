@@ -1,14 +1,12 @@
 <template>
   <div class="select-wrapper">
-    <div class="select-dropdown" @click="switchDropdown">
-      {{optionList[slectedIndex].name}}
-    </div>
+    <div class="select-dropdown" @click="switchDropdown">{{optionList[slectedIndex].name}}</div>
     <svg class="caret" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg>
     <transition>
       <ul class="select-options" v-show="isOpen">
         <li class="option"><span class="head">{{initText}}</span></li>
         <li v-for="(item,index) in optionList" v-bind:key="index" class="option">
-          <span class="option__content" :class="index==slectedIndex? 'selected':''" @click="changeOption(index)">{{item.name}}</span>
+          <span class="option__content" :class="index==slectedIndex? 'selected':''" @click="changeOption(item.id)">{{item.name}}</span>
         </li>
       </ul>
     </transition>
@@ -17,6 +15,15 @@
 <script>
 
 export default {
+  watch: {
+    "initSelected": {
+      handler: function(newVal, oldVal) {
+        this.initialize()
+      },
+      deep: true,
+      immediate: true
+    },
+  },
   props: {
     initText: {
       type: String,
@@ -25,6 +32,11 @@ export default {
     optionList: {
       type: Array,
       require: false
+    },
+    initSelected: {
+      type: Number,
+      require: false,
+      default: 0
     }
   },
   data: function () {
@@ -36,20 +48,30 @@ export default {
   mounted() {
     window.addEventListener('click', this.closeDropDown);
   },
-   created: function() {
-
+  created: function() {
+    this.initialize()
   },
   beforeDestroy() {
     window.removeEventListener('click', this.closeDropDown);
   },
 
   methods: {
+    initialize: function() {
+      if (this.initSelected) {
+        this.changeOption(this.initSelected)
+      }
+    },
     switchDropdown: function() {
       this.isOpen = !this.isOpen
     },
-    changeOption: function(index) {
+    changeOption: function(id) {
+      const index = this.optionList.findIndex((option) => option.id == id)
+
       this.slectedIndex = index
       this.isOpen = false
+      if (this.optionList[index]) {
+        this.$emit('change-value', this.optionList[index].id)
+      }
     },
     closeDropDown(event) {
       if (!this.$el.querySelector('.select-options').contains(event.target) && !this.$el.querySelector('.select-dropdown').contains(event.target)){

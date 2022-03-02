@@ -52,13 +52,12 @@ export default {
     deleteProjectData: function() {
         axios.delete('/api/projects/' + this.projectId)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$emit('update-project')
           this.modalClose()
         }, (error) => {
           console.log(error);
         });
-      
     },
     fetchData: function() {
       if (this.projectId) {

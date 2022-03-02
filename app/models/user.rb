@@ -80,6 +80,11 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
+  # Send an invitation email
+  def send_announcement_email_of_join_the_project_mail(user, project)
+    UserMailer.join_the_project(self, user, project).deliver_now
+  end
+
   private
 
   # Convert email addresses to all lowercase
