@@ -158,9 +158,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.section-project-members {
-  margin-top: 20px;
-}
 .project-member-list {
   margin-top: 20px;
 }

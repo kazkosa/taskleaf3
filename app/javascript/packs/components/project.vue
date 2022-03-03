@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container" v-if="Object.keys(project).length">
     <div class="page-head">
       <h1 v-if="!editNameMode" class="page-title" @click="editName" >{{project.name}}</h1>
       <h1 v-else class="page-title page-title-edit" ><input type="text" v-model="project.name"></h1>
@@ -366,12 +366,53 @@ export default {
       display: inline-block;
     }
     &__tab {
+      &:first-child {
+        margin-left: 16px;
+      }
+      &:nth-child(n+2){
+        margin-left: 8px;
+      }
       padding: 10px;
+      background-color: #f3f3f3;
+      a {
+        color: #888;
+      }
+      h2 {
+        color: #000;
+        position: relative;
+      }
+      position: relative;
+      &:after {
+        content: '';
+        position: absolute;
+        width: 0%;
+        height: 0px;
+        border: none;
+        opacity: 0;
+        transition-duration: .3s;
+        background-color : #551a8b;
+        bottom: 0px;
+        left: 50%;
+        transform: translateX(-50%)
+      }
+      &.is-active {
+        background-color: #f3f3f3;
+        h2 {
+          color: #000;
+        }
+         &:after {
+          opacity: 1;
+          width: 50%;
+          height: 2px;
+        }
+      }
+    }
+  }
+  .content-list {
+    padding: 20px 10px;
+    @media screen and (min-width: 768px) {
+      padding: 20px;
     }
   }
   
-
-
-  
-
 </style>

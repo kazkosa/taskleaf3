@@ -5,10 +5,12 @@
         <img src="../../images/dashboards/common/side-menu-toggle.svg"  width="14" height="16">
       </div>
       <div class="sidebar-main" v-show="isOpenSidebar">
-        <div class="user-container">
-
-          <span class="user-container__avatar">{{getInitial}}</span>
-          <span class="user-container__name">{{currentUser.name}}</span>
+        <div class="user-container__wrapper">
+          <div class="user-container">
+            <span class="user-container__avatar">{{getInitial}}</span>
+            <span class="user-container__name">{{currentUser.name}}</span>
+          </div>
+          <a v-if="!isPc" class="btn-logout" href="/logout" data-method="delete"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
         </div>
         <ul class="menu-items">
           <li class="menu-items__item">
@@ -99,6 +101,16 @@ export default {
     targetOpenProjectid: {
       type: Number,
       require: false
+    },
+    triggerMenuSp: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    isPc: {
+      type: Boolean,
+      require: false,
+      default: false
     }
   },
   watch: {
@@ -116,6 +128,20 @@ export default {
       deep: true,
       immediate: true
     },
+    "triggerMenuSp": {
+      handler: function(newVal, oldVal) {
+        this.toggleMenuSP()
+      },
+      deep: true,
+      immediate: true
+    },
+    "isPc": {
+      handler: function(newVal, oldVal) {
+        this.toggleMenuSP()
+      },
+      deep: true,
+      immediate: true
+    }
   },
   data: function () {
     return {
@@ -126,7 +152,8 @@ export default {
         {id:2, name: 'WorkSpace01'}
       ],
       isOpenProjects: [],
-      isOpenSidebar: true
+      isOpenSidebar: true,
+      breakPoint: 768
     }
   },
   computed: {
@@ -174,6 +201,11 @@ export default {
     openFormBoardEdit: function(project_id) {
       this.$emit('open-form-board-edit', project_id)
     },
+    toggleMenuSP: function() {
+      if (window.innerWidth < this.breakPoint) {
+        this.isOpenSidebar = this.triggerMenuSp
+      }
+    }
   },
   components: {
     'selectWrapper': selectWrapper,
@@ -186,21 +218,35 @@ export default {
 
 <style lang="scss">
 #sidebar {
-  width: 216px;
-  min-width: 216px;
+  width: 100%;
+  
   overflow-y: scroll;
   background-color: rgb(255, 255, 255);
   scroll-behavior: smooth;
   border-right: 1px solid rgb(238, 238, 238);
   height: 100%;
+  transition-duration: .3s;
+  position: absolute;
+  z-index: 1;
+  @media screen and (min-width:768px) {
+    width: 216px;
+    min-width: 216px;
+    position: static;
+    z-index: 0;
+
+  }
   .sidebar-toggle-box {
     text-align: right;
+    display: none;
     svg {
       max-width: 20px;
     }
     &:hover {
     opacity: 0.7;
     cursor: pointer;
+    }
+    @media screen and (min-width:768px) {
+      display: block;
     }
   }
   a:hover {
@@ -211,6 +257,34 @@ export default {
   }
   .inner {
     padding: 8px;
+    .user-container__wrapper {
+      display: flex;
+      justify-content: space-between;
+      @media screen and (min-width:768px) {
+        display: block;
+      }
+    }
+    .btn-logout {
+      padding: 0px 10px 0 20px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #000;
+      border-radius: 10px;
+      width: 150px;
+      display: flex;
+      align-items: center;
+      
+      svg {
+        width: 30px;
+        font-size: 26px;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+      
+      span {
+        font-size: 12px;
+      }
+    }
     .user-container {
       width: 100%;
       padding: 8px 0px;
@@ -351,7 +425,12 @@ export default {
 
 }
 #sidebar.isClosed {
-  max-width: 30px;
+  width: 0;
+  // max-width: 30px;
   min-width: 0px;
+  @media screen and (min-width:768px) {
+    width: 30px;
+    max-width: 30px;
+  }
 }
 </style>
