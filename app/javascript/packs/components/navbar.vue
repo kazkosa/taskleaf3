@@ -28,6 +28,11 @@
                   </ul>
                   </transition>
                 </div>
+                <div class="global-header__menu-container">
+                  <div class="header__toggle" @click="toggleMenu" :class="openFlg? 'is-show':''">
+                    <span class="header__toggle-text"></span>
+                  </div>
+                </div>
               </div>
             </li>
           </ul>
@@ -48,7 +53,8 @@ export default {
   data: function () {
     return {
       message: "Hello Vue!",
-      basicMenuOpen: false
+      basicMenuOpen: false,
+      openFlg: false
     }
   },
   computed: {
@@ -82,6 +88,10 @@ export default {
       if (!this.$el.querySelector('.drop-menu').contains(event.target) && !this.$el.querySelector('.drop-down-btn').contains(event.target)){
         this.basicMenuOpen = false
       }
+    },
+    toggleMenu() {
+      this.openFlg = !this.openFlg
+      this.$emit('toggle-sidemenu', this.openFlg)
     }
   }
 }
@@ -195,14 +205,72 @@ export default {
       }
     }
     .round-btn {
+      display: none;
       width: 30px;
       height: 30px;
       background: #C0C0C0;
       border-radius: 50%;
+      @media screen and (min-width:768px) {
+        display: block;
+      }
     }
-    
-
+    .global-header__menu-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      @media screen and (min-width:768px) {
+        display: none;
+      }
+      .header__toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: center;
+        width: 24px;
+        height: 18px;
+        margin-top: 0;
+        margin-left: 0;
+        cursor: pointer;
+        .header__toggle-text {
+          overflow: hidden;
+          font-size: 0;
+          text-indent: -100%;
+          position: relative;
+          display: block;
+          width: 24px;
+          height: 2px;
+          background-color: #000;
+          transition-duration: .3s;
+        }
+        &:before,
+        &:after {
+          content: '';
+          position: relative;
+          display: block;
+          width: 24px;
+          height: 2px;
+          background-color: #000;
+          transition-duration: .3s;
+        }
+        &.is-show {
+          &:before {
+            top: 8px;
+            transform: rotate(-45deg);
+            background-color: #000;
+          }
+           &:after {
+            bottom: 8px;
+            transform: rotate(45deg);
+            background-color: #000;
+          }
+          .header__toggle-text {
+            opacity: 0;
+          }
+        }
+      }
+    }
   }
+
   .v-enter-active, .v-leave-active {
     transition: all 0.1s
   }

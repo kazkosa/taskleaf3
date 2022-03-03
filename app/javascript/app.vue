@@ -2,6 +2,7 @@
   <div>
     <navbar
       :current-user="current_user"
+      @toggle-sidemenu="toggleSideMenu"
     ></navbar>
     <div id="body">
       <sidebar
@@ -11,7 +12,8 @@
         :target-open-projectid="selected_project_id"
         @open-form-project-edit="openFormProjectEdit"
         @open-form-board-edit="openFormBoardEdit"
-        
+        :trigger-menu-sp="isOpenSideMenuSp"
+        :is-pc="isPC"
       ></sidebar>
       <main>
         <div class="container">
@@ -110,7 +112,12 @@ export default {
       deleteBoardId: 0,
       showFlash: false,
       flashMessage: '',
-      flashType: ''
+      flashType: '',
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+      isOpenSideMenuSp: false,
+      isPC: false,
+      breakPoint: 768
     }
   },
   components: {
@@ -123,11 +130,13 @@ export default {
     'FlashMessage': FlashMessage
   },
   mounted: function () {
+    window.addEventListener('resize', this.handleResize)
     this.initialize()
   },
   methods: {
     initialize: function() {
       this.fetchCurrentUser()
+      this.handleResize()
       if (!this.selected_space_id) {
         this.fetchProjects()
       }
@@ -197,8 +206,19 @@ export default {
     flashOff: function() {
       this.showFlash = false
       this.flashMessage = ''
+    },
+    handleResize: function() {
+      this.windowWidth = window.innerWidth
+      this.windowHeight = window.innerHeight
+      this.isPC = this.windowWidth >= this.breakPoint
+    },
+    toggleSideMenu: function(val) {
+      this.isOpenSideMenuSp = val
     }
-  }
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
+  },
 }
 </script>
 
