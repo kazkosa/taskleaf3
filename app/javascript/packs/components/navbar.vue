@@ -63,12 +63,12 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener('click', this.closeDropDown);
+    window.addEventListener('click', this.closeDropDown)
   },
   created: function() {
   },
   beforeDestroy() {
-    window.removeEventListener('click', this.closeDropDown);
+    window.removeEventListener('click', this.closeDropDown)
   },
   
   methods: {
@@ -90,7 +90,7 @@ export default {
 <style lang="scss" scoped>
 #header {
   position: fixed;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   top: 0;
   background: #FFF;
