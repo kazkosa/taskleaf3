@@ -3,6 +3,7 @@
     <navbar
       :current-user="current_user"
       @toggle-sidemenu="toggleSideMenu"
+      :rst-global-menu-btn-flg="rstGlobalMenuBtnFlg"
     ></navbar>
     <div id="body">
       <sidebar
@@ -14,6 +15,7 @@
         @open-form-board-edit="openFormBoardEdit"
         :trigger-menu-sp="isOpenSideMenuSp"
         :is-pc="isPC"
+        @touch-link-sp="resetGrobalMenuBtn"
       ></sidebar>
       <main>
         <div class="container">
@@ -117,7 +119,8 @@ export default {
       windowHeight: window.innerHeight,
       isOpenSideMenuSp: false,
       isPC: false,
-      breakPoint: 768
+      breakPoint: 768,
+      rstGlobalMenuBtnFlg: false
     }
   },
   components: {
@@ -214,6 +217,10 @@ export default {
     },
     toggleSideMenu: function(val) {
       this.isOpenSideMenuSp = val
+      this.rstGlobalMenuBtnFlg = false
+    },
+    resetGrobalMenuBtn: function() {
+      this.rstGlobalMenuBtnFlg = true
     }
   },
   beforeDestroy() {

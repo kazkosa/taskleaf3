@@ -14,7 +14,7 @@
         </div>
         <ul class="menu-items">
           <li class="menu-items__item">
-            <router-link to="/" class="menu-items__item__link">
+            <router-link to="/" class="menu-items__item__link" @click.native="touchLink">
               <span class="icon"><i class="fas fa-home"></i></span>
               <span class="txt">HOME</span>
             </router-link>
@@ -35,7 +35,7 @@
             <ul class="projects">
               <li class="project" v-for="(item,index) in projects" v-bind:key="index">
                 <div class="project__head">
-                  <router-link :to="{ name: 'project', params: { id: item.id }}" class="project__head__link">
+                  <router-link :to="{ name: 'project', params: { id: item.id }}" class="project__head__link" @click.native="touchLink">
                     <div class="name">
                       <span class="icon_char">{{item.name[0]}}</span>
                       <span>{{item.name}}</span>
@@ -204,6 +204,11 @@ export default {
     toggleMenuSP: function() {
       if (window.innerWidth < this.breakPoint) {
         this.isOpenSidebar = this.triggerMenuSp
+      }
+    },
+    touchLink: function() {
+      if (!this.isPc) {
+        this.$emit('touch-link-sp')
       }
     }
   },
