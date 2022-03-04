@@ -48,7 +48,23 @@ export default {
     currentUser: {
       type: Object,
       require: false
+    },
+    rstGlobalMenuBtnFlg: {
+      type: Boolean,
+      require: false,
+      default: false
     }
+  },
+  watch: {
+    'rstGlobalMenuBtnFlg': {
+      handler: function(newVal, oldVal) {
+        if (newVal && !oldVal && this.openFlg) {
+          this.toggleMenu()
+        }
+      },
+      deep: true,
+      immediate: true
+    },
   },
   data: function () {
     return {
