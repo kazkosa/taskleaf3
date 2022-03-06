@@ -166,6 +166,7 @@ export default {
       axios.get('/api/boards/' + board_id).then((res) => {
         this.board = res.data.board
         this.project = res.data.project
+        this.$emit('get-projectid-from-url', this.project.id)
       }, (error) => {
         console.log(error);
       });

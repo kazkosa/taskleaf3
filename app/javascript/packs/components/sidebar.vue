@@ -35,12 +35,19 @@
             <ul class="projects">
               <li class="project" v-for="(item,index) in projects" v-bind:key="index">
                 <div class="project__head">
-                  <router-link :to="{ name: 'project', params: { id: item.id }}" class="project__head__link" @click.native="touchLink">
+                  <span v-if="checkCurrentProject(item.id)">
+                    <div class="name">
+                      <span class="icon_char">{{item.name[0]}}</span>
+                      <span>{{item.name}}</span>
+                    </div>
+                  </span>
+                  <router-link v-else :to="{ name: 'project', params: { id: item.id }}" class="project__head__link" @click.native="touchLink">
                     <div class="name">
                       <span class="icon_char">{{item.name[0]}}</span>
                       <span>{{item.name}}</span>
                     </div>
                   </router-link>
+                  
                   <div v-if="item.boards && item.boards.length" class="project__head__toggle" @click="swProjectMenu(index)">
                     <div class="btn-openclose" >
                       <span v-show="!isOpenProjects[index]"><i class="fas fa-chevron-down"></i></span>
@@ -52,14 +59,10 @@
                 <transition>
                   <ul class="boards" v-show="isOpenProjects[index]">
                     <li class="board" v-for="(item2, index2) in item.boards" v-bind:key="'board' + index2">
-                      <span>{{item2.name}}</span>
+                      <span v-if="checkCurrentBoard(item2.id)" class="board__content" >{{item2.name}}</span>
+                      <router-link v-else :to="{ name: 'board', params: { id: item2.id }}" class="board__content active" @click.native="touchLink" >{{item2.name}}</router-link>
                     </li>
-                    <!-- <li class="board">
-                      <span>board00</span>
-                    </li>
-                    <li class="board">
-                      <span>board00</span>
-                    </li> -->
+
                     <li class="board">
                       <a class="addbtn">
                         <span class="icon"><i class="fas fa-plus"></i></span>
@@ -85,8 +88,8 @@
   </div>
 </template>
 <script>
+
 import selectWrapper from './selectWrapper'
-// import VueRouter from 'vue-router'
 
 export default {
   props: {
@@ -183,7 +186,6 @@ export default {
         } else {
           _this.isOpenProjects.push(false)
         }
-        
       })
     },
     swProjectMenu: function(n) {
@@ -210,6 +212,28 @@ export default {
       if (!this.isPc) {
         this.$emit('touch-link-sp')
       }
+    },
+    checkCurrentProject: function(id) {
+      let current_id = 0
+      switch(this.$route.name) {
+        case 'project':
+        case 'project-member':
+        case 'project-setting':
+          current_id = parseInt(this.$route.params.id)
+          break;
+      }
+      return id === current_id
+    },
+    checkCurrentBoard: function(id) {
+      let current_id = 0
+      switch(this.$route.name) {
+        case 'board':
+        case 'board-member':
+        case 'board-setting':
+          current_id = parseInt(this.$route.params.id)
+          break;
+      }
+      return id === current_id
     }
   },
   components: {
