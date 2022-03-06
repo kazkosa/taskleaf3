@@ -32,6 +32,8 @@
             @open-confirm-board-delete="openConfirmBoardDelete"
             @flash-on="flashOn"
             @keypress.esc="closeModal"
+
+            @update-board="updateBoard"
           ></router-view>
         </div>
       </main>

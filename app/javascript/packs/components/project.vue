@@ -10,7 +10,6 @@
     </div>
     <section class="main-section">
       <ul class="head-tab-list">
-        <!-- <li class="head-tab-list__tab"><h2>Board List</h2></li> -->
         <li class="head-tab-list__tab" :class="openTabFlg[0]? 'is-active': ''" @click="selTab(0)">
           <h2 v-if="openTabFlg[0]">Board List</h2>
           <router-link v-else :to="{ name: 'project', params: { id: project.id } }" class="">Board List</router-link>
@@ -28,6 +27,12 @@
 
       <ul class="content-list">
         <li v-if="openTabFlg[0]">
+          <div class="cntrol-container">
+            <a class="addbtn" @click="openFormBoardEdit(project.id)">
+              <span class="icon"><i class="fas fa-plus"></i></span>
+              <span class="txt2">Create New Board</span>
+            </a>
+          </div>
           <ul class="project-list">
             <li v-for="(item,index) in boards" v-bind:key="index" class="project-list__item">
               <router-link :to="{ name: 'board', params: { id: item.id }}" class="project-list__item__link">
@@ -48,12 +53,6 @@
             </li>
           </ul>
 
-          <div class="cntrol-container">
-            <a class="addbtn" @click="openFormBoardEdit(project.id)">
-              <span class="icon"><i class="fas fa-plus"></i></span>
-              <span class="txt2">Create New Board</span>
-            </a>
-          </div>
         </li>
 
         <li  v-if="openTabFlg[1]">
@@ -100,6 +99,11 @@ import FormAddProjectMember from  './FormAddProjectMember'
 import FormDeleteProjectMember from  './FormDeleteProjectMember'
 import axios from 'axios';
 export default {
+  components: {
+    'ProjectMember': ProjectMember,
+    'FormAddProjectMember': FormAddProjectMember,
+    'FormDeleteProjectMember': FormDeleteProjectMember
+  },
   props: {
     currentUser: {
       type: Object,
@@ -113,11 +117,6 @@ export default {
       type: Array,
       require: false
     }
-  },
-  components: {
-    'ProjectMember': ProjectMember,
-    'FormAddProjectMember': FormAddProjectMember,
-    'FormDeleteProjectMember': FormDeleteProjectMember
   },
   computed: {
     className: function () {
@@ -149,10 +148,6 @@ export default {
   created: function() {
     // this.initialize()
     
-  },
-  beforeDestroy() {
-    window.removeEventListener('click', this.closeEdit)
-    window.removeEventListener('click', this.closeCntList)
   },
   watch: {
     "projects": {
@@ -287,8 +282,10 @@ export default {
     next();
   },
   beforeDestroy() {
+    window.removeEventListener('click', this.closeEdit)
+    window.removeEventListener('click', this.closeCntList)
     document.removeEventListener('keydown', this.onKeyDown)
-  },
+  }
   
 
 }

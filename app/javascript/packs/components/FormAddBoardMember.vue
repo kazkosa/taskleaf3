@@ -4,7 +4,7 @@
       <div class="modal__bg js-modal-close" @click="modalClose"></div>
       <div class="modal__content modal__content-project-form">
         <a class="js-modal-close" @click="modalClose"><span></span></a>
-        <h4 class="modal_title"><span>Add Project Member</span></h4>
+        <h4 class="modal_title"><span>Add Board Member</span></h4>
 
         <div v-if="send_users.length==0" class="modal_txt">
           <input v-model="keyword" @keyup="seaching" type="text" name="keyword" placeholder="Search By Account Email or name">
@@ -36,11 +36,6 @@
 
         <div class="optional-info">
           <div class="check-form-notify">
-            <formCheckbox
-              name="notify"
-              text="Notify users"
-              v-model="notify"
-            ></formCheckbox>
           </div>
           <div class="select-form-asuthority">
             <selectWrapper
@@ -80,11 +75,10 @@
 <script>
 import axios from 'axios';
 import selectWrapper from './selectWrapper'
-import formCheckbox from './formCheckbox.vue'
+
 export default {
   components: {
-    'selectWrapper': selectWrapper,
-    'formCheckbox': formCheckbox
+    'selectWrapper': selectWrapper
   },
   props: {
     isShow: {
@@ -92,6 +86,10 @@ export default {
       require: false
     },
     projectId: {
+      type: Number,
+      require: false
+    },
+    boardId: {
       type: Number,
       require: false
     },
@@ -146,7 +144,7 @@ export default {
     }
   },
   computed: {
-    currentUserRoleInThisPj: function() {
+    currentUserRoleInThisBd: function() {
       const tmp = this.members.filter((member)=>{
         return member.user_id == this.currentUser.id
       })
@@ -161,7 +159,7 @@ export default {
       ]
       let target_authority_list = []
       target_authority_list = authority_list.filter( function(item) {
-        return  item.id >= _this.currentUserRoleInThisPj
+        return  item.id >= _this.currentUserRoleInThisBd
       })
 
       return target_authority_list
@@ -192,7 +190,7 @@ export default {
           params: {
             keyword: this.keyword,
             exist_user_ids: exclude_user_ids,
-            type: 'project',
+            type: 'board',
             project_id: this.projectId
           }
         })
@@ -207,7 +205,7 @@ export default {
               params: {
                 keyword: this.keyword,
                 exist_user_ids: exclude_user_ids,
-                type: 'project',
+                type: 'board',
                 project_id: this.projectId
               }
             })
@@ -268,18 +266,18 @@ export default {
 
 
       let params = {
-        project: {
+        board: {
           user_ids: user_ids
         },
-        project_member: {
+        board_member: {
           roles: this.exist_user_roles,
           sendmail_user_ids
         }
       }
-      axios.put('/api/projects/' + this.projectId + '/update_members/', params)
+      axios.put('/api/boards/' + this.boardId + '/update_members/', params)
       .then((res) => {
         this.modalClose()
-        this.$emit('update-project-member', this.projectId)
+        this.$emit('update-board-member', this.boardId)
       }, (error) => {
         console.log(error);
       });
