@@ -39,7 +39,19 @@ export default new VueRouter({
     {
       path: '/boards/:id',
       name: 'board',
-      component: Board
+      component: Board,
+      children: [
+        {
+          path: 'members',
+          name: 'board-member',
+          component: Board
+        },
+        {
+          path: 'setting',
+          name: 'board-setting',
+          component: Board
+        }
+      ]
     },
   ],
 })

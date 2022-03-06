@@ -57,7 +57,14 @@ Rails.application.routes.draw do
       end
     end
     resources :project_members, only: [:update, :destroy]
-    resources :boards, only: [:index, :create, :update, :show, :destroy]
+
+    resources :boards, only: [:index, :create, :update, :show, :destroy] do
+      resources :board_members,     only: [:index, :update]
+      member do
+        put :update_members
+      end
+    end
+    resources :board_members, only: [:update, :destroy]
     # get '/static_pages'   => 'static_pages#index'
   end
   get '/dashboard/' => 'dashboard#index'
@@ -67,4 +74,6 @@ Rails.application.routes.draw do
   get '/dashboard/projects/:id/members' => 'dashboard#index', as: 'dashboard_project_members'
   get '/dashboard/projects/:id/setting' => 'dashboard#index', as: 'dashboard_project_setting'
   get '/dashboard/boards/:id' => 'dashboard#index', as: 'dashboard_boards'
+  get '/dashboard/boards/:id/members' => 'dashboard#index', as: 'dashboard_board_members'
+  get '/dashboard/boards/:id/setting' => 'dashboard#index', as: 'dashboard_board_setting'
 end
