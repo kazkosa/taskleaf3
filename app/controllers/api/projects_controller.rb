@@ -4,7 +4,14 @@ class Api::ProjectsController < ApplicationController
   # GET /projects
   def index
     # @projects = Project.where(owner_id: current_user.id, workspace_id:nil).order('id ASC')
-    @projects = current_user.projects.order('id DESC')
+    # @projects = current_user.projects.order('id DESC')
+    @projects = Project.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+
+    @projects.each_with_index do |project, i|
+      boards = project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+      @projects[i].boards = boards
+    end
+
   end
 
   # POST /project

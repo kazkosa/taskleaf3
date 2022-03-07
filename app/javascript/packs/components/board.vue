@@ -91,6 +91,26 @@ export default {
     'FormAddBoardMember': FormAddBoardMember,
     'FormDeleteBoardMember': FormDeleteBoardMember
   },
+  watch: {
+    "projects": {
+      handler: function(newVal, oldVal) {
+        if (newVal.length) {
+          this.initialize()
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    '$route' : {
+      handler: function(newVal, oldVal) {
+        if (newVal.params.id !== oldVal.params.id) {
+          this.initialize()
+        }
+      },
+      // deep: true,
+      // immediate: true
+    }
+  },
   props: {
     currentUser: {
       type: Object,
@@ -134,10 +154,6 @@ export default {
     this.initialize()
     
   },
-  watch: {
-
-  },
-  
   methods: {
     initialize: async function() {
       const boardid = parseInt(this.$route.params.id)

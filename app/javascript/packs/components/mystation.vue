@@ -16,11 +16,11 @@
               <span>{{item.name}}</span>
             </div>
           </router-link>
-          <div class="sw-cnt" @click.stop="toggleCntList(item.id)">
+          <div v-if="item.role <= 1" class="sw-cnt" @click.stop="toggleCntList(item.id)">
             <i class="fas fa-ellipsis-v"></i>
           </div>
           <transition name="fade">
-            <ul v-if="item.id === selectedCntListId" class="cnt-list">
+            <ul v-if="item.role <= 1 && item.id === selectedCntListId" class="cnt-list">
               <li class="cnt-list__item" @click="openFormProjectEdit(item.id)">Edit</li>
               <li class="cnt-list__item" @click="openConfirmProjectDelete(item.id)">Delete</li>
             </ul>
