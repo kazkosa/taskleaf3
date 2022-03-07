@@ -329,6 +329,9 @@ export default {
       font-size: 18px;
     }
   }
+  .addbtn:hover {
+    color:  #551a8b;
+  }
   .enb-edit {
     svg {
       width: 12px;
@@ -341,11 +344,6 @@ export default {
       margin-left: 20px;
     }
   }
-
-  .addbtn:hover {
-    color:  #551a8b;
-  }
-
   .project-list {
     display: flex;
     flex-wrap: wrap;
