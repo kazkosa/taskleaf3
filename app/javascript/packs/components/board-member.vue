@@ -58,7 +58,7 @@ export default {
       type: Object,
       require: false
     },
-    project: {
+    board: {
       type: Object,
       require: true
     },

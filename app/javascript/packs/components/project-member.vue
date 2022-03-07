@@ -81,7 +81,6 @@ export default {
   },
   created: function() {
     this.initialize()
-    
   },
   watch: {
     "members": {
@@ -97,7 +96,6 @@ export default {
     initialize: async function() {
       const projectid = parseInt(this.$route.params.id)
       // this.$emit('update-project-member', this.project.id)
-     
     },
     openFormAddProjectMember: function() {
       this.$emit('open-form-add-project-member')

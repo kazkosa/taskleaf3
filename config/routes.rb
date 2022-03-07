@@ -55,6 +55,7 @@ Rails.application.routes.draw do
       member do
         put :update_members
       end
+      resources :boards, only: [:index]
     end
     resources :project_members, only: [:update, :destroy]
 

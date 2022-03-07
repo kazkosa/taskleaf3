@@ -2,6 +2,8 @@ class Api::BoardsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
+    # @boards = Board.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+    @boards = Board.joins(:users).where(project_id: params[:project_id]).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
   end
 
   def create
