@@ -25,11 +25,15 @@ class Api::ProjectsController < ApplicationController
   end
 
   def show
-    @project = Project.find(params[:id])
+    # @project = Project.find(params[:id])
+    @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
+    @project.boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
   end
 
   def update
-    @project = Project.find(params[:id])
+    # @project = Project.find(params[:id])
+    @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
+    @project.boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
     if @project.update_attributes(project_params)
       render :show, status: :created
     else
@@ -47,7 +51,9 @@ class Api::ProjectsController < ApplicationController
   end
 
   def update_members
-    @project = Project.find(params[:id])
+    # @project = Project.find(params[:id])
+    @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
+    @project.boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
     if @project.update(project_params_update) && @project.ensure_no_member
       success = true
       if project_params_update[:user_ids]
