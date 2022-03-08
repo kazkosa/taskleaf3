@@ -1,18 +1,15 @@
 <template>
   <div class="page-container" v-if="Object.keys(project).length">
     <div class="page-head">
-      <h1 v-if="currentUserRoleInThisPj == 2" class="page-title">{{project.name}}</h1>
-      <h1 v-else-if="!editNameMode" class="page-title enb-edit" @click="editName" >
+      <h1 v-if="project.role == 2" class="page-title">{{project.name}}</h1>
+      <h1 v-else-if="!editNameMode" class="page-title enb-edit">
         {{project.name}}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
+        <svg @click.stop="editName" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
       </h1>
       <h1 v-else class="page-title page-title-edit" ><input type="text" v-model="project.name"></h1>
       <div v-if="project.description">
-        <p v-if="currentUserRoleInThisPj == 2" class="page-desc">{{project.description}}</p>
-        <p v-else-if="!editDescMode"  class="page-desc enb-edit" @click="editDesc" >
-          <span>{{project.description}}</span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
-        </p>
+        <p v-if="project.role == 2" class="page-desc">{{project.description}}</p>
+        <p v-else-if="!editDescMode"  class="page-desc enb-edit" >{{project.description}}<svg @click.stop="editDesc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg></p>
         <p v-else class="page-desc page-desc-edit"><textarea v-model="project.description"></textarea></p>
       </div>
     </div>
@@ -36,9 +33,9 @@
       <ul class="content-list">
         <li v-if="openTabFlg[0]">
           <div class="cntrol-container">
-            <a class="addbtn" @click="openFormBoardEdit(project.id)">
+            <a v-if="project.role != 2" class="addbtn" @click="openFormBoardEdit(project.id)">
               <span class="icon"><i class="fas fa-plus"></i></span>
-              <span class="txt2">Create New Board</span>
+              <span class="txt2">Add Board</span>
             </a>
           </div>
           <ul class="project-list">
@@ -151,9 +148,12 @@ export default {
       return this.message.split('').reverse().join('')
     },
     currentUserRoleInThisPj: function() {
+
+      console.log(this.members)
       const tmp = this.members.filter((member)=>{
         return member.user_id == this.currentUser.id
       })
+      console.log(tmp)
       return (tmp.length && tmp[0].role_before_type_cast >= 0)? tmp[0].role_before_type_cast: 2
     }
   },
@@ -333,9 +333,11 @@ export default {
     color:  #551a8b;
   }
   .enb-edit {
+
     svg {
       width: 12px;
       fill: #888;
+      cursor: pointer;
     }
   }
   .page-title.enb-edit,

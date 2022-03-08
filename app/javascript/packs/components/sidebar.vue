@@ -64,7 +64,7 @@
                     </li>
 
                     <li class="board">
-                      <a class="addbtn">
+                      <a v-if="item.role != 2" class="addbtn">
                         <span class="icon"><i class="fas fa-plus"></i></span>
                         <span class="txt2" @click="openFormBoardEdit(item.id)">Add Board</span>
                       </a>

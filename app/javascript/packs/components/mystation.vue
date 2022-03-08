@@ -29,7 +29,7 @@
       </ul>
       <a class="addbtn" @click="openFormProjectNew">
         <span class="icon"><i class="fas fa-plus"></i></span>
-        <span class="txt2">Create New Project</span>
+        <span class="txt2">Add Project</span>
       </a>
     </section>
 
@@ -76,14 +76,10 @@ export default {
     },
     
     openFormProjectEdit: function (project_id) {
-      // this.cntListOpen = !this.cntListOpen
-      console.log(project_id)
       this.$emit('open-form-project-edit', project_id)
 
     },
     toggleCntList: function (project_id) {
-      // this.cntListOpen = !this.cntListOpen
-      console.log(project_id)
       this.selectedCntListId = project_id
     },
     closeCntList: function(event) {
