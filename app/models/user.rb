@@ -10,7 +10,9 @@ class User < ApplicationRecord
                     uniqueness: { case_sensitive: false }
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
-  has_many :workspaces
+
+  has_many :workspace_members, dependent: :destroy
+  has_many :workspaces, through: :workspace_members
 
   has_many :project_members, dependent: :destroy
   has_many :projects, through: :project_members
