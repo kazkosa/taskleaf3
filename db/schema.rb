@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_12_005812) do
+ActiveRecord::Schema.define(version: 2022_03_11_211251) do
 
   create_table "board_members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "board_id"
@@ -89,17 +89,26 @@ ActiveRecord::Schema.define(version: 2022_02_12_005812) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  create_table "workspaces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
-    t.string "name"
-    t.bigint "owner_id"
+  create_table "workspace_members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "workspace_id"
+    t.bigint "user_id"
+    t.integer "role", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["owner_id"], name: "index_workspaces_on_owner_id"
+    t.index ["user_id"], name: "index_workspace_members_on_user_id"
+    t.index ["workspace_id"], name: "index_workspace_members_on_workspace_id"
+  end
+
+  create_table "workspaces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   add_foreign_key "boards", "projects"
   add_foreign_key "project_members", "projects"
   add_foreign_key "project_members", "users"
   add_foreign_key "projects", "workspaces"
-  add_foreign_key "workspaces", "users", column: "owner_id"
+  add_foreign_key "workspace_members", "users"
+  add_foreign_key "workspace_members", "workspaces"
 end
