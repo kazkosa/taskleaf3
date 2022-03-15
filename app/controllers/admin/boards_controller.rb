@@ -38,27 +38,29 @@ class Admin::BoardsController < AdminController
   def update
     @board = Board.find(params[:id])
 
-    if @board.update(board_params) && @board.ensure_no_member
+    if board_params[:user_ids] && @board.check_member(board_params[:project_id], board_params[:user_ids], board_member_params[:roles]) && @board.update(board_params)
       success = true
-      if board_params[:user_ids]
-        @board.board_members.each do |member|
-          index = board_params[:user_ids].index(member.user_id.to_s)
-          member.role = (board_member_params[:roles][index]).to_i
-          unless member.save
-            success = false
-          end
+      @board.board_members.each do |member|
+        index = board_params[:user_ids].index(member.user_id.to_s)
+        member.role = (board_member_params[:roles][index]).to_i
+        unless member.save
+          success = false
         end
       end
+
       if success
         flash[:success] = "Board Updated"
         redirect_to admin_board_url(@board)
       else
+        @members = @board.build_member
         render 'edit'
       end
     else
+      @members = @board.build_member
       render 'edit'
     end
   end
+
   def destroy
     Board.find(params[:id]).destroy
     redirect_to admin_boards_url
