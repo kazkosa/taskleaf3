@@ -1,5 +1,14 @@
 <table class="table table-bordered table-striped table-condensed">
   <tr>
+    <th><%= f.label :workspace_id, 'Workspace' %></th>
+    <td>
+      <% if params[:workspace_id] %>
+        <%= f.select :workspace_id, Workspace.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {selected: params[:workspace_id], include_blank: ''}, { class: "form-control" }  %>
+      <% else %>
+        <%= f.select :workspace_id, Workspace.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {include_blank: ''}, { class: "form-control" }  %>
+      <% end %>
+  </tr>
+  <tr>
     <th><%= f.label :name, 'Name' %></th>
     <td><%= f.text_field :name, required: true, class: 'form-control' %></td>
   </tr>

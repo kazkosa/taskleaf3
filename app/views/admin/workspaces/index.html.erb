@@ -6,13 +6,13 @@
   <!--main content start-->
   <section id="main-content">
     <section class="wrapper">
-      <h3><i class="fa fa-angle-right"></i> Projects</h3>
+      <h3><i class="fa fa-angle-right"></i> WorkSpaces</h3>
       <div class="row mt">
         <div class="col-lg-12">
           <div class="content-panel">
-            <h4><i class="fa fa-angle-right"></i>Project list</h4>
+            <h4><i class="fa fa-angle-right"></i>WorkSpace list</h4>
             <div style="margin: 0 10px 10px 0;text-align: right;">
-              <%= link_to "New", new_admin_project_path, class:"btn btn-outline-secondary btn-sm"%>
+              <%= link_to "New", new_admin_workspace_path, class:"btn btn-outline-secondary btn-sm"%>
             </div>
             <section id="unseen">
               <table class="table table-bordered table-striped table-condensed">
@@ -20,27 +20,19 @@
                   <tr>
                     <th>#</th>
                     <th class="numeric">Name</th>
-                    <th class="numeric">Workspace</th>
                     <th class="numeric" colspan="2">Manage</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <% @projects.each do |project| %>
+                  <% @workspaces.each do |workspace| %>
                   <tr>
-                    <td><%= link_to project.id, admin_project_path(project) %></td>
-                    <td><%= project.name %></td>
-                    <td>
-                      <% if project.workspace %>
-                        <%= link_to project.workspace.id, admin_workspace_path(project.workspace) %>
-                      <% else %>
-                        -
-                      <% end %>
+                    <td><%= link_to workspace.id, admin_workspace_path(workspace) %></td>
+                    <td><%= workspace.name %></td>
+                    <td class="numeric">
+                      <%= link_to "Edit", edit_admin_workspace_path(workspace) %>
                     </td>
                     <td class="numeric">
-                      <%= link_to "Edit", edit_admin_project_path(project) %>
-                    </td>
-                    <td class="numeric">
-                      <%= link_to "Delete", admin_project_path(project), method: :delete , data: { confirm: "You sure?" }%>
+                      <%= link_to "Delete", admin_workspace_path(workspace), method: :delete , data: { confirm: "You sure?" }%>
                     </td>
                   </tr>
                   <% end %>

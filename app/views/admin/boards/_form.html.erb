@@ -7,7 +7,6 @@
       <% else %>
         <%= f.select :project_id, Project.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {include_blank: ''}, { class: "form-control" }  %>
       <% end %>
-    
   </tr>
   <tr>
     <th><%= f.label :name, 'Name' %></th>

@@ -1,0 +1,34 @@
+<section id="container">
+  <%= render 'layouts/admin_sidebar' %>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <!--main content start-->
+  <section id="main-content">
+    <section class="wrapper">
+      <h3><i class="fa fa-angle-right"></i><%= link_to "Workspaces", admin_workspaces_path%></h3>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="content-panel">
+            <h4><i class="fa fa-angle-right"></i>Edit Workspace</h4>
+            <div style="margin: 0 10px 10px 0;text-align: right;">
+              <%= link_to "Workspace Infomation", admin_workspace_path(@workspace), class:"btn btn-outline-secondary btn-sm"%>
+            </div>
+            <section id="unseen">
+              <%= form_with model: @workspace, local: true, url: admin_workspace_path(@workspace) do |f| %>
+                <%= render 'shared/error_workspace_messages' %>
+                <%= render partial: "form", locals: { project: @workspace, members: @members, f: f, mode_text: 'UPDATE' } %>
+              <% end %>
+            </section>
+          </div>
+          <!-- /content-panel -->
+        </div>
+        <!-- /col-lg-4 -->
+      </div>
+      <!-- /row -->
+    </section>
+    <!-- /wrapper -->
+  </section>
+  <!-- /MAIN CONTENT -->
+  <!--main content end-->
+</section><!--/container-->

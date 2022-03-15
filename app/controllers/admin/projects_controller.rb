@@ -29,6 +29,7 @@ class Admin::ProjectsController < AdminController
 
   def show
     @project = Project.find(params[:id])
+    @members = @project.build_member
   end
 
   def edit
@@ -39,27 +40,27 @@ class Admin::ProjectsController < AdminController
   def update
     @project = Project.find(params[:id])
 
-    if @project.update(project_params) && @project.ensure_no_member
+    if project_params[:user_ids] && @project.check_member(project_params[:workspace_id], project_params[:user_ids], project_member_params[:roles]) && @project.update(project_params)
       success = true
-      if project_params[:user_ids]
-        @project.project_members.each do |member|
-          
-          index = project_params[:user_ids].index(member.user_id.to_s)
-          member.role = (project_member_params[:roles][index]).to_i
-          
-          unless member.save
-            success = false
-          end
-          
+
+      @project.project_members.each do |member|
+        index = project_params[:user_ids].index(member.user_id.to_s)
+        member.role = (project_member_params[:roles][index]).to_i
+
+        unless member.save
+          success = false
         end
       end
+
       if success
         flash[:success] = "Project Updated"
         redirect_to admin_project_url(@project)
       else
+        @members = @project.build_member
         render 'edit'
       end
     else
+      @members = @project.build_member
       render 'edit'
     end
   end
@@ -70,7 +71,7 @@ class Admin::ProjectsController < AdminController
   private
   
   def project_params
-    params.require(:project).permit(:name, :description, user_ids: [] )
+    params.require(:project).permit(:workspace_id, :name, :description, user_ids: [] )
   end
 
   def project_member_params

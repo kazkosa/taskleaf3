@@ -1,7 +1,23 @@
 $(function(){
   //検索結果を表示
   const type = $('.member-list').data('type');
-  let project_id= 0;
+  let workspace_id = 0;
+  let project_id = 0;
+  
+  $('select[name="project[workspace_id]"]').on('change', function(){
+    if ($(this).val()) {
+      // $('#member_search').prop('disabled', false)
+      workspace_id = parseInt($(this).val(), 10);
+    } else {
+      $('#member_search').val('')
+      workspace_id = 0
+      // $('#member_search').prop('disabled', true)
+    }
+  });
+  if (type === 'project') {
+    $('select[name="project[workspace_id]"]').trigger('change')
+  }
+
   $('select[name="board[project_id]"]').on('change', function(){
     if ($(this).val()) {
       $('#member_search').prop('disabled', false)
@@ -57,8 +73,8 @@ $(function(){
           url = "/api/users/";
           $.ajax({
             url: url,
-            type:"GET",
-            data: {keyword: input, exist_user_ids: exist_user_ids, type, project_id},
+            type: "GET",
+            data: { keyword: input, exist_user_ids: exist_user_ids, type, workspace_id, project_id },
             dataType: "json",
           })
           .done(function(result){
@@ -81,10 +97,7 @@ $(function(){
       .fail(function(){
         alert("ユーザー検索に失敗しました");
       })
-
-
-      
-    }   
+    }
   })
 
   // Remove Member
@@ -96,7 +109,23 @@ $(function(){
   });
 
   function buildHTML_AddMember (id, name, email, type) {
-    var html = `
+    let html_option = ``;
+    console.log($('.member-list__sel-user').length)
+    if ($('.member-list__sel-user').length ) {
+      html_option = `
+        <option value="0">owner</option>
+        <option value="1">manager</option>
+        <option value="2" selected>regular</option>
+      `;
+    } else {
+      html_option = `
+        <option value="0" selected>owner</option>
+        <option value="1">manager</option>
+        <option value="2">regular</option>
+      `;
+    }
+    
+    let html = `
       <tr class="member-list__sel-user">
         <input class="user_ids" name="${type}[user_ids][]" type="hidden" value="${id}" >
         <td class="member-list__sel-user__name">
@@ -106,11 +135,9 @@ $(function(){
           ${email}
         </td>
         <td class="member-list__sel-user__authority">
-          <select name="${type}_member[roles][]" class="form-control" >
-            <option value="0">owner</option>
-            <option value="1">manager</option>
-            <option value="2" selected>regular</option>
-          </select>
+          <select name="${type}_member[roles][]" class="form-control" >`
+           + html_option + 
+          `</select>
         </td>
         <td>
           <span class="remove-member" data-user_id="${id}" >削除</span>
@@ -119,6 +146,7 @@ $(function(){
     `;
     $(".member-list tbody").append(html);
   }
+
   // Add member
   $(document).on("click",".add-member", function(e){
     e.preventDefault();

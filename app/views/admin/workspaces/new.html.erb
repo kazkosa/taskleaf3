@@ -1,0 +1,31 @@
+<section id="container">
+  <%= render 'layouts/admin_sidebar' %>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <!--main content start-->
+  <section id="main-content">
+    <section class="wrapper">
+      <h3><i class="fa fa-angle-right"></i><%= link_to "Workspaces", admin_workspaces_path%></h3>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="content-panel">
+            <h4><i class="fa fa-angle-right"></i>Create Workspace</h4>
+            <section id="unseen">
+              <%= form_with model: @workspace, local: true, url: admin_workspaces_path do |f| %>
+                <%= render 'shared/error_workspace_messages' %>
+                <%= render partial: "form", locals: { workspace: @workspace, members: @members, f: f, mode_text: 'CREATE'} %>
+              <% end %>
+            </section>
+          </div>
+          <!-- /content-panel -->
+        </div>
+        <!-- /col-lg-4 -->
+      </div>
+      <!-- /row -->
+    </section>
+    <!-- /wrapper -->
+  </section>
+  <!-- /MAIN CONTENT -->
+  <!--main content end-->
+</section><!--/container-->
