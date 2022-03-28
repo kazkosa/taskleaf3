@@ -1,15 +1,15 @@
 <template>
 
     <section class="section-project-members">
-      <h3>Board Member({{members.length}})</h3>
+      <h3>Workspace Member({{members.length}})</h3>
       <div class="cntrol-container">
-        <a class="addbtn" @click="openFormAddBoardMember">
+        <a class="addbtn" @click="openFormAddWorkspaceMember">
           <span class="icon"><i class="fas fa-plus"></i></span>
           <span class="txt2">Add Member</span>
         </a>
       </div>
 
-      <transition-group class="project-member-list" name="items" tag="ul"  v-if="members.length && currentUser.id">
+      <transition-group class="project-member-list" name="items" tag="ul">
 
         <li v-for="item in members" v-bind:key="item.id" class="project-member-list__member">
 
@@ -24,16 +24,16 @@
             <div class="member-item__tag"></div>
             <div v-if="getAuthorityList(item).length" class="member-item__role">
 
-              <selectWrapper
+              <SelectWrapper
                 :init-text="'Authority'"
                 :option-list="getAuthorityList(item)" 
                 :init-selected="item.role_before_type_cast"
                 @change-value="changeRole($event, item)"
-              ></selectWrapper>
+              ></SelectWrapper>
             </div>
             <div v-else class="member-item__role noedit" >{{ item.role.charAt(0).toUpperCase() + item.role.slice(1)}}</div> 
 
-            <div v-if="getAuthorityList(item).length" class="member-item__remove xinvisible" @click="openFormDeleteBoardMember(item)">
+            <div v-if="getAuthorityList(item).length" class="member-item__remove xinvisible" @click="openFormDeleteWorkspaceeMember(item)">
               <span></span>
             </div>
            
@@ -47,18 +47,18 @@
 </template>
 <script>
 import axios from 'axios'
-import selectWrapper from './selectWrapper'
+import SelectWrapper from 'packs/components/form/select/SelectWrapper'
 
 export default {
   components: {
-    'selectWrapper': selectWrapper
+    'SelectWrapper': SelectWrapper
   },
   props: {
     currentUser: {
       type: Object,
       require: false
     },
-    board: {
+    workspace: {
       type: Object,
       require: true
     },
@@ -68,7 +68,7 @@ export default {
     }
   },
   computed: {
-    currentUserRoleInThisBd: function() {
+    currentUserRoleInThisWs: function() {
       const tmp = this.members.filter((member)=>{
         return member.user_id == this.currentUser.id
       })
@@ -81,11 +81,11 @@ export default {
   },
   created: function() {
     this.initialize()
-    
   },
   watch: {
     "members": {
       handler: function(newVal, oldVal) {
+        // this.initialize()
       },
       deep: true,
       immediate: true
@@ -94,12 +94,11 @@ export default {
   
   methods: {
     initialize: async function() {
-      // const boardid = parseInt(this.$route.params.id)
+      const workspace_id = parseInt(this.$route.params.ws_id)
       // this.$emit('update-project-member', this.project.id)
-     
     },
-    openFormAddBoardMember: function() {
-      this.$emit('open-form-add-board-member')
+    openFormAddWorkspaceMember: function() {
+      this.$emit('open-form-add-workspace-member')
     },
     getInitial: function (name) {
       if (name) {
@@ -110,14 +109,15 @@ export default {
         return ''
       }
     },
-    openFormDeleteBoardMember: function(user) {
-      this.$emit('open-form-delete-board-member', user)
+    openFormDeleteWorkspaceeMember: function(user) {
+      this.$emit('open-form-delete-workspace-member', user)
     },
     changeRole: function(selected_role, user) {
       if (selected_role !== user.role_before_type_cast) {
-        axios.put('/api/board_members/' + user.id, { board_member: {role: selected_role} })
+        axios.put('/api/workspace_members/' + user.id, { workspace_member: {role: selected_role} })
         .then((res) => {
-          this.$emit('update-board-member', this.board.id)
+          // console.log(res)
+          this.$emit('update-workspace-member', this.workspace.id)
         }, (error) => {
           console.log(error);
         });
@@ -131,21 +131,22 @@ export default {
         {id:2, name: 'Regular'}
       ]
       let target_authority_list = []
-      
-      if (this.currentUserRoleInThisBd === 0) {
+      if (this.currentUserRoleInThisWs === 0) {
         if ( this.currentUser.id != target_user.user_id ) {
           target_authority_list = authority_list
         }
-      } else if ( this.currentUserRoleInThisBd <= target_user.role_before_type_cast ) {
+      } else if ( this.currentUserRoleInThisWs <= target_user.role_before_type_cast ) {
         target_authority_list = authority_list.filter( function(item) {
-          return  _this.currentUserRoleInThisBd <= item.id 
+          return  _this.currentUserRoleInThisWs <= item.id 
         })
       }
       return target_authority_list
+
     }
+  
   },
   beforeRouteUpdate (to, from, next) {
-    this.fetchBoards(parseInt(to.params.id))
+    // this.fetchBoards(parseInt(to.params.id))
     next();
   }
 
@@ -168,6 +169,27 @@ export default {
   max-width: calc(100% - 40px);
   flex: 1 1 100%;
 }
+.cntrol-container {
+  text-align: right;
+}
+.subsection .addbtn {
+  padding: 10px 0;
+  display: inline-block;
+}
+.addbtn {
+  padding: 0 0 0 10px;
+  display: inline-block;
+  cursor: pointer;
+  .icon {
+    font-size: 18px;
+  }
+  .txt2 {
+    font-size: 18px;
+  }
+}
+.addbtn:hover {
+  color:  #551a8b;
+}
 .member-item__image-wrapper {
     background-color: #2C7CFF;
     color: #FFF;
@@ -186,7 +208,7 @@ export default {
   object-position: center;
   backface-visibility: hidden;
   vertical-align: middle;
-  border-style: none;
+    border-style: none;
 }
 .member-item__info {
   flex: 1;
@@ -275,19 +297,19 @@ export default {
 
 .items-leave-active,
 .items-enter-active {
-  transition: opacity .5s, transform .5s ease;
+    transition: opacity .5s, transform .5s ease;
 }
 .items-leave-to,
 .items-enter {
-  opacity: 0;
-  transform: translateX(50px);
+    opacity: 0;
+    transform: translateX(50px);
 }
 .items-leave,
 .items-enter-to {
-  opacity: 1;
+    opacity: 1;
 }
 .items-move {
-  transition: transform .5s;
+    transition: transform .5s;
 }
 
 

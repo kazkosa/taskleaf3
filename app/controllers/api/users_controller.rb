@@ -24,8 +24,6 @@ class Api::UsersController < ApplicationController
   def index
     if params[:type] == 'project' && params[:workspace_id] && params[:workspace_id].to_i > 0
       @users = User.joins(:workspace_members).where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where('workspace_members.workspace_id': params[:workspace_id]).where.not(id: exist_user_ids_params)
-    
-    
     elsif params[:type] == 'board' && params[:project_id] && params[:project_id].to_i
       @users = User.joins(:project_members).where("name LIKE :keyword OR email LIKE :keyword", keyword: "%#{params[:keyword]}%").where('project_members.project_id': params[:project_id]).where.not(id: exist_user_ids_params)
     else

@@ -5,19 +5,25 @@ class Api::ProjectsController < ApplicationController
   def index
     # @projects = Project.where(owner_id: current_user.id, workspace_id:nil).order('id ASC')
     # @projects = current_user.projects.order('id DESC')
-    @projects = Project.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
-
+    if params[:workspace_id].to_i > 0
+      @projects = Project.joins(:users).where({ workspace_id: params[:workspace_id].to_i }).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+    else
+      @projects = Project.joins(:users).where({ workspace_id: nil }).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+    end
     @projects.each_with_index do |project, i|
       boards = project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
       @projects[i].boards = boards
     end
-
   end
 
   # POST /project
   def create
     @project = Project.new(project_params)
+    @project.project_members.each_with_index do |member, index|
+      member.role = 0
+    end
     if @project.save
+      @project = Project.joins(:users).where({id: @project.id}).where(users: {id: current_user.id}).select("projects.*, project_members.role").first
       render :show, status: :created
     else
       render json: @project.errors, status: :unprocessable_entity
@@ -54,20 +60,18 @@ class Api::ProjectsController < ApplicationController
     # @project = Project.find(params[:id])
     @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
     @project.boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
-    if @project.update(project_params_update) && @project.ensure_no_member
+    if project_params_update[:user_ids] && @project.check_member(project_params_update[:workspace_id], project_params_update[:user_ids], project_member_params[:roles])  && @project.update(project_params_update)
       success = true
-      if project_params_update[:user_ids]
-        @project.project_members.each do |member|
-          index = project_params_update[:user_ids].index(member.user_id)
-          member.role = (project_member_params[:roles][index])
+      @project.project_members.each do |member|
+        index = project_params_update[:user_ids].index(member.user_id)
+        member.role = (project_member_params[:roles][index])
 
-          if member.save
-            sendmail_user_id = project_member_params[:sendmail_user_ids].find { |n| n == member.user_id}
-            @sendmail_user = sendmail_user_id && User.find(sendmail_user_id)
-            current_user.send_announcement_email_of_join_the_project_mail(@sendmail_user, @project) if @sendmail_user
-          else
-            success = false
-          end
+        if member.save
+          sendmail_user_id = project_member_params[:sendmail_user_ids].find { |n| n == member.user_id}
+          @sendmail_user = sendmail_user_id && User.find(sendmail_user_id)
+          current_user.send_announcement_email_of_join_the_project_mail(@sendmail_user, @project) if @sendmail_user
+        else
+          success = false
         end
       end
       if success
@@ -85,11 +89,11 @@ class Api::ProjectsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def project_params
-    params.fetch(:project, {}).permit(:name, :description).merge(user_ids: [current_user.id])
+    params.fetch(:project, {}).permit(:name, :description, :workspace_id).merge(user_ids: [current_user.id])
   end
 
   def project_params_update
-    params.require(:project).permit(user_ids: [] )
+    params.require(:project).permit(:workspace_id, user_ids: [])
   end
 
   def project_member_params

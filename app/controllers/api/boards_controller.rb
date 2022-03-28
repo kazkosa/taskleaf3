@@ -2,14 +2,17 @@ class Api::BoardsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    # @boards = Board.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
     @boards = Board.joins(:users).where(project_id: params[:project_id]).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
   end
 
   def create
     @board = Board.new(board_params)
+    @board.board_members.each_with_index do |member, index|
+      member.role = 0
+    end
 
     if @board.save
+      @board = Board.joins(:users).where(id: @board.id).where(users: {id: current_user.id} ).select("boards.*, board_members.role").first
       render :show, status: :created
     else
       render json: @board.errors, status: :unprocessable_entity
@@ -40,16 +43,14 @@ class Api::BoardsController < ApplicationController
 
   def update_members
     @board = Board.find(params[:id])
-    if @board.update(board_params_update) && @board.ensure_no_member
+    if board_params_update[:user_ids] && @board.check_member(board_params[:project_id], board_params_update[:user_ids], board_member_params[:roles]) && @board.update(board_params_update)
       success = true
-      if board_params_update[:user_ids]
-        @board.board_members.each do |member|
-          index = board_params_update[:user_ids].index(member.user_id)
-          member.role = (board_member_params[:roles][index])
+      @board.board_members.each do |member|
+        index = board_params_update[:user_ids].index(member.user_id)
+        member.role = (board_member_params[:roles][index])
 
-          unless member.save
-            success = false
-          end
+        unless member.save
+          success = false
         end
       end
       if success

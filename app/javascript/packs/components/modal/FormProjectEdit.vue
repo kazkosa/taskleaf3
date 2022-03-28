@@ -4,7 +4,7 @@
       <div class="modal__bg js-modal-close" @click="modalClose"></div>
       <div class="modal__content modal__content-project-form">
         <a class="js-modal-close" @click="modalClose"><span></span></a>
-        <h4 class="modal_title"><span>{{getMode}} Project</span></h4>
+        <h4 class="modal_title"><span>{{getMode}} Project {{selectedSpaceId}}</span></h4>
         <p class="modal_txt"><input v-model="project.name" @keyup="checkEnable" type="text" name="name" placeholder="project name"></p>
         <p class="modal_txt"><textarea v-model="project.description" @keyup="checkEnable" name="description"  placeholder="project description"></textarea></p>
         <button v-if="!activeSubmit" class="btnSubmit inActive">{{getBtnText}}</button>
@@ -19,6 +19,10 @@ export default {
   props: {
     isShow: {
       type: Boolean,
+      require: false
+    },
+    selectedSpaceId: {
+      type: Number,
       require: false
     },
     projectId: {
@@ -63,18 +67,25 @@ export default {
       if (this.projectId) {
         axios.put('/api/projects/' + this.projectId, { project: this.project })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$emit('update-project', this.project.id)
           this.modalClose()
         }, (error) => {
           console.log(error);
         });
       } else {
-        axios.post('/api/projects/',{ project: {name: this.project.name, description: this.project.description}})
+        if (this.selectedSpaceId) {
+          this.project.workspace_id = this.selectedSpaceId
+        }
+        axios.post('/api/projects/',{ project: this.project })
         .then((res) => {
           this.$emit('add-project', res.data.project)
           this.project.name = null
           this.project.description = null
+          this.project.workspace_id = null
+          if (this.project.workspace_id) {
+            delete this.project.workspace_id
+          }
           this.modalClose()
         }, (error) => {
           console.log(error);
@@ -82,9 +93,6 @@ export default {
       }
     },
     checkEnable: function() {
-      console.log('checkEnable')
-      console.log(this.project.name)
-      console.log(this.project.description)
       if (this.project.name && this.project.description) {
         this.activeSubmit = true
       } else {

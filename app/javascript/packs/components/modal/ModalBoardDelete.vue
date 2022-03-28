@@ -52,7 +52,7 @@ export default {
     deleteBoardData: function() {
         axios.delete('/api/boards/' + this.boardId)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$emit('update-board')
           this.modalClose()
         }, (error) => {
@@ -62,7 +62,6 @@ export default {
     },
     fetchData: function() {
       if (this.boardId) {
-        // this.$emit('get-projectid-from-url', this.projectId)
         axios.get('/api/boards/' + this.boardId).then((res) => {
           this.board = res.data.board
         }, (error) => {

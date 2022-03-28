@@ -110,7 +110,6 @@ $(function(){
 
   function buildHTML_AddMember (id, name, email, type) {
     let html_option = ``;
-    console.log($('.member-list__sel-user').length)
     if ($('.member-list__sel-user').length ) {
       html_option = `
         <option value="0">owner</option>

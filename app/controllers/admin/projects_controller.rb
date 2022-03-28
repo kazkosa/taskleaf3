@@ -78,10 +78,4 @@ class Admin::ProjectsController < AdminController
     params.require(:project_member).permit(roles: [])
   end
 
-  # protected
-
-  # def redirect_to_projects
-  #   redirect_to admin_projects_url, alert: 'Project not found'
-  # end
-
 end

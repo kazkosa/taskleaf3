@@ -2,15 +2,23 @@
   <div class="page-container">
     <h1>My Station</h1>
 
-    <section class="subsection">
+    <!-- <section class="subsection">
       <h2>Resent Tasks</h2>
-    </section>
+    </section> -->
 
     <section class="subsection">
-      <h2>Projects</h2>
-      <ul class="project-list">
-        <li v-for="(item,index) in projects" v-bind:key="index" class="project-list__item">
-          <router-link :to="{ name: 'project', params: { id: item.id }}" class="project-list__item__link">
+      <h2>Participating Workspaces</h2>
+      <ul class="project-list" v-if="workspaces.length">
+        <li class="project-list__item">
+          <router-link :to="{ name: 'workspace-global'}" class="project-list__item__link">
+            <div class="name">
+              <span class="icon_char">GS</span>
+              <span>General Space</span>
+            </div>
+          </router-link>
+        </li>
+        <li v-for="(item,index) in workspaces" v-bind:key="index" class="project-list__item">
+          <router-link :to="{ name: 'workspace', params: { ws_id: item.id }}" class="project-list__item__link">
             <div class="name">
               <span class="icon_char">{{item.name[0]}}</span>
               <span>{{item.name}}</span>
@@ -21,21 +29,31 @@
           </div>
           <transition name="fade">
             <ul v-if="item.role <= 1 && item.id === selectedCntListId" class="cnt-list">
-              <li class="cnt-list__item" @click="openFormProjectEdit(item.id)">Edit</li>
-              <li class="cnt-list__item" @click="openConfirmProjectDelete(item.id)">Delete</li>
+              <!-- <li class="cnt-list__item" @click="openFormWorkspaceEdit(item.id)">Edit</li> -->
+              <li class="cnt-list__item" @click="openConfirmWorkspaceDelete(item.id)">Delete</li>
             </ul>
           </transition>
         </li>
       </ul>
-      <a class="addbtn" @click="openFormProjectNew">
+      <ul class="project-list" v-else>
+        <li class="project-list__item">
+          <router-link :to="{ name: 'workspace-global'}" class="project-list__item__link">
+            <div class="name">
+              <span class="icon_char">GS</span>
+              <span>General Space</span>
+            </div>
+          </router-link>
+        </li>
+      </ul>
+      <a class="addbtn" >
         <span class="icon"><i class="fas fa-plus"></i></span>
-        <span class="txt2">Add Project</span>
+        <span class="txt2" @click="openFormWorkspaceNew">Create New Workspace</span>
       </a>
     </section>
 
-    <section class="subsection">
+    <!-- <section class="subsection">
       <h2>Profile</h2>
-    </section>
+    </section> -->
 
   </div>
 </template>
@@ -50,11 +68,14 @@ export default {
       type: Number,
       require: false
     },
+    workspaces: {
+      type: Array,
+      require: false
+    },
     projects: {
       type: Array,
       require: false
     }
-
   },
   data: function () {
     return {
@@ -79,8 +100,8 @@ export default {
       this.$emit('open-form-project-edit', project_id)
 
     },
-    toggleCntList: function (project_id) {
-      this.selectedCntListId = project_id
+    toggleCntList: function (workspace_id) {
+      this.selectedCntListId = workspace_id
     },
     closeCntList: function(event) {
       if (this.selectedCntListId && !this.$el.querySelector('.cnt-list').contains(event.target) && !this.$el.querySelector('.sw-cnt').contains(event.target)) {
@@ -88,9 +109,15 @@ export default {
       }
 
     },
+    openConfirmWorkspaceDelete: function (workspace_id) {
+      this.$emit('open-confirm-workspace-delete', workspace_id)
+    },
     openConfirmProjectDelete: function (project_id) {
       this.$emit('open-confirm-project-delete', project_id)
 
+    },
+    openFormWorkspaceNew: function() {
+      this.$emit('open-form-workspace-edit')
     },
   }
 
@@ -98,7 +125,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   
   .icon_char {
     width: 30px;
@@ -147,7 +174,8 @@ export default {
       border-radius: 5px;
       box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .2);
       @media screen and (min-width:768px) {
-        width: 30%;
+        width: 80%;
+        max-width: 500px;
         margin:0 10px 30px;
       }
       
@@ -201,9 +229,7 @@ export default {
           &:hover {
             opacity: 0.7;
           }
-          
         }
-
       }
     }
   }
