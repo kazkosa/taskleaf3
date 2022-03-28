@@ -84,9 +84,9 @@
   </div>
 </template>
 <script>
-import BoardMember from './board-member'
-import FormAddBoardMember from  './FormAddBoardMember'
-import FormDeleteBoardMember from  './FormDeleteBoardMember'
+import BoardMember from 'packs/pages/BoardMember'
+import FormAddBoardMember from  'packs/components/modal/FormAddBoardMember'
+import FormDeleteBoardMember from  'packs/components/modal/FormDeleteBoardMember'
 import axios from 'axios';
 export default {
   components: {
@@ -97,9 +97,9 @@ export default {
   watch: {
     "projects": {
       handler: function(newVal, oldVal) {
-        if (newVal.length) {
+        // if (newVal.length) {
           this.initialize()
-        }
+        // }
       },
       deep: true,
       immediate: true
@@ -154,7 +154,7 @@ export default {
     document.addEventListener('keydown', this.onKeyDown)
   },
   created: function() {
-    this.initialize()
+    // this.initialize()
     
   },
   methods: {
@@ -186,6 +186,7 @@ export default {
         this.board = res.data.board
         this.project = res.data.project
         this.$emit('get-projectid-from-url', this.project.id)
+        this.$emit('get-workspaceid-from-url', this.project.workspace_id === null? 0 : this.project.workspace_id)
       }, (error) => {
         console.log(error);
       });

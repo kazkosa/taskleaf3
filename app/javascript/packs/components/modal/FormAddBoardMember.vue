@@ -38,12 +38,12 @@
           <div class="check-form-notify">
           </div>
           <div class="select-form-asuthority">
-            <selectWrapper
+            <SelectWrapper
               :init-text="'Authority'"
               :option-list="getAuthorityList" 
               :init-selected="2"
               @change-value="role = $event"
-            ></selectWrapper>
+            ></SelectWrapper>
           </div>
         </div>
         <button @click="submitAddMembers" class="btnSubmit" :class="activeSubmit? '': 'inActive'" >Add</button>
@@ -74,11 +74,11 @@
 </template>
 <script>
 import axios from 'axios';
-import selectWrapper from './selectWrapper'
+import SelectWrapper from 'packs/components/form/select/SelectWrapper'
 
 export default {
   components: {
-    'selectWrapper': selectWrapper
+    'SelectWrapper': SelectWrapper
   },
   props: {
     isShow: {

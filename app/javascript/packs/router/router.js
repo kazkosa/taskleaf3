@@ -3,10 +3,10 @@ import VueRouter from 'vue-router'
 import Index from '../components/index.vue'
 import About from '../components/about.vue'
 import Contact from '../components/contact.vue'
-import Mystation from '../components/mystation.vue'
-import Project from '../components/project.vue'
-import ProjectMember from '../components/project-member.vue'
-import Board from '../components/board.vue'
+import Mystation from '../pages/Mystation.vue'
+import Workspace from '../pages/Workspace.vue'
+import Project from '../pages/Project.vue'
+import Board from '../pages/Board.vue'
 
 Vue.use(VueRouter)
 
@@ -14,10 +14,43 @@ export default new VueRouter({
   mode: 'history',
   base: '/dashboard',
   routes: [
-    { path: '/', component: Mystation },
+    { 
+      path: '/',
+      meta: { layout: 'simple'},
+      component: Mystation
+    },
     { path: '/about', component: About },
     { path: '/contact', component: Contact },
-    { path: '/mystation', component: Mystation },
+    { 
+      path: '/mystation',
+      name: 'mystation',
+      meta: { layout: 'simple'},
+      component: Mystation 
+    },
+    
+    {
+      path: '/ws/',
+      name: 'workspace-global',
+      component: Workspace,
+      
+    },
+    {
+      path: '/ws/:ws_id',
+      name: 'workspace',
+      component: Workspace,
+      children: [
+        {
+          path: 'members',
+          name: 'workspace-member',
+          component: Workspace,
+        },
+        {
+          path: 'setting',
+          name: 'workspace-setting',
+          component: Workspace,
+        }
+      ]
+    },
     {
       path: '/projects/:id',
       name: 'project',

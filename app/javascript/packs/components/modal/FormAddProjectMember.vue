@@ -36,19 +36,19 @@
 
         <div class="optional-info">
           <div class="check-form-notify">
-            <formCheckbox
+            <FormCheckbox
               name="notify"
               text="Notify users"
               v-model="notify"
-            ></formCheckbox>
+            ></FormCheckbox>
           </div>
           <div class="select-form-asuthority">
-            <selectWrapper
+            <SelectWrapper
               :init-text="'Authority'"
               :option-list="getAuthorityList" 
               :init-selected="2"
               @change-value="role = $event"
-            ></selectWrapper>
+            ></SelectWrapper>
           </div>
         </div>
         <button @click="submitAddMembers" class="btnSubmit" :class="activeSubmit? '': 'inActive'" >Add</button>
@@ -79,16 +79,21 @@
 </template>
 <script>
 import axios from 'axios';
-import selectWrapper from './selectWrapper'
-import formCheckbox from './formCheckbox.vue'
+import SelectWrapper from 'packs/components/form/select/SelectWrapper'
+import FormCheckbox from 'packs/components/form/checkbox/FormCheckbox'
+
 export default {
   components: {
-    'selectWrapper': selectWrapper,
-    'formCheckbox': formCheckbox
+    'SelectWrapper': SelectWrapper,
+    'FormCheckbox': FormCheckbox
   },
   props: {
     isShow: {
       type: Boolean,
+      require: false
+    },
+    selectedSpaceId: {
+      type: Number,
       require: false
     },
     projectId: {
@@ -188,13 +193,19 @@ export default {
       if(this.keyword !== "" ){ //空文字対策
         const send_user_ids = this.send_users.map((send_user) => send_user.id)
         const exclude_user_ids = this.exist_user_ids.concat(send_user_ids)
+        
+        let params = {
+          keyword: this.keyword,
+          exist_user_ids: exclude_user_ids,
+          type: 'project',
+          project_id: this.projectId
+        }
+        if (this.selectedSpaceId) {
+          params.workspace_id = this.selectedSpaceId
+        }
+
         axios.get('/api/users/count', {
-          params: {
-            keyword: this.keyword,
-            exist_user_ids: exclude_user_ids,
-            type: 'project',
-            project_id: this.projectId
-          }
+          params: params
         })
         .then((res) => {
 
@@ -204,12 +215,7 @@ export default {
             this.enableDispResult = true
 
             axios.get('/api/users/', {
-              params: {
-                keyword: this.keyword,
-                exist_user_ids: exclude_user_ids,
-                type: 'project',
-                project_id: this.projectId
-              }
+              params: params
             })
             .then((res) => {
               this.users = res.data
@@ -275,6 +281,9 @@ export default {
           roles: this.exist_user_roles,
           sendmail_user_ids
         }
+      }
+      if (this.selectedSpaceId) {
+        params.project.workspace_id = this.selectedSpaceId
       }
       axios.put('/api/projects/' + this.projectId + '/update_members/', params)
       .then((res) => {

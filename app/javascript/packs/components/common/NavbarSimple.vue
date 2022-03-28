@@ -3,7 +3,7 @@
       <div class="inner">
         <div class="header-logo-container">
           <a href="/dashboard" class="imgBox">
-            <img src="../../images/dashboards/common/logoTop2.png" alt="TicketLine" width="160" height="37" class="logo-top">
+            <img src="../../../images/dashboards/common/logoTop2.png" alt="TicketLine" width="160" height="37" class="logo-top">
           </a>
         </div>
 
@@ -17,11 +17,10 @@
                   <transition>
                   <ul class="drop-menu basic-menu" v-show="basicMenuOpen">
                     <li class="basic-menu__item">
-                      <a class="user-container">
-                        <!-- <i class="fas fa-user-circle"></i> -->
+                      <router-link :to="{ name: 'mystation' }" class="user-container">
                         <span class="user-container__avatar">{{getInitial}}</span>
                         <span>{{currentUser.name}}</span>
-                      </a>
+                      </router-link>
                     </li>
 
                     <li class="basic-menu__item"><a href="/logout" data-method="delete"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
@@ -36,12 +35,12 @@
               </div>
             </li>
           </ul>
-        
         </div>
       </div>
     </header>
 </template>
 <script>
+
 
 export default {
   props: {
@@ -53,7 +52,21 @@ export default {
       type: Boolean,
       require: false,
       default: false
-    }
+    },
+    isPc: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    selectedSpaceId: {
+      type: Number,
+      require: false,
+      default: 0
+    },
+    workspaces: {
+      type: Array,
+      require: false
+    },
   },
   watch: {
     'rstGlobalMenuBtnFlg': {
@@ -82,6 +95,13 @@ export default {
       } else {
         return ''
       }
+    },
+    getSpaceList: function () {
+      let spaceList = [{id:0, name: 'General Space'}]
+      if (this.workspaces.length > 0) {
+        spaceList = spaceList.concat(this.workspaces)
+      }
+      return spaceList
     }
   },
   mounted() {
@@ -108,6 +128,19 @@ export default {
     toggleMenu() {
       this.openFlg = !this.openFlg
       this.$emit('toggle-sidemenu', this.openFlg)
+    },
+    changeWorkspace: function(target_ws_id) {
+      if (this.selectedSpaceId != target_ws_id) {
+        this.$emit('reload-workspace', target_ws_id)
+        if (target_ws_id) {
+          this.$router.push({ name: 'workspace', params: { ws_id: target_ws_id }} )
+        } else {
+          this.$router.push({ name: 'workspace-global' } )
+        }
+      }
+    },
+    openFormWorkspaceEdit: function() {
+      this.$emit('open-form-workspace-edit')
     }
   }
 }
@@ -297,6 +330,18 @@ export default {
 
   .v-enter, .v-leave-to {
       opacity: 0
+  }
+
+  .iteml-ws {
+    padding-right: 80px;
+    display: none;
+    @media screen and (min-width:768px) {
+      display: flex;
+      align-items: center;
+    }
+    .select-wrapper {
+      width: 160px;
+    }
   }
 
 }

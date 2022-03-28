@@ -66,7 +66,7 @@ export default {
       if (this.boardId) {
         axios.put('/api/boards/' + this.boardId, { board: this.board })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$emit('update-board', this.boardId)
           this.modalClose()
         }, (error) => {

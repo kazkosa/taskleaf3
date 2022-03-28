@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }).$mount()
   document.body.appendChild(app.$el)
 
-  console.log(app)
+  // console.log(app)
 })
 
 

@@ -26,7 +26,6 @@
         <li class="head-tab-list__tab" :class="openTabFlg[2]? 'is-active': ''"  @click="selTab(2)">
           <h2 v-if="openTabFlg[2]">Other Setting</h2>
           <router-link v-else :to="{ name: 'project-setting', params: { id: project.id } }" class="">Other Setting</router-link>
-          
         </li>
       </ul>
 
@@ -81,6 +80,7 @@
 
 
     <FormAddProjectMember
+      :selected-space-id="selectedSpaceId"
       :is-show="showFormAddProjectMember"
        :members="members"
        :current-user="currentUser"
@@ -99,9 +99,9 @@
   </div>
 </template>
 <script>
-import ProjectMember from './project-member'
-import FormAddProjectMember from  './FormAddProjectMember'
-import FormDeleteProjectMember from  './FormDeleteProjectMember'
+import ProjectMember from 'packs/pages/ProjectMember'
+import FormAddProjectMember from  'packs/components/modal/FormAddProjectMember'
+import FormDeleteProjectMember from  'packs/components/modal/FormDeleteProjectMember'
 import axios from 'axios';
 export default {
   components: {
@@ -112,9 +112,7 @@ export default {
   watch: {
     "projects": {
       handler: function(newVal, oldVal) {
-        if (newVal.length) {
-          this.initialize()
-        }
+        this.initialize()
       },
       deep: true,
       immediate: true
@@ -124,9 +122,7 @@ export default {
         if (newVal.params.id !== oldVal.params.id) {
           this.initialize()
         }
-      },
-      // deep: true,
-      // immediate: true
+      }
     }
   },
   props: {
@@ -148,12 +144,9 @@ export default {
       return this.message.split('').reverse().join('')
     },
     currentUserRoleInThisPj: function() {
-
-      console.log(this.members)
       const tmp = this.members.filter((member)=>{
         return member.user_id == this.currentUser.id
       })
-      console.log(tmp)
       return (tmp.length && tmp[0].role_before_type_cast >= 0)? tmp[0].role_before_type_cast: 2
     }
   },
@@ -183,8 +176,7 @@ export default {
   methods: {
     initialize: async function() {
       const project_id = parseInt(this.$route.params.id)
-      this.fetchBoards(project_id)
-     
+      this.fetchProjectAndBoards(project_id)
       switch (this.$route.name) {
         case 'project': this.selTab(0);break;
         case 'project-member': 
@@ -193,16 +185,16 @@ export default {
         case 'project-setting': this.selTab(2);break;
         default: this.selTab(0);break;
       }
-     
     },
     openFormBoardEdit: function(projectid, boardid = 0 ) {
       this.$emit('open-form-board-edit', projectid, boardid)
     },
-    fetchBoards: function(project_id) {
+    fetchProjectAndBoards: function(project_id) {
       this.$emit('get-projectid-from-url', project_id)
       axios.get('/api/projects/' + project_id).then((res) => {
         this.boards = res.data.boards
         this.project = res.data.project
+        this.$emit('get-workspaceid-from-url', this.project.workspace_id === null? 0 : this.project.workspace_id)
       }, (error) => {
         console.log(error);
       });
@@ -289,7 +281,7 @@ export default {
     }
   },
   beforeRouteUpdate (to, from, next) {
-    this.fetchBoards(parseInt(to.params.id))
+    this.fetchProjectAndBoards(parseInt(to.params.id))
     next();
   },
   beforeDestroy() {
@@ -359,6 +351,11 @@ export default {
       
       width: 80%;
       margin:0 5px 30px;
+      position: relative;
+      background-color: #fff;
+      min-height:80px;
+      border-radius: 5px;
+      box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .2);
       @media screen and (min-width: 768px) {
         // width: 30%;
         width: 220px;
@@ -366,18 +363,57 @@ export default {
       }
       
       &__link {
-        margin: 0 auto;
+        // margin: 0 auto;
         width: 100%;
-        max-width: 220px;
+        // max-width: 220px;
         display: block;
-        min-height:80px;
-        border-radius: 5px;
-        background-color: #fff;
-        box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .2);
+        // min-height:80px;
+        // border-radius: 5px;
+        // background-color: #fff;
+        // box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .2);
         .name {
           padding: 10px;
           color: #000;
         }
+      }
+      .sw-cnt {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        cursor: pointer;
+        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover {
+          color: #551A8B
+        }
+      }
+      .cnt-list {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 30px;
+        padding: 10px;
+        box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, .2);
+        border-radius: 4px;
+        background: #fff;
+        li {
+          padding: 10px;
+          border-top: 1px solid #ccc;
+          cursor: pointer;
+          &:first-child {
+            border-top: none;
+          }
+          &:hover {
+            opacity: 0.7;
+          }
+          
+        }
+
       }
     }
   }

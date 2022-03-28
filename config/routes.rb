@@ -53,6 +53,15 @@ Rails.application.routes.draw do
         get :count
       end
     end
+    resources :workspaces, only: [:index, :create, :update, :show, :destroy] do
+      resources :workspace_members,     only: [:index, :update]
+      member do
+        put :update_members
+      end
+      resources :projects, only: [:index ]
+    end
+    resources :workspace_members, only: [:update, :destroy]
+
     resources :projects, only: [:index, :create, :update, :show, :destroy] do
       resources :project_members,     only: [:index, :update]
       member do
@@ -71,8 +80,13 @@ Rails.application.routes.draw do
     resources :board_members, only: [:update, :destroy]
     # get '/static_pages'   => 'static_pages#index'
   end
+
   get '/dashboard/' => 'dashboard#index'
   get '/dashboard/mystation' => 'dashboard#index'
+  get '/dashboard/ws' => 'dashboard#index'
+  get '/dashboard/ws/:id' => 'dashboard#index'
+  get '/dashboard/ws/:id/members' => 'dashboard#index', as: 'dashboard_workspace_members'
+  get '/dashboard/ws/:id/setting' => 'dashboard#index', as: 'dashboard_workspace_setting'
   get '/dashboard/projects' => 'dashboard#index'
   get '/dashboard/projects/:id' => 'dashboard#index', as: 'dashboard_project'
   get '/dashboard/projects/:id/members' => 'dashboard#index', as: 'dashboard_project_members'

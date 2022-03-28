@@ -2,7 +2,7 @@
   <div id="sidebar" :class="[!isOpenSidebar? 'isClosed':'']">
     <div class="inner">
       <div class="sidebar-toggle-box" @click="opencloseSidebar">
-        <img src="../../images/dashboards/common/side-menu-toggle.svg"  width="14" height="16">
+        <img src="../../../images/dashboards/common/side-menu-toggle.svg"  width="14" height="16">
       </div>
       <div class="sidebar-main" v-show="isOpenSidebar">
         <div class="user-container__wrapper">
@@ -14,19 +14,27 @@
         </div>
         <ul class="menu-items">
           <li class="menu-items__item">
-            <router-link to="/" class="menu-items__item__link" @click.native="touchLink">
+            <router-link v-if="selectedSpaceId >= 1" :to="{ name: 'workspace', params: {ws_id: selectedSpaceId}}" class="menu-items__item__link" @click.native="touchLink">
               <span class="icon"><i class="fas fa-home"></i></span>
-              <span class="txt">HOME</span>
+              <span class="txt">Home</span>
+            </router-link>
+            <router-link v-else :to="{ name: 'workspace-global' }" class="menu-items__item__link" @click.native="touchLink">
+              <span class="icon"><i class="fas fa-home"></i></span>
+              <span class="txt">Home</span>
             </router-link>
           </li>
-          <li class="menu-items__item">
+          <li class="menu-items__item menu-items__item-select-container">
             <div class="menu-items__item__select-container">
               <span class="icon"><i class="fas fa-subway"></i></span>
               <div class="select-workspaces">
-                <selectWrapper
+                <SelectWrapper
+                  v-if="workspaces.length"
                   :init-text="'Switch Workspace'"
-                  :option-list="workspaces"
-                ></selectWrapper>
+                  :option-list="getSpaceList"
+                  :init-selected="selectedSpaceId"
+                  @change-value="changeWorkspace($event)"
+                  @open-form-workspace-edit="openFormWorkspaceEdit"
+                ></SelectWrapper>
               </div>
             </div>
           </li>
@@ -89,7 +97,7 @@
 </template>
 <script>
 
-import selectWrapper from './selectWrapper'
+import SelectWrapper from 'packs/components/form/select/SelectWrapperWs'
 
 export default {
   props: {
@@ -114,7 +122,17 @@ export default {
       type: Boolean,
       require: false,
       default: false
-    }
+    },
+
+    selectedSpaceId: {
+      type: Number,
+      require: false,
+      default: 0
+    },
+    workspaces: {
+      type: Array,
+      require: false
+    },
   },
   watch: {
     "projects": {
@@ -150,10 +168,10 @@ export default {
     return {
       message: "Hello Vue!",
       basicMenuOpen: false,
-      workspaces: [
-        {id:1, name: 'MySpace00'},
-        {id:2, name: 'WorkSpace01'}
-      ],
+      // workspaces: [
+      //   {id:1, name: 'MySpace00'},
+      //   {id:2, name: 'WorkSpace01'}
+      // ],
       isOpenProjects: [],
       isOpenSidebar: true,
       breakPoint: 768
@@ -168,6 +186,16 @@ export default {
       } else {
         return ''
       }
+    },
+    getSpaceList: function () {
+      let spaceList = [{id:0, name: 'General Space'}]
+      // let spaceList = this.workspaces//[{id:0, name: 'MySpace'}]
+      // console.log(spaceList)
+      // spaceList = spaceList.unshift( {id:0, name: 'MySpace'}) 
+      if (this.workspaces.length > 0) {
+        spaceList = spaceList.concat(this.workspaces)
+      }
+      return spaceList
     }
   },
   created: function() {
@@ -189,10 +217,10 @@ export default {
       })
     },
     swProjectMenu: function(n) {
-      console.log(n)
-      console.log(this.isOpenProjects)
+      // console.log(n)
+      // console.log(this.isOpenProjects)
       this.$set(this.isOpenProjects, n, !this.isOpenProjects[n])
-      console.log(this.isOpenProjects)
+      // console.log(this.isOpenProjects)
     },
     opencloseSidebar: function() {
       this.isOpenSidebar = !this.isOpenSidebar
@@ -234,10 +262,24 @@ export default {
           break;
       }
       return id === current_id
+    },
+    changeWorkspace: function(target_ws_id) {
+      if (this.selectedSpaceId != target_ws_id) {
+        this.$emit('reload-workspace', target_ws_id)
+        if (target_ws_id) {
+          this.$router.push({ name: 'workspace', params: { ws_id: target_ws_id }} )
+        } else {
+          this.$router.push({ name: 'workspace-global' } )
+        }
+      }
+    },
+    openFormWorkspaceEdit: function() {
+      this.$emit('open-form-workspace-edit')
     }
+
   },
   components: {
-    'selectWrapper': selectWrapper,
+    'SelectWrapper': SelectWrapper,
   },
 
 
@@ -290,7 +332,7 @@ export default {
       display: flex;
       justify-content: space-between;
       @media screen and (min-width:768px) {
-        display: block;
+        display: none;
       }
     }
     .btn-logout {
@@ -425,6 +467,13 @@ export default {
             .txt2 {
               font-size: 14px;
             }
+          }
+        }
+
+        &.menu-items__item-select-container {
+          display: block;
+          @media screen and (min-width:768px) {
+            display: none;
           }
         }
       }

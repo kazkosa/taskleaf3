@@ -1,12 +1,17 @@
 <template>
   <div class="select-wrapper">
-    <div class="select-dropdown" @click="switchDropdown">{{optionList[slectedIndex].name}}</div>
+    <div class="select-dropdown" :class="className" @click="switchDropdown">{{optionList[slectedIndex].name}}</div>
     <svg class="caret" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg>
     <transition>
       <ul class="select-options" v-show="isOpen">
         <li class="option"><span class="head">{{initText}}</span></li>
         <li v-for="(item,index) in optionList" v-bind:key="index" class="option">
           <span class="option__content" :class="index==slectedIndex? 'selected':''" @click="changeOption(item.id)">{{item.name}}</span>
+        </li>
+        <li class="option add-create"  @click="openFormWorkspaceNew">
+          <span class="foot" >
+            <i class="fas fa-plus"></i>Create Workspace
+          </span>
         </li>
       </ul>
     </transition>
@@ -18,7 +23,9 @@ export default {
   watch: {
     "initSelected": {
       handler: function(newVal, oldVal) {
-        this.initialize()
+        if (newVal !== oldVal) {
+          this.initialize()
+        }
       },
       deep: true,
       immediate: true
@@ -37,6 +44,11 @@ export default {
       type: Number,
       require: false,
       default: 0
+    },
+    type: {
+      type: String,
+      require: false,
+      default: ''
     }
   },
   data: function () {
@@ -54,12 +66,17 @@ export default {
   beforeDestroy() {
     window.removeEventListener('click', this.closeDropDown);
   },
+  computed: {
+    className: function () {
+      return this.type? 'is-' + this.type: ''
+    },
+  },
 
   methods: {
     initialize: function() {
-      if (this.initSelected) {
+      // if (this.initSelected) {
         this.changeOption(this.initSelected)
-      }
+      // }
     },
     switchDropdown: function() {
       this.isOpen = !this.isOpen
@@ -77,7 +94,11 @@ export default {
       if (!this.$el.querySelector('.select-options').contains(event.target) && !this.$el.querySelector('.select-dropdown').contains(event.target)){
         this.isOpen = false
       }
-    }
+    },
+    openFormWorkspaceNew: function() {
+      this.isOpen = false
+      this.$emit('open-form-workspace-edit')
+    },
   }
 }
 </script>
@@ -104,6 +125,12 @@ export default {
   -ms-user-select: none;
   user-select: none;
   z-index: 1;
+  &.is-noborder {
+    border-bottom: none;
+    margin: 0;
+    height: 2.6rem;
+    line-height: 2.6rem;
+  }
 }
 .select-options {
   background-color: #fff;
@@ -149,6 +176,7 @@ export default {
   .head {
     color: #888;
     cursor: auto;
+    font-size: 14px;
   }
   .selected {
     background: #EEE;
@@ -156,6 +184,19 @@ export default {
   &__content:hover {
     background: #EEE;
     opacity: 0.7;
+  }
+  &.add-create {
+    
+    .foot {
+      font-size: 12px;
+      color: #000;
+      .fa-plus {
+        margin-right: 5px;
+      }
+    }
+    &:hover {
+      opacity: 0.7;
+    }
   }
   .v-enter-active, .v-leave-active {
     transition: all 0.1s
