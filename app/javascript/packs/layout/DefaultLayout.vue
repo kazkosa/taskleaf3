@@ -29,7 +29,6 @@
       ></Sidebar>
       <main>
         <div class="container">
-          {{selected_space_id}}
           <router-view
             ref="page"
             :current-user="current_user"
