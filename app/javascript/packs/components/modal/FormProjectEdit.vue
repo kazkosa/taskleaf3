@@ -4,7 +4,7 @@
       <div class="modal__bg js-modal-close" @click="modalClose"></div>
       <div class="modal__content modal__content-project-form">
         <a class="js-modal-close" @click="modalClose"><span></span></a>
-        <h4 class="modal_title"><span>{{getMode}} Project {{selectedSpaceId}}</span></h4>
+        <h4 class="modal_title"><span>{{getMode}} Project</span></h4>
         <p class="modal_txt"><input v-model="project.name" @keyup="checkEnable" type="text" name="name" placeholder="project name"></p>
         <p class="modal_txt"><textarea v-model="project.description" @keyup="checkEnable" name="description"  placeholder="project description"></textarea></p>
         <button v-if="!activeSubmit" class="btnSubmit inActive">{{getBtnText}}</button>
