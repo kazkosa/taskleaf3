@@ -22,18 +22,19 @@
               <p class="member-item__email">{{item.email}}</p>
             </div>
             <div class="member-item__tag"></div>
-            <div v-if="getAuthorityList(item).length" class="member-item__role">
+            <div v-if="getAuthorityList(item).length && currentUserRoleInThisPj < 2" class="member-item__role">
 
               <SelectWrapper
                 :init-text="'Authority'"
                 :option-list="getAuthorityList(item)" 
                 :init-selected="item.role_before_type_cast"
                 @change-value="changeRole($event, item)"
+                :reset="reset"
               ></SelectWrapper>
             </div>
-            <div v-else class="member-item__role noedit" >{{ item.role.charAt(0).toUpperCase() + item.role.slice(1)}}</div> 
+            <div v-else class="member-item__role" :class="(currentUserRoleInThisPj==2 && item.user_id == currentUser.id)? 'noedit2': 'noedit'">{{ item.role.charAt(0).toUpperCase() + item.role.slice(1)}}</div> 
 
-            <div v-if="getAuthorityList(item).length" class="member-item__remove xinvisible" @click="openFormDeleteProjectMember(item)">
+            <div v-if="getAuthorityList(item).length && ( currentUserRoleInThisPj < 2 || (item.user_id == currentUser.id) )" class="member-item__remove xinvisible" @click="openFormDeleteProjectMember(item)">
               <span></span>
             </div>
            
@@ -52,6 +53,15 @@ import SelectWrapper from 'packs/components/form/select/SelectWrapper'
 export default {
   components: {
     'SelectWrapper': SelectWrapper
+  },
+  watch: {
+    "members": {
+      handler: function(newVal, oldVal) {
+        this.reset = true
+      },
+      deep: true,
+      immediate: true
+    },
   },
   props: {
     currentUser: {
@@ -77,21 +87,12 @@ export default {
   },
   data: function () {
     return {
+      reset: false
     }
   },
   created: function() {
     this.initialize()
   },
-  watch: {
-    "members": {
-      handler: function(newVal, oldVal) {
-        // this.initialize()
-      },
-      deep: true,
-      immediate: true
-    },
-  },
-  
   methods: {
     initialize: async function() {
       const projectid = parseInt(this.$route.params.id)
@@ -114,17 +115,24 @@ export default {
     },
     changeRole: function(selected_role, user) {
       if (selected_role !== user.role_before_type_cast) {
-        axios.put('/api/project_members/' + user.id, { project_member: {role: selected_role} })
-        .then((res) => {
-          // console.log(res)
-          this.$emit('update-project-member', this.project.id)
-        }, (error) => {
-          console.log(error);
-        });
+        if (selected_role == 0) {
+          const currentOrner = this.members.filter((member)=>{
+            return member.user_id == this.currentUser.id
+          })[0]
+          this.reset = false
+          this.$emit('open-modal-change-project-orner', user, currentOrner)
+        } else {
+          axios.put('/api/project_members/' + user.id, { project_member: {role: selected_role} })
+          .then((res) => {
+            // console.log(res)
+            this.$emit('update-project-member', this.project.id)
+          }, (error) => {
+            console.log(error);
+          });
+        }
       }
     },
     getAuthorityList: function(target_user) {
-      // console.log(this.currentUserRoleInThisPj)
       const _this = this
       const authority_list = [
         {id:0, name: 'Owner'},
@@ -236,6 +244,9 @@ export default {
   font-size: 12px;
   &.noedit {
     margin-right: 36px;
+    font-size: 16px;
+  }
+  &.noedit2 {
     font-size: 16px;
   }
 }

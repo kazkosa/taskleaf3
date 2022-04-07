@@ -2,38 +2,14 @@
   <transition name="modal">
     <div v-if="isShow" id="modal_m1-01" class="modal js-modal" key="modal1">
       <div class="modal__bg js-modal-close" @click="modalClose"></div>
-      <div v-if="ownboards.length === 0" class="modal__content modal__content-project-form">
+      <div class="modal__content modal__content-project-form">
         <a class="js-modal-close" @click="modalClose"><span></span></a>
-        <h4 class="modal_title"><span>Delete {{user.name}} from {{project.name}}</span></h4>
-        <p class="modal_message">Are you sure you want to delete this member?</p>
-        <button @click="deleteProjectMember" class="btnSubmit">Yes</button>
+        <h4 class="modal_title"><span>Change the owner of project "{{project.name}}"</span></h4>
+        <p class="modal_message">Are you sure you want to change the owner from {{currentOrner.name}} to {{user.name}}?</p>
+        <button @click="changeProjectOrner" class="btnSubmit">Yes</button>
         <button @click="modalClose" class="btnCancel">No</button>
       </div>
-      <div v-else class="modal__content modal__content-project-form">
-        <a class="js-modal-close" @click="modalClose"><span></span></a>
-        <h4 class="modal_title"><span>Cannot delete {{user.name}} from {{project.name}}</span></h4>
-        <div class="modal_message">
-          <p>You need to transfer the permissions or remove <br/>the following boards because {{user.name}} own these boards.</p>
-          
-          <table class="permission-table">
-            <tr>
-              <th>Boads:</th>
-
-              <td>
-                <ul>
-                  <li v-for="item in ownboards" v-bind:key="item.id">
-                    <router-link :to="{ name: 'board-member', params: {id: item.id}}">{{item.name}}</router-link>
-                  </li>
-                </ul>
-              </td>
-            </tr>
-              
-          </table>
-        </div>
-        <button @click="modalClose" class="btnCancel">OK</button>
-      </div>
     </div>
-
   </transition>
 </template>
 <script>
@@ -49,13 +25,11 @@ export default {
       type: Object,
       require: false
     },
-
-    boards: {
-      type: Array,
-      require: false,
-      default: []
-    },
     user: {
+      type: Object,
+      require: false
+    },
+    currentOrner: {
       type: Object,
       require: false
     },
@@ -65,56 +39,40 @@ export default {
     }
   },
   watch: {
-    "isShow": {
-      handler: function(newVal, oldVal) {
-        if (newVal) {
-          this.initCheck()
-        }
-      },
-      deep: true,
-      immediate: true
-    },
+    // "isShow": {
+    //   handler: function(newVal, oldVal) {
+    //     if (newVal) {
+
+    //     }
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // },
   },
   created: function() {
 
   },
   data: function () {
     return {
-      ownboards: []
+
     }
   },
 
   methods: {
-    initCheck: function() {
-      const _this = this
-      this.ownboards = []
-      axios.get('/api/projects/'+ this.project.id +'/search_child_members',{params: {user_id: _this.user.user_id}}).then((res) => {
-        if (res.data.boards) {
-          _this.ownboards = res.data.boards
-        }
-      }, (error) => {
-        console.log(error);
-      });
-    },
     modalClose: function() {
+      this.$emit('update-project-member', this.project.id)
       this.$emit('close-modal')
     },
-    deleteProjectMember: function() {
-      axios.delete('/api/project_members/' + this.user.id)
+    changeProjectOrner: function() {
+      axios.put('/api/project_members/' + this.user.id, { project_member: { role: 0 } })
       .then((res) => {
-        this.$emit('update-project-member')
-        
-        if (this.currentUser.id === this.user.user_id) {
-          // this.$emit('update-board')
-          this.$emit('update-project')
-          if (this.project.workspace_id) {
-            this.$router.push({ name: 'workspace', params: { ws_id: this.project.workspace_id }} )
-          } else {
-            this.$router.push({ name: 'workspace-global' } )
-          }
-          
-        }
-        this.modalClose()
+        axios.put('/api/project_members/' + this.currentOrner.id, { project_member: { role: 1 } })
+          .then((res) => {
+            // this.$emit('update-project-member', this.project.id)
+            this.modalClose()
+          }, (error) => {
+            console.log(error);
+          });
       }, (error) => {
         console.log(error);
       });
@@ -383,15 +341,5 @@ export default {
   } 
   .invisible {
     visibility: hidden !important;
-  }
-  .permission-table {
-    margin: 10px auto;
-    th {
-      font-weight: bold;
-    }
-    th, td {
-      // border: 1px solid #000;
-      padding: 5px;
-    }
   }
 </style>

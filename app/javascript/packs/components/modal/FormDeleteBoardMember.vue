@@ -28,6 +28,10 @@ export default {
     user: {
       type: Object,
       require: false
+    },
+    currentUser: {
+      type: Object,
+      require: false
     }
   },
   watch: {
@@ -59,6 +63,10 @@ export default {
       .then((res) => {
         this.$emit('update-board-member')
         this.modalClose()
+        if (this.currentUser.id === this.user.user_id) {
+          this.$emit('update-board')
+          this.$router.push({ name: 'project', params: { id: this.board.project_id }} )
+        }
       }, (error) => {
         console.log(error);
       });

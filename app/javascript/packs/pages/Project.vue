@@ -38,7 +38,7 @@
             </a>
           </div>
           <ul class="project-list">
-            <li v-for="(item,index) in boards" v-bind:key="index" class="project-list__item">
+            <li v-for="(item,index) in project.boards" v-bind:key="index" class="project-list__item">
               <router-link :to="{ name: 'board', params: { id: item.id }}" class="project-list__item__link">
                 <div class="name">
                   <span class="icon_char">{{item.name[0]}}</span>
@@ -67,6 +67,7 @@
             @open-form-add-project-member="openFormAddProjectMember"
             @open-form-delete-project-member="openFormDeleteProjectMember"
             @update-project-member="updateProjectMember"
+            @open-modal-change-project-orner="openModalChangeProjectOrner"
           />
         </li>
 
@@ -77,7 +78,6 @@
 
       </ul>
     </section>
-
 
     <FormAddProjectMember
       :selected-space-id="selectedSpaceId"
@@ -91,23 +91,36 @@
     <FormDeleteProjectMember
       :is-show="showFormDeleteProjectMember"
       :user="deleteMember"
+      :current-user="currentUser"
+      @close-modal="closeModal"
+      :project="project"
+      :boards="project.boards"
+      @update-project-member="updateProjectMember"
+      @update-project="updateProject"
+      ></FormDeleteProjectMember>
+    <ModalChangeProjectOrner
+      :is-show="showModalChangeProjectOrner"
+      :user="targetMember"
+      :current-orner="currentOrner"
+      :current-user="currentUser"
       @close-modal="closeModal"
       :project="project"
       @update-project-member="updateProjectMember"
-      ></FormDeleteProjectMember>
-
+      ></ModalChangeProjectOrner>
   </div>
 </template>
 <script>
 import ProjectMember from 'packs/pages/ProjectMember'
 import FormAddProjectMember from  'packs/components/modal/FormAddProjectMember'
 import FormDeleteProjectMember from  'packs/components/modal/FormDeleteProjectMember'
+import ModalChangeProjectOrner from 'packs/components/modal/ModalChangeProjectOrner'
 import axios from 'axios';
 export default {
   components: {
-    'ProjectMember': ProjectMember,
-    'FormAddProjectMember': FormAddProjectMember,
-    'FormDeleteProjectMember': FormDeleteProjectMember
+    ProjectMember,
+    FormAddProjectMember,
+    FormDeleteProjectMember,
+    ModalChangeProjectOrner
   },
   watch: {
     "projects": {
@@ -137,7 +150,7 @@ export default {
     projects: {
       type: Array,
       require: false
-    }
+    },
   },
   computed: {
     className: function () {
@@ -152,7 +165,7 @@ export default {
   },
   data: function () {
     return {
-      boards: [],
+      // boards: [],
       project: {},
       editNameMode: false,
       editDescMode: false,
@@ -162,7 +175,10 @@ export default {
       showFormAddProjectMember: false,
       editProjectId: 0,
       showFormDeleteProjectMember: false,
-      deleteMember: {}
+      deleteMember: {},
+      targetMember: {},
+      currentOrner: {},
+      showModalChangeProjectOrner: false
     }
   },
   mounted() {
@@ -192,7 +208,7 @@ export default {
     fetchProjectAndBoards: function(project_id) {
       this.$emit('get-projectid-from-url', project_id)
       axios.get('/api/projects/' + project_id).then((res) => {
-        this.boards = res.data.boards
+        // this.boards = res.data.boards
         this.project = res.data.project
         this.$emit('get-workspaceid-from-url', this.project.workspace_id === null? 0 : this.project.workspace_id)
       }, (error) => {
@@ -263,12 +279,16 @@ export default {
     },
     updateProjectMember: function() {
       this.fetchMembers(parseInt(this.$route.params.id))
+      this.$emit('update-project')
     },
     closeModal: function() {
       this.showFormAddProjectMember = false
       this.editProjectId = 0
       this.showFormDeleteProjectMember = false
       this.deleteMemberId = 0
+      this.targetMember = {}
+      this.currentOrner = {}
+      this.showModalChangeProjectOrner = false
     },
     openFormDeleteProjectMember: function(user) {
       this.deleteMember = user
@@ -276,8 +296,19 @@ export default {
     },
     onKeyDown: function (event) {
       if (event.key === 'Escape') {
+        if (this.showModalChangeProjectOrner) {
+          this.fetchMembers(parseInt(this.$route.params.id))
+        }
         this.closeModal()
       }
+    },
+    openModalChangeProjectOrner: function(user, current_orner) {
+      this.targetMember = user
+      this.currentOrner = current_orner
+      this.showModalChangeProjectOrner = true
+    },
+    updateProject: function() {
+      this.$emit('update-project')
     }
   },
   beforeRouteUpdate (to, from, next) {
@@ -328,6 +359,7 @@ export default {
 
     svg {
       width: 12px;
+      height: 12px;
       fill: #888;
       cursor: pointer;
     }

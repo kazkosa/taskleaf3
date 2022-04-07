@@ -87,6 +87,10 @@ class User < ApplicationRecord
     UserMailer.join_the_project(self, user, project).deliver_now
   end
 
+  def send_announcement_email_of_join_the_workspace_mail(user, workspace)
+    UserMailer.join_the_workspace(self, user, workspace).deliver_now
+  end
+
   private
 
   # Convert email addresses to all lowercase

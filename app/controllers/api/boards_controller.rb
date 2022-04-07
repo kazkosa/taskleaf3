@@ -6,7 +6,7 @@ class Api::BoardsController < ApplicationController
   end
 
   def create
-    @board = Board.new(board_params)
+    @board = Board.new(board_params_create)
     @board.board_members.each_with_index do |member, index|
       member.role = 0
     end
@@ -21,6 +21,11 @@ class Api::BoardsController < ApplicationController
 
   def show
     @board = Board.find(params[:id])
+    @project = @board.project
+    if @project.workspace_id
+      @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.*").where(id: @project.workspace_id, users: { id: current_user.id }).first
+    end
+
   end
 
   def update
@@ -67,8 +72,12 @@ class Api::BoardsController < ApplicationController
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def board_params
+  def board_params_create
     params.fetch(:board, {}).permit(:name, :description, :project_id).merge(user_ids: [current_user.id])
+  end
+
+  def board_params
+    params.fetch(:board, {}).permit(:name, :description, :project_id)
   end
 
   def board_params_update

@@ -23,4 +23,11 @@ class UserMailer < ApplicationMailer
     @project = project
     mail to: to_user.email, subject: "#{from_user.name} invited you to #{project.name}"
   end
+
+  def join_the_workspace(from_user, to_user, workspace)
+    @from_user = from_user
+    @to_user = to_user
+    @workspace = workspace
+    mail to: to_user.email, subject: "#{from_user.name} invited you to #{workspace.name}"
+  end
 end

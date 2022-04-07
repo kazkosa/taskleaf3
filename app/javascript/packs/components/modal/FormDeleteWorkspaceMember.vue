@@ -2,12 +2,44 @@
   <transition name="modal">
     <div v-if="isShow" id="modal_m1-01" class="modal js-modal" key="modal1">
       <div class="modal__bg js-modal-close" @click="modalClose"></div>
-      <div class="modal__content modal__content-project-form">
+      <div v-if="ownprojects.length === 0 && ownboards.length === 0" class="modal__content modal__content-project-form">
         <a class="js-modal-close" @click="modalClose"><span></span></a>
         <h4 class="modal_title"><span>Delete {{user.name}} from {{workspace.name}}</span></h4>
         <p class="modal_message">Are you sure you want to delete this member?</p>
         <button @click="deleteWorkspaceMember" class="btnSubmit">Yes</button>
         <button @click="modalClose" class="btnCancel">No</button>
+      </div>
+      <div v-else class="modal__content modal__content-project-form">
+        <a class="js-modal-close" @click="modalClose"><span></span></a>
+        <h4 class="modal_title"><span>Cannot delete {{user.name}} from {{workspace.name}}</span></h4>
+        <div class="modal_message">
+          <p>You need to transfer the permissions or remove <br/>the following projects/boards <br/>
+          because {{user.name}} own these projects/boards.</p>
+
+          <table class="permission-table">
+            <tr v-if="ownprojects.length">
+              <th>Projects:</th>
+              <td>
+                <ul>
+                  <li v-for="item in ownprojects" :key="item.id">
+                    <router-link :to="{ name: 'project-member', params: {id: item.id}}">{{item.name}}</router-link>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr v-if="ownboards.length">
+              <th>Board:</th>
+              <td>
+                <ul>
+                  <li v-for="item in ownboards" :key="item.id">
+                    <router-link :to="{ name: 'board-member', params: {id: item.id}}">{{item.name}}</router-link>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <button @click="modalClose" class="btnCancel">OK</button>
       </div>
     </div>
   </transition>
@@ -28,13 +60,17 @@ export default {
     user: {
       type: Object,
       require: false
+    },
+    currentUser: {
+      type: Object,
+      require: false
     }
   },
   watch: {
     "isShow": {
       handler: function(newVal, oldVal) {
         if (newVal) {
-
+          this.initCheck()
         }
       },
       deep: true,
@@ -46,11 +82,27 @@ export default {
   },
   data: function () {
     return {
-
+      ownprojects: [],
+      ownboards: []
     }
   },
 
   methods: {
+    initCheck: function() {
+      const _this = this
+      this.ownprojects = []
+      this.ownboards = []
+      axios.get('/api/workspaces/'+ this.workspace.id +'/search_child_members',{params: {user_id: _this.user.user_id}}).then((res) => {
+        if (res.data.projects) {
+          _this.ownprojects = res.data.projects
+        }
+        if (res.data.boards) {
+          _this.ownboards = res.data.boards
+        }
+      }, (error) => {
+        console.log(error);
+      });
+    },
     modalClose: function() {
       this.$emit('close-modal')
     },
@@ -59,6 +111,10 @@ export default {
       .then((res) => {
         this.$emit('update-workspace-member')
         this.modalClose()
+        if (this.currentUser.id === this.user.user_id) {
+          this.$emit('update-workspace')
+          this.$router.push({ path: '/' } )
+        }
       }, (error) => {
         console.log(error);
       });
@@ -327,5 +383,15 @@ export default {
   } 
   .invisible {
     visibility: hidden !important;
+  }
+  .permission-table {
+    margin: 10px auto;
+    th {
+      font-weight: bold;
+    }
+    th, td {
+      // border: 1px solid #000;
+      padding: 5px;
+    }
   }
 </style>

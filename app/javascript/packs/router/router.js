@@ -10,7 +10,9 @@ import Board from '../pages/Board.vue'
 
 Vue.use(VueRouter)
 
-export default new VueRouter({
+// export default new VueRouter({
+// export default router
+const router = new VueRouter({
   mode: 'history',
   base: '/dashboard',
   routes: [
@@ -88,3 +90,7 @@ export default new VueRouter({
     },
   ],
 })
+router.beforeEach( (to, from, next) => {
+  next()
+})
+export default router

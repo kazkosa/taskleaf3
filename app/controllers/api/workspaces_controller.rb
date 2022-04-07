@@ -3,15 +3,14 @@ class Api::WorkspacesController < ApplicationController
 
   def index
     @workspaces = Workspace.joins(:users).where(users: {id: current_user.id} ).select("workspaces.*, workspace_members.role")
-    @workspaces.each_with_index do |workspace, i|
-      projects = workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
-      @workspaces[i].projects = projects
-    end
-
+    @projects = []
+    # @workspaces.each do |workspace|
+    #   @projects[workspace.id] = workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+    # end
   end
 
   def create
-    @workspace = Workspace.new(workspace_params)
+    @workspace = Workspace.new(workspace_params_create)
     @workspace.workspace_members.each_with_index do |member, index|
       member.role = 0
     end
@@ -24,13 +23,21 @@ class Api::WorkspacesController < ApplicationController
   end
 
   def show
-    @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
-    @workspace.projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+    # @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
+    @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where({ id: params[:id] }).where(users: { id: current_user.id } ).first
+    
+    # if @workspace.role_before_type_cast > 0
+    #   @projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+    # else
+    #   @projects = @workspace.projects
+    #   render :show_manager
+    # end
   end
 
   def update
-    @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
-    @workspace.projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+    # @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
+    @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where({ id: params[:id] }).where(users: { id: current_user.id } ).first
+    @projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
     if @workspace.update_attributes(workspace_params)
       render :show, status: :created
     else
@@ -48,8 +55,9 @@ class Api::WorkspacesController < ApplicationController
   end
 
   def update_members
-    @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
-    @workspace.projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
+    # @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
+    @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where({ id: params[:id] }).where(users: { id: current_user.id } ).first
+    @projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
     if workspace_params_update[:user_ids] && @workspace.check_member(workspace_params_update[:user_ids], workspace_member_params[:roles])  && @workspace.update(workspace_params_update)
       success = true
       @workspace.workspace_members.each do |member|
@@ -75,11 +83,33 @@ class Api::WorkspacesController < ApplicationController
     end
   end
 
+  def search_child_members
+    projects = Project.joins(:users).where(users: {id: params[:user_id]} ).where({workspace_id: params[:id]} ).select("projects.*, project_members.role")
+    @projects = []
+    @boards = []
+    projects.each do |project|
+      if project.role_before_type_cast == 0
+        @projects << project
+      end
+      boards = project.boards.joins(:users).where(users: {id: params[:user_id]} ).select("boards.*, board_members.role")
+      boards.each do |board|
+        if board.role_before_type_cast == 0
+          @boards << board
+        end
+      end
+    end
+    render :search_child_members
+  end
+
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def workspace_params
+  def workspace_params_create
     params.fetch(:workspace, {}).permit(:name).merge(user_ids: [current_user.id])
+  end
+
+  def workspace_params
+    params.fetch(:workspace, {}).permit(:name)
   end
 
   def workspace_params_update
