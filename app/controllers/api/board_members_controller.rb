@@ -27,6 +27,25 @@ class Api::BoardMembersController < ApplicationController
     end
   end
 
+  def show
+    @board_member = BoardMember.find(params[:id])
+    if @board_member
+      render :show
+    else
+      render json: { errors: { title: 'レコードが見つかりません', detail: 'IDと一致するレコードが見つかりません' }, status: :not_found }
+    end
+  end
+
+  def search
+    @board_member = BoardMember.find_by(user_id: params[:user_id], board_id: params[:board_id])
+    if @board_member
+      render :show
+    else
+      render json: { errors: { title: 'レコードが見つかりません', detail: 'IDと一致するレコードが見つかりません' }, status: :not_found }
+    end
+  end
+
+
   private
 
   def member_params

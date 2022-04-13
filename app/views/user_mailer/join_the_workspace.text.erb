@@ -1,0 +1,6 @@
+Hi <%= @to_user.name %>,
+ 
+<%= @from_user.name %> invited you to the workspace: <%= @workspace.name %>.
+Click the button below to check.
+
+<%= dashboard_ws_url(@workspace) %>

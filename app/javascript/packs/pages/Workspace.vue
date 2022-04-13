@@ -2,10 +2,10 @@
   <div class="page-container" v-if="Object.keys(workspace).length">
     <!-- <h1>{{workspace.name}}</h1> -->
     <div class="page-head">
-      <h1 v-if="workspace.role >= 1 || !selectedSpaceId" class="page-title">{{workspace.name}}</h1>
+      <h1 v-if="workspace.role >= 2 || !selectedSpaceId" class="page-title">{{workspace.name}}</h1>
       <h1 v-else-if="!editNameMode" class="page-title enb-edit">
         {{workspace.name}}
-        <svg @click.stop="editName" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
+        <svg @click.stop="editName" style="height: 12px;width: 12px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
       </h1>
       <h1 v-else class="page-title page-title-edit" ><input type="text" v-model="workspace.name"></h1>
     </div>
@@ -66,6 +66,7 @@
             @open-form-add-workspace-member="openFormAddWorkspaceMember"
             @open-form-delete-workspace-member="openFormDeleteWorkspaceMember"
             @update-workspace-member="updateWorkspaceMember"
+            @open-modal-change-workspace-orner="openModalChangeWorkspaceOrner"
           />
         </li>
 
@@ -93,7 +94,17 @@
       @close-modal="closeModal"
       :workspace="workspace"
       @update-workspace-member="updateWorkspaceMember"
+      @update-workspace="updateWorkspace"
       ></FormDeleteWorkspaceMember>
+    <ModalChangeWorkspaceOrner
+      :is-show="showModalChangeWorkspaceOrner"
+      :user="targetMember"
+      :current-orner="currentOrner"
+      :current-user="currentUser"
+      @close-modal="closeModal"
+      :workspace="workspace"
+      @update-workspace-member="updateWorkspaceMember"
+      ></ModalChangeWorkspaceOrner>
   </div>
 </template>
 <script>
@@ -102,11 +113,22 @@ import axios from 'axios';
 import WorkspaceMember from 'packs/pages/WorkspaceMember'
 import FormDeleteWorkspaceMember from 'packs/components/modal/FormDeleteWorkspaceMember'
 import FormAddWorkspaceMember from 'packs/components/modal/FormAddWorkspaceMember'
+import ModalChangeWorkspaceOrner from 'packs/components/modal/ModalChangeWorkspaceOrner'
 export default {
   components: {
     WorkspaceMember,
     FormDeleteWorkspaceMember,
-    FormAddWorkspaceMember
+    FormAddWorkspaceMember,
+    ModalChangeWorkspaceOrner
+  },
+  watch: {
+    '$route' : {
+      handler: function(newVal, oldVal) {
+        if (newVal.params.ws_id !== oldVal.params.ws_id) {
+          this.initialize()
+        }
+      }
+    }
   },
   props: {
     currentUser: {
@@ -122,16 +144,6 @@ export default {
       require: false
     },
   },
-  watch: {
-    '$route' : {
-      handler: function(newVal, oldVal) {
-        if (newVal.params.ws_id !== oldVal.params.ws_id) {
-          this.initialize()
-        }
-      }
-    }
-  },
-
   computed: {
   
   },
@@ -146,7 +158,10 @@ export default {
       showFormAddWorkspaceMember: false,
       editWorkspaceId: 0,
       showFormDeleteWorkspaceMember: false,
-      deleteMember: {}
+      deleteMember: {},
+      targetMember: {},
+      currentOrner: {},
+      showModalChangeWorkspaceOrner: false
     }
   },
   mounted() {
@@ -188,7 +203,7 @@ export default {
       if (this.selectedSpaceId) {
         axios.get('/api/workspaces/' + this.selectedSpaceId).then((res) => {
           this.workspace = res.data.workspace
-          this.project = res.data.project
+          // this.projects = res.data.projects
           this.$emit('get-workspaceid-from-url', this.workspace.id === null? 0 : this.workspace.id)
         }, (error) => {
           console.log(error);
@@ -251,6 +266,9 @@ export default {
     },
     onKeyDown: function (event) {
       if (event.key === 'Escape') {
+        if (this.showModalChangeWorkspaceOrner) {
+          this.fetchMembers(parseInt(this.$route.params.ws_id))
+        }
         this.closeModal()
       }
     },
@@ -279,13 +297,26 @@ export default {
     },
     updateWorkspaceMember: function() {
       this.fetchMembers(parseInt(this.$route.params.ws_id))
+      // this.$emit('reload-workspace', parseInt(this.$route.params.ws_id))
+      this.$emit('update-workspace')
     },
     closeModal: function() {
       this.showFormAddWorkspaceMember = false
       this.editWorkspaceId = 0
       this.showFormDeleteWorkspaceMember = false
       this.deleteMemberId = 0
+      this.targetMember = {}
+      this.currentOrner = {}
+      this.showModalChangeWorkspaceOrner = false
     },
+    openModalChangeWorkspaceOrner: function(user, current_orner) {
+      this.targetMember = user
+      this.currentOrner = current_orner
+      this.showModalChangeWorkspaceOrner = true
+    },
+    updateWorkspace: function() {
+      this.$emit('update-workspace')
+    }
   },
   beforeRouteUpdate (to, from, next) {
     if (to.params.ws_id === from.params.ws_id) {
@@ -331,6 +362,7 @@ export default {
 
   svg {
     width: 12px;
+    height: 12px;
     fill: #888;
     cursor: pointer;
   }

@@ -39,6 +39,7 @@
             @open-form-project-edit="openFormProjectEdit"
             @open-form-board-edit="openFormBoardEdit"
             @get-workspaceid-from-url="getWorkspaceIdFromUrl"
+            @reload-workspace="reloadWorkspace"
             @get-projectid-from-url="getProjectIdFromUrl"
             @update-workspace="updateWorkspace"
             @update-project="updateProject"
@@ -139,6 +140,7 @@ export default {
   data: function () {
     return {
       selected_space_id: 0,
+      selected_space_role: 2,
       selected_project_id: 0,
       current_user: {
         id: null,
@@ -171,6 +173,7 @@ export default {
 
       showConfirmWorkspaceDelete: false,
       deleteWorkspaceId: 0,
+      ws_owner_flg: false
     }
   },
   components: {
@@ -184,9 +187,12 @@ export default {
     'ModalBoardDelete': ModalBoardDelete,
     'FlashMessage': FlashMessage
   },
+  created: function() {
+    this.initialize()
+  },
   mounted: function () {
     window.addEventListener('resize', this.handleResize)
-    this.initialize()
+    // this.initialize()
   },
   methods: {
     initialize: async function() {
@@ -201,9 +207,9 @@ export default {
       switch (this.$route.name) {
         case 'workspace-global':
           this.selected_space_id = 0
-          await Promise.all([
-            this.fetchProjects()
-          ])
+          // await Promise.all([
+          //   this.fetchProjects()
+          // ])
           break;
         case 'workspace':
           
@@ -212,9 +218,9 @@ export default {
           } else {
             this.selected_space_id = 0
           }
-          await Promise.all([
-            this.fetchProjects()
-          ])
+          // await Promise.all([
+          //   this.fetchProjects()
+          // ])
           break;
         default:
           break;
@@ -238,17 +244,42 @@ export default {
       })
     },
     reloadWorkspace: function(target_ws_id) {
+      // const target_ws_id = data.value
+
+
+      if (target_ws_id) {
+        const selected_ws = this.workspaces.filter ( (ws) => {
+          return  ws.id ==  target_ws_id
+        })
+        if (selected_ws.length) {
+          this.selected_space_role = selected_ws[0].role
+        } else {
+          this.selected_space_role = 2
+        }
+      } else {
+        this.selected_space_role = 2
+      }
+
       this.selected_space_id = target_ws_id
       this.selected_project_id = 0
       this.fetchProjects()
     },
     fetchProjects: async function () {
       if (this.selected_space_id) {
-        await axios.get('/api/workspaces/' + this.selected_space_id + '/projects/').then((res) => {
-          this.projects = res.data.projects
-        }, (error) => {
-          console.log(error);
-        });
+        if (this.selected_space_role > 0) {
+          await axios.get('/api/workspaces/' + this.selected_space_id + '/projects/').then((res) => {
+            this.projects = res.data.projects
+          }, (error) => {
+            console.log(error);
+          });
+        } else {
+          await axios.get('/api/workspaces/' + this.selected_space_id + '/projects/index_manager').then((res) => {
+            this.projects = res.data.projects
+          }, (error) => {
+            console.log(error);
+          });
+        }
+        
 
       } else {
         await axios.get('/api/projects/').then((res) => {
@@ -299,8 +330,21 @@ export default {
     getProjectIdFromUrl: function(projectid) {
       this.selected_project_id = projectid
     },
-    updateWorkspace: function() {
-      this.fetchWorkspaces()
+    updateWorkspace: async function() {
+      await Promise.all([
+        this.fetchWorkspaces()
+      ])
+      const _this = this
+      const selected_ws = this.workspaces.filter ( (ws) => {
+        return  ws.id ==  _this.selected_space_id
+      })
+      if (selected_ws.length) {
+        this.selected_space_role = selected_ws[0].role
+      } else {
+        this.selected_space_role = 2
+      }
+
+      this.fetchProjects()
     },
     createWorkspace: async function(add_ws_id) {
       await Promise.all([
@@ -546,6 +590,7 @@ main {
   .modal_message {
     margin-bottom: 20px;
     font-size: 14px;
+    line-height: 1.6;
   }
   input, textarea {
     padding: 10px 10px;

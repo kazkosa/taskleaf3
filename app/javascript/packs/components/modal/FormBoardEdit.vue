@@ -101,12 +101,6 @@ export default {
           console.log(error);
         });
 
-        // axios.get('/api/boards/' + board_id).then((res) => {
-        //   console.log(res)
-        //   this.board = res.data.board
-        // }, (error) => {
-        //   console.log(error);
-        // });
       } else {
         this.board.name = null,
         this.board.description = null

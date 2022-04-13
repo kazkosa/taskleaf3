@@ -72,7 +72,7 @@
                     </li>
 
                     <li class="board">
-                      <a v-if="item.role != 2" class="addbtn">
+                      <a v-if="item.role != 2 && item.join" class="addbtn">
                         <span class="icon"><i class="fas fa-plus"></i></span>
                         <span class="txt2" @click="openFormBoardEdit(item.id)">Add Board</span>
                       </a>
@@ -190,7 +190,6 @@ export default {
     getSpaceList: function () {
       let spaceList = [{id:0, name: 'General Space'}]
       // let spaceList = this.workspaces//[{id:0, name: 'MySpace'}]
-      // console.log(spaceList)
       // spaceList = spaceList.unshift( {id:0, name: 'MySpace'}) 
       if (this.workspaces.length > 0) {
         spaceList = spaceList.concat(this.workspaces)
@@ -217,10 +216,7 @@ export default {
       })
     },
     swProjectMenu: function(n) {
-      // console.log(n)
-      // console.log(this.isOpenProjects)
       this.$set(this.isOpenProjects, n, !this.isOpenProjects[n])
-      // console.log(this.isOpenProjects)
     },
     opencloseSidebar: function() {
       this.isOpenSidebar = !this.isOpenSidebar

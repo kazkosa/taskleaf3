@@ -1,0 +1,10 @@
+<h1>TicketLine</h1>
+
+<p>Hi <%= @to_user.name %>,</p>
+
+<p>
+<%= @from_user.name %> invited you to the workspace: <%= @workspace.name %>.
+Click the button below to check.
+</p>
+
+<%= link_to "Confirm this workspace", dashboard_ws_url(@workspace) %>

@@ -57,8 +57,13 @@ Rails.application.routes.draw do
       resources :workspace_members,     only: [:index, :update]
       member do
         put :update_members
+        get :search_child_members
       end
-      resources :projects, only: [:index ]
+      resources :projects, only: [:index ] do
+        collection do
+          get :index_manager
+        end
+      end
     end
     resources :workspace_members, only: [:update, :destroy]
 
@@ -66,10 +71,11 @@ Rails.application.routes.draw do
       resources :project_members,     only: [:index, :update]
       member do
         put :update_members
+        get :search_child_members
       end
       resources :boards, only: [:index]
     end
-    resources :project_members, only: [:update, :destroy]
+    resources :project_members, only: [:show, :update, :destroy]
 
     resources :boards, only: [:index, :create, :update, :show, :destroy] do
       resources :board_members,     only: [:index, :update]
@@ -77,7 +83,11 @@ Rails.application.routes.draw do
         put :update_members
       end
     end
-    resources :board_members, only: [:update, :destroy]
+    resources :board_members, only: [:show, :update, :destroy] do
+      collection do
+        get :search
+      end
+    end
     # get '/static_pages'   => 'static_pages#index'
   end
 

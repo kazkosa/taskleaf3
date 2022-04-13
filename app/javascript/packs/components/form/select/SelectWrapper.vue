@@ -25,6 +25,24 @@ export default {
       deep: true,
       immediate: true
     },
+     "optionList": {
+      handler: function(newVal, oldVal) {
+        if (oldVal === undefined || newVal.length !== oldVal.length) {
+          this.initialize()
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    'reset': {
+      handler: function(newVal, oldVal) {
+        if (newVal) {
+          this.initialize()
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   props: {
     initText: {
@@ -33,7 +51,8 @@ export default {
     },
     optionList: {
       type: Array,
-      require: false
+      require: false,
+      default: []
     },
     initSelected: {
       type: Number,
@@ -44,6 +63,11 @@ export default {
       type: String,
       require: false,
       default: ''
+    },
+    reset: {
+      type: Boolean,
+      require: false,
+      default: false
     }
   },
   data: function () {

@@ -3,22 +3,36 @@ class Api::ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    # @projects = Project.where(owner_id: current_user.id, workspace_id:nil).order('id ASC')
-    # @projects = current_user.projects.order('id DESC')
+    @pj_owner_flg = false
     if params[:workspace_id].to_i > 0
       @projects = Project.joins(:users).where({ workspace_id: params[:workspace_id].to_i }).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
     else
       @projects = Project.joins(:users).where({ workspace_id: nil }).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
     end
-    @projects.each_with_index do |project, i|
-      boards = project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
-      @projects[i].boards = boards
+    @boards = []
+    @projects.each do |project|
+      if project.role == 0
+        @pj_owner_flg = true
+        @boards[project.id] = project.boards
+      else
+        @boards[project.id] = project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+      end
     end
+  end
+
+  def index_manager
+    @projects = Project.where(workspace_id: params[:workspace_id].to_i)
+    @projects_check_join = []
+    @projects.each do |project|
+      member = ProjectMember.find_by(user_id: current_user.id, project_id: project.id) 
+      @projects_check_join[project.id] = !member.nil?
+    end
+    #
   end
 
   # POST /project
   def create
-    @project = Project.new(project_params)
+    @project = Project.new(project_params_create)
     @project.project_members.each_with_index do |member, index|
       member.role = 0
     end
@@ -31,20 +45,51 @@ class Api::ProjectsController < ApplicationController
   end
 
   def show
-    # @project = Project.find(params[:id])
-    @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
-    @project.boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+    @project = Project.joins(:users).select("projects.*, project_members.role").where(id: params[:id], users: { id: current_user.id }).first
+    @projects_check_join = !!@project || false
+    @project = Project.find(params[:id]) unless @project
+    @pj_owner_flg = false
+    if @project.workspace_id
+      @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where(id: @project.workspace_id, users: { id: current_user.id }).first
+      if @workspace && @workspace.role_before_type_cast == 0
+        render :show_manager
+      else
+        if @project && @project.role_before_type_cast == 0
+          @boards = @project.boards
+          @pj_owner_flg = true
+        else
+          @boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+        end
+      end
+    else
+      if @project && @project.role_before_type_cast == 0
+        @boards = @project.boards
+        @pj_owner_flg = true
+      else
+        @boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+      end
+    end
   end
 
   def update
-    # @project = Project.find(params[:id])
     @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
-    @project.boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+    @boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
     if @project.update_attributes(project_params)
       render :show, status: :created
     else
       render json: @project.errors, status: :unprocessable_entity
     end
+  end
+
+  def search_child_members
+    boards = Board.joins(:users).where(users: {id: params[:user_id]} ).where({project_id: params[:id]} ).select("boards.*, board_members.role")
+    @boards = []
+    boards.each do |board|
+      if board.role_before_type_cast == 0
+        @boards << board
+      end
+    end
+    render :search_child_members
   end
 
   def destroy
@@ -57,9 +102,8 @@ class Api::ProjectsController < ApplicationController
   end
 
   def update_members
-    # @project = Project.find(params[:id])
     @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
-    @project.boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
+    @boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
     if project_params_update[:user_ids] && @project.check_member(project_params_update[:workspace_id], project_params_update[:user_ids], project_member_params[:roles])  && @project.update(project_params_update)
       success = true
       @project.project_members.each do |member|
@@ -88,8 +132,12 @@ class Api::ProjectsController < ApplicationController
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  def project_params
+  def project_params_create
     params.fetch(:project, {}).permit(:name, :description, :workspace_id).merge(user_ids: [current_user.id])
+  end
+
+  def project_params
+    params.fetch(:project, {}).permit(:name, :description, :workspace_id)
   end
 
   def project_params_update

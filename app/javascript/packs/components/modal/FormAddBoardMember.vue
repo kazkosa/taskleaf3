@@ -153,7 +153,7 @@ export default {
     getAuthorityList: function() {
       const _this = this
       const authority_list = [
-        {id:0, name: 'Owner'},
+        // {id:0, name: 'Owner'},
         {id:1, name: 'Manager'},
         {id:2, name: 'Regular'}
       ]

@@ -45,7 +45,7 @@
 
         </li>
 
-        <li  v-if="openTabFlg[1]">
+        <li v-if="openTabFlg[1]">
           <BoardMember
             :board="board"
             :current-user="currentUser"
@@ -53,6 +53,7 @@
             @open-form-add-board-member="openFormAddBoardMember"
             @open-form-delete-board-member="openFormDeleteBoardMember"
             @update-board-member="updateBoardMember"
+            @open-modal-change-board-orner="openModalChangeBoardOrner"
           />
         </li>
 
@@ -76,10 +77,21 @@
     <FormDeleteBoardMember
       :is-show="showFormDeleteBoardMember"
       :user="deleteMember"
+      :current-user="currentUser"
       @close-modal="closeModal"
       :board="board"
       @update-board-member="updateBoardMember"
+      @update-board="updateBoard"
       ></FormDeleteBoardMember>
+    <ModalChangeBoardOrner
+      :is-show="showModalChangeBoardOrner"
+      :user="targetMember"
+      :current-orner="currentOrner"
+      :current-user="currentUser"
+      @close-modal="closeModal"
+      :board="board"
+      @update-board-member="updateBoardMember"
+      ></ModalChangeBoardOrner>
 
   </div>
 </template>
@@ -87,12 +99,14 @@
 import BoardMember from 'packs/pages/BoardMember'
 import FormAddBoardMember from  'packs/components/modal/FormAddBoardMember'
 import FormDeleteBoardMember from  'packs/components/modal/FormDeleteBoardMember'
+import ModalChangeBoardOrner from 'packs/components/modal/ModalChangeBoardOrner'
 import axios from 'axios';
 export default {
   components: {
-    'BoardMember': BoardMember,
-    'FormAddBoardMember': FormAddBoardMember,
-    'FormDeleteBoardMember': FormDeleteBoardMember
+    BoardMember,
+    FormAddBoardMember,
+    FormDeleteBoardMember,
+    ModalChangeBoardOrner
   },
   watch: {
     "projects": {
@@ -130,6 +144,7 @@ export default {
   },
   data: function () {
     return {
+      workspace: {},
       project: {},
       board: {},
       editNameMode: false,
@@ -145,7 +160,10 @@ export default {
         { name: 'Doing' },
         { name: 'Done' }
       ],
-      deleteMember: {}
+      deleteMember: {},
+      targetMember: {},
+      currentOrner: {},
+      showModalChangeBoardOrner: false
     }
   },
   mounted() {
@@ -185,6 +203,7 @@ export default {
       axios.get('/api/boards/' + board_id).then((res) => {
         this.board = res.data.board
         this.project = res.data.project
+        this.workspace = res.data.workspace
         this.$emit('get-projectid-from-url', this.project.id)
         this.$emit('get-workspaceid-from-url', this.project.workspace_id === null? 0 : this.project.workspace_id)
       }, (error) => {
@@ -222,6 +241,9 @@ export default {
     },
     onKeyDown: function (event) {
       if (event.key === 'Escape') {
+        if (this.showModalChangeBoardOrner) {
+          this.fetchMembers(parseInt(this.$route.params.id))
+        }
         this.closeModal()
       }
     },
@@ -254,11 +276,22 @@ export default {
       this.editProjectId = 0
       this.showFormDeleteBoardMember = false
       this.deleteBoardId = 0
+      this.targetMember = {}
+      this.currentOrner = {}
+      this.showModalChangeBoardOrner = false
     },
     openFormDeleteBoardMember: function(user) {
       this.deleteMember = user
       this.showFormDeleteBoardMember = true
     },
+    updateBoard: function() {
+      this.$emit('update-board')
+    },
+    openModalChangeBoardOrner: function(user, current_orner) {
+      this.targetMember = user
+      this.currentOrner = current_orner
+      this.showModalChangeBoardOrner = true
+    }
   },
   beforeRouteUpdate (to, from, next) {
     this.fetchBoard(parseInt(to.params.id))
@@ -307,6 +340,7 @@ export default {
       width: 12px;
       fill: #888;
       cursor: pointer;
+      height: 12px;
     }
   }
   .page-title.enb-edit,
