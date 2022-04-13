@@ -32,7 +32,7 @@
       <ul class="content-list">
         <li v-if="openTabFlg[0]">
           <div class="cntrol-container">
-            <a v-if="project.role != 2" class="addbtn" @click="openFormBoardEdit(project.id)">
+            <a v-if="project.role != 2 && project.join" class="addbtn" @click="openFormBoardEdit(project.id)">
               <span class="icon"><i class="fas fa-plus"></i></span>
               <span class="txt2">Add Board</span>
             </a>

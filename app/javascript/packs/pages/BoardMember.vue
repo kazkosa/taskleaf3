@@ -82,7 +82,14 @@ export default {
       const tmp = this.members.filter((member)=>{
         return member.user_id == this.currentUser.id
       })
-      return (tmp.length && tmp[0].role_before_type_cast >= 0)? tmp[0].role_before_type_cast: 2
+      let result = 2
+      if (this.board.role == 0) {
+        result = 0
+      } else if (tmp.length && tmp[0].role_before_type_cast >= 0) {
+        result = tmp[0].role_before_type_cast
+      }
+      // return (tmp.length && tmp[0].role_before_type_cast >= 0)? tmp[0].role_before_type_cast: 2
+      return result
     }
   },
   data: function () {
@@ -119,7 +126,8 @@ export default {
       if (selected_role !== user.role_before_type_cast) {
         if (selected_role == 0) {
           const currentOrner = this.members.filter((member)=>{
-            return member.user_id == this.currentUser.id
+            // return member.user_id == this.currentUser.id
+            return member.role_before_type_cast == 0
           })[0]
           this.reset = false
           this.$emit('open-modal-change-board-orner', user, currentOrner)
@@ -143,7 +151,7 @@ export default {
       let target_authority_list = []
 
       if (this.currentUserRoleInThisBd === 0) {
-        if ( this.currentUser.id != target_user.user_id ) {
+        if ( (this.currentUser.id != target_user.user_id || this.board.join) && target_user.role_before_type_cast !== 0) {
           target_authority_list = authority_list
         }
       } else if ( this.currentUserRoleInThisBd <= target_user.role_before_type_cast ) {

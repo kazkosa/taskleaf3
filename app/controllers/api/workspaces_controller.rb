@@ -4,9 +4,6 @@ class Api::WorkspacesController < ApplicationController
   def index
     @workspaces = Workspace.joins(:users).where(users: {id: current_user.id} ).select("workspaces.*, workspace_members.role")
     @projects = []
-    # @workspaces.each do |workspace|
-    #   @projects[workspace.id] = workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
-    # end
   end
 
   def create
@@ -23,19 +20,10 @@ class Api::WorkspacesController < ApplicationController
   end
 
   def show
-    # @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
     @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where({ id: params[:id] }).where(users: { id: current_user.id } ).first
-    
-    # if @workspace.role_before_type_cast > 0
-    #   @projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
-    # else
-    #   @projects = @workspace.projects
-    #   render :show_manager
-    # end
   end
 
   def update
-    # @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
     @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where({ id: params[:id] }).where(users: { id: current_user.id } ).first
     @projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
     if @workspace.update_attributes(workspace_params)
@@ -55,7 +43,6 @@ class Api::WorkspacesController < ApplicationController
   end
 
   def update_members
-    # @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").find_by(id: params[:id])
     @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where({ id: params[:id] }).where(users: { id: current_user.id } ).first
     @projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
     if workspace_params_update[:user_ids] && @workspace.check_member(workspace_params_update[:user_ids], workspace_member_params[:roles])  && @workspace.update(workspace_params_update)

@@ -22,6 +22,12 @@ class Api::ProjectsController < ApplicationController
 
   def index_manager
     @projects = Project.where(workspace_id: params[:workspace_id].to_i)
+    @projects_check_join = []
+    @projects.each do |project|
+      member = ProjectMember.find_by(user_id: current_user.id, project_id: project.id) 
+      @projects_check_join[project.id] = !member.nil?
+    end
+    #
   end
 
   # POST /project
@@ -39,15 +45,15 @@ class Api::ProjectsController < ApplicationController
   end
 
   def show
-    project = Project.find(params[:id])
+    @project = Project.joins(:users).select("projects.*, project_members.role").where(id: params[:id], users: { id: current_user.id }).first
+    @projects_check_join = !!@project || false
+    @project = Project.find(params[:id]) unless @project
     @pj_owner_flg = false
-    if project.workspace_id
-      @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where(id: project.workspace_id, users: { id: current_user.id }).first
+    if @project.workspace_id
+      @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where(id: @project.workspace_id, users: { id: current_user.id }).first
       if @workspace && @workspace.role_before_type_cast == 0
-        @project = project
         render :show_manager
       else
-        @project = Project.joins(:users).select("projects.*, project_members.role").where(id: params[:id], users: { id: current_user.id }).first
         if @project && @project.role_before_type_cast == 0
           @boards = @project.boards
           @pj_owner_flg = true
@@ -56,7 +62,6 @@ class Api::ProjectsController < ApplicationController
         end
       end
     else
-      @project = Project.joins(:users).select("projects.*, project_members.role").where(id: params[:id], users: { id: current_user.id }).first
       if @project && @project.role_before_type_cast == 0
         @boards = @project.boards
         @pj_owner_flg = true
@@ -64,7 +69,6 @@ class Api::ProjectsController < ApplicationController
         @boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
       end
     end
-
   end
 
   def update
