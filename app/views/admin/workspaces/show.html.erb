@@ -53,7 +53,19 @@
                     <% if !@workspace.projects.empty? %>
                       <ul style="padding-left: 0;">
                         <% @workspace.projects.each do |project| %>
-                          <li> - <%=link_to "#{project.name}", admin_project_path(project) %></li>
+                          <li>
+                             - <%=link_to "#{project.name}  (owner: #{@project_owners[project.id].name})", admin_project_path(project) %>
+                             <% if !project.boards.empty? %>
+                                <ul>
+                                  <% project.boards.each do |board| %>
+                                    <li>
+                                      |- <%=link_to "#{board.name} (owner: #{@board_owners[board.id].name})", admin_board_path(board) %>
+                                    </li>
+                                  <% end %>
+                                </ul>
+                                <br/>
+                             <% end %>
+                          </li>
                         <% end %>
                       </ul>
                     <% else %>

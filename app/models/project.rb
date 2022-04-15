@@ -7,7 +7,7 @@ class Project < ApplicationRecord
   has_many :users, through: :project_members
 
   validates :name, presence: true, length: {maximum: 30}
-  validates :description, presence: true 
+  # validates :description, presence: true
 
   def build_member
     members = []
@@ -59,5 +59,49 @@ class Project < ApplicationRecord
 
   def instance_validations
     validates_with ::ProjectMemberValidator
+  end
+
+  def get_board_owners
+    board_owners = []
+    self.boards.each do |board|
+      board_owners[board.id] = board.board_members.find { |member| member.role == 'owner' }.user
+    end
+    return board_owners
+  end
+
+  def member_is_board_owner?(members)
+    board_owners = self.get_board_owners
+    boards = self.boards
+    result = []
+    if !members.empty?
+      members.each do |member|
+        if board_owners.empty?
+          result[member.user_id] = false
+        else
+          result[member.user_id] = !board_owners.find { |owner| !owner.nil? && owner.id == member.user_id }.nil?
+        end
+      end
+    end
+    return result
+  end
+
+  def diff_member (new_ids)
+    current_ids = self.users.map { |user| user.id }
+    return current_ids - new_ids.map(&:to_i)
+  end
+
+  def delete_child (target_delete_members)
+    result = true
+    if !target_delete_members.empty?
+      self.boards.each do |board|
+        target_delete_members.each do |target_delete_member|
+          bd_member = BoardMember.find_by(board_id: board.id, user_id: target_delete_member)
+          if bd_member && !bd_member.destroy
+            result = false
+          end
+        end
+      end
+    end
+    return result
   end
 end
