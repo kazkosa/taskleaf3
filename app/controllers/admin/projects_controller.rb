@@ -30,18 +30,21 @@ class Admin::ProjectsController < AdminController
   def show
     @project = Project.find(params[:id])
     @members = @project.build_member
+    @board_owners = @project.get_board_owners
   end
 
   def edit
     @project = Project.find(params[:id])
     @members = @project.build_member
+    @checked_board_owner = @project.member_is_board_owner?(@members)
   end
 
   def update
     @project = Project.find(params[:id])
-
+    target_delete_members = @project.diff_member(project_params[:user_ids])
     if project_params[:user_ids] && @project.check_member(project_params[:workspace_id], project_params[:user_ids], project_member_params[:roles]) && @project.update(project_params)
-      success = true
+      # success = true
+      success = @project.delete_child (target_delete_members)
 
       @project.project_members.each do |member|
         index = project_params[:user_ids].index(member.user_id.to_s)

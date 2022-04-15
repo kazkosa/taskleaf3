@@ -85,7 +85,7 @@ export default {
       }
     },
     checkEnable: function() {
-      if (this.board.name && this.board.description) {
+      if (this.board.name /*&& this.board.description*/) {
         this.activeSubmit = true
       } else {
         this.activeSubmit = false

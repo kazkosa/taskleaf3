@@ -69,7 +69,7 @@
                     <% if !@project.boards.empty? %>
                       <ul style="padding-left: 0;">
                         <% @project.boards.each do |board| %>
-                          <li> - <%=link_to "#{board.name}", admin_board_path(board) %></li>
+                          <li> - <%=link_to "#{board.name} (owner: #{@board_owners[board.id].name})", admin_board_path(board)%></li> 
                         <% end %>
                       </ul>
                     <% else %>

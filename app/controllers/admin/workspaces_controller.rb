@@ -28,18 +28,21 @@ class Admin::WorkspacesController < AdminController
   def show
     @workspace = Workspace.find(params[:id])
     @members = @workspace.build_member
+    @project_owners = @workspace.get_project_owners
+    @board_owners = @workspace.get_board_owners
   end
 
   def edit
     @workspace = Workspace.find(params[:id])
     @members = @workspace.build_member
+    @checked_project_or_board_owner = @workspace.member_is_project_or_board_owner?(@members)
   end
 
   def update
     @workspace = Workspace.find(params[:id])
-
+    target_delete_members = @workspace.diff_member(workspace_params[:user_ids])
     if workspace_params[:user_ids] && @workspace.check_member(workspace_params[:user_ids], workspace_member_params[:roles]) && @workspace.update(workspace_params)
-      success = true
+      success = @workspace.delete_child (target_delete_members)
 
       @workspace.workspace_members.each do |member|
         index = workspace_params[:user_ids].index(member.user_id.to_s)

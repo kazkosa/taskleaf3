@@ -38,7 +38,7 @@ class Api::BoardsController < ApplicationController
         end
       end
     else
-      @project = Project.joins(:users).select("projects.*, project_members.role").where(id: board.project_id, users: { id: current_user.id }).first
+      @project = Project.joins(:users).select("projects.*, project_members.role").where(id: @board.project_id, users: { id: current_user.id }).first
       if @project && @project.role_before_type_cast == 0
         render :show_pj_manager
       end

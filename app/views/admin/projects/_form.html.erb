@@ -41,7 +41,13 @@
                 <td class="member-list__sel-user__authority">
                   <%= select_tag "project_member[roles][]", options_for_select(ProjectMember.roles, selected: member_info_pj.role_before_type_cast), {class: 'form-control', require: true} %>  
                 </td>
-                <td><span class="remove-member" data-user_id="<%= member_info_pj.user_id %>">削除</span></td>
+                <td>
+                  <% if  @checked_board_owner[member_info_pj.user_id] %>
+                    -
+                  <% else %>
+                    <span class="remove-member" data-user_id="<%= member_info_pj.user_id %>">削除</span>
+                  <% end %>
+                </td>
               </tr>
             <% end %>
           <% else %>

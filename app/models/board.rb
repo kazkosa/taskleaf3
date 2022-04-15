@@ -6,7 +6,7 @@ class Board < ApplicationRecord
   has_many :users, through: :board_members
 
   validates :name, presence: true, length: {maximum: 30}
-  validates :description, presence: true 
+  # validates :description, presence: true 
 
   def build_member
     members = []

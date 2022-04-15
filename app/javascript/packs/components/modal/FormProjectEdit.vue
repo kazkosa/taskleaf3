@@ -93,7 +93,7 @@ export default {
       }
     },
     checkEnable: function() {
-      if (this.project.name && this.project.description) {
+      if (this.project.name /*&& this.project.description*/) {
         this.activeSubmit = true
       } else {
         this.activeSubmit = false
