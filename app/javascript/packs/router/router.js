@@ -14,7 +14,7 @@ Vue.use(VueRouter)
 // export default router
 const router = new VueRouter({
   mode: 'history',
-  base: '/dashboard',
+  base: '/app',
   routes: [
     { 
       path: '/',

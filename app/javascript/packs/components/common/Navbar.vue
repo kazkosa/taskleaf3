@@ -2,7 +2,7 @@
     <header id="header">
       <div class="inner">
         <div class="header-logo-container">
-          <a href="/dashboard" class="imgBox">
+          <a href="/app" class="imgBox">
             <img src="../../../images/dashboards/common/logoTop2.png" alt="TicketLine" width="160" height="37" class="logo-top">
           </a>
         </div>
