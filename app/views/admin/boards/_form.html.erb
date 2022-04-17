@@ -53,6 +53,43 @@
       </table>
     </td>
   </tr>
+  <tr>
+    <th>States / Tasks</th>
+    <td>
+      <% if @states %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="display: flex; justify-content: space-between;align-items:center;">
+                <p style="margin: 0;">States</p>
+                <%= link_to new_admin_board_state_path(@board, @state), class:"" do %>
+                  <i style="color:grey;" class="far fa-plus-square"></i>
+                <% end %>
+              </th>
+              <th>Tasks</th>
+            </tr>
+          </thead>
+          <tbody class="state-sortable">
+            <% @states.each do |state| %>
+              <tr class="">
+                <input class="state_ids" name="board[state_ids][]" type="hidden" value="<%=state.id%>" >
+                <td class="" style="display: flex; align-items: center;justify-content:space-between;">
+                  <div>
+                    <span class="glip" style="cursor: grab; padding: 5px; margin-right: 10px;"><i style="color: grey;" class="fas fa-grip-vertical"></i></span>
+                    <%= link_to state.name, edit_admin_state_path(state) %>
+                  </div>
+                  <span class="remove-state" data-state_id="<%= state.id %>" style="cursor: pointer ; padding: 5px; float: right;"><i style="color: grey;" class="far fa-minus-square"></i></span>
+                </td>
+                <td class="">-</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        -
+      <% end %>
+    </td>
+  </tr>
 </table>
 <div style="text-align: center;">
   <%= f.submit mode_text, class: "submit_project btn btn-outline-primary" %>

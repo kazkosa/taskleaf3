@@ -28,18 +28,26 @@ class Admin::BoardsController < AdminController
 
   def show
     @board = Board.find(params[:id])
+    @states = @board.states.order("states.sort")
   end
 
   def edit
     @board = Board.find(params[:id])
     @members = @board.build_member
+    @states = @board.states.order("states.sort")
   end
 
   def update
     @board = Board.find(params[:id])
+    @states = @board.states.order("states.sort")
+    
+    
 
     if board_params[:user_ids] && @board.check_member(board_params[:project_id], board_params[:user_ids], board_member_params[:roles]) && @board.update(board_params)
       success = true
+
+      success = @board.update_states(board_params[:state_ids])
+
       @board.board_members.each do |member|
         index = board_params[:user_ids].index(member.user_id.to_s)
         member.role = (board_member_params[:roles][index]).to_i
@@ -69,7 +77,7 @@ class Admin::BoardsController < AdminController
   private
 
   def board_params
-    params.require(:board).permit(:project_id, :name, :description, user_ids: [] )
+    params.require(:board).permit(:project_id, :name, :description, user_ids: [], state_ids: [] )
   end
 
   def board_member_params

@@ -1,0 +1,63 @@
+<section id="container">
+  <%= render 'layouts/admin_sidebar' %>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <!--main content start-->
+  <section id="main-content">
+    <section class="wrapper">
+      <h3><a href="/admin/states" ><i class="fa fa-angle-right"></i> States</a></h3>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="content-panel">
+            <h4><i class="fa fa-angle-right"></i>State Infomation</h4>
+            <div style="margin: 0 10px 10px 0;text-align: right;">
+              <%= link_to "Edit", edit_admin_state_path(@state), class:"btn btn-outline-secondary btn-sm"%>
+            </div>
+            <section id="unseen">
+              <table class="table table-bordered table-striped table-condensed">
+                <tr>
+                  <th>id</th>
+                  <td><%= @state.id%></td>
+                </tr>
+                <tr>
+                  <th>State name</th>
+                  <td><%= @state.name%></td>
+                </tr>
+                <tr>
+                  <th>Sort</th>
+                  <td><%= @state.sort %></td>
+                </tr>
+                <tr>
+                  <th>Workspace</th>
+                  <td>
+                    <% if @state.board.project.workspace %>
+                      <%= link_to "#{@state.board.project.workspace.id}: #{@state.board.project.workspace.name}", admin_workspace_path(@state.board.project.workspace) %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Project</th>
+                  <td><%= link_to "#{@state.board.project.id}: #{@state.board.project.name} ", admin_project_path(@state.board.project) %></td>
+                </tr>
+                <tr>
+                  <th>Board</th>
+                  <td><%= link_to "#{@state.board.id}: #{@state.board.name}", admin_board_path(@state.board) %></td>
+                </tr>
+
+              </table>
+            </section>
+          </div>
+          <!-- /content-panel -->
+        </div>
+        <!-- /col-lg-4 -->
+      </div>
+      <!-- /row -->
+    </section>
+    <!-- /wrapper -->
+  </section>
+  <!-- /MAIN CONTENT -->
+  <!--main content end-->
+</section><!--/container-->

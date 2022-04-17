@@ -1,0 +1,22 @@
+<table class="table table-bordered table-striped table-condensed">
+  <tr>
+    <th><%= f.label :board_id, 'Board' %></th>
+    <td>
+      <% if params[:board_id] %>
+        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {selected: params[:board_id], include_blank: ''}, { class: "form-control" }  %>
+      <% else %>
+        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {include_blank: ''}, { class: "form-control" }  %>
+      <% end %>
+  </tr>
+  <tr>
+    <th><%= f.label :name, 'Name' %></th>
+    <td><%= f.text_field :name, required: true, class: 'form-control' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :sort, 'Sort' %></th>
+    <td><%= f.number_field :sort, required: false, class: 'form-control' %></td>
+  </tr>
+</table>
+<div style="text-align: center;">
+  <%= f.submit mode_text, class: "submit_project btn btn-outline-primary" %>
+</div>

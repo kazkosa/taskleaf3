@@ -57,6 +57,36 @@
                     </table>
                   </td>
                 </tr>
+                <tr>
+                  <th>States / Tasks</th>
+                  <td>
+                    <% if @states %>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th style="display: flex; justify-content: space-between;align-items:center;">
+                              <p style="margin: 0;">States</p>
+                              <%= link_to new_admin_board_state_path(@board, @state), class:"" do %>
+                                <i style="color:grey;" class="far fa-plus-square"></i>
+                              <% end %>
+                            </th>
+                            <th>Tasks</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% @states.each do |state| %>
+                            <tr class="">
+                              <td class=""><%= link_to state.name, admin_state_path(state) %></td>
+                              <td class="">-</td>
+                            </tr>
+                          <% end %>
+                        </tbody>
+                      </table>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                </tr>
               </table>
             </section>
           </div>
