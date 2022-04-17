@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_11_211251) do
+ActiveRecord::Schema.define(version: 2022_04_16_020026) do
 
   create_table "board_members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "board_id"
@@ -56,6 +56,15 @@ ActiveRecord::Schema.define(version: 2022_03_11_211251) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["workspace_id"], name: "index_projects_on_workspace_id"
+  end
+
+  create_table "states", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "sort", default: 0
+    t.bigint "board_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["board_id"], name: "index_states_on_board_id"
   end
 
   create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -109,6 +118,7 @@ ActiveRecord::Schema.define(version: 2022_03_11_211251) do
   add_foreign_key "project_members", "projects"
   add_foreign_key "project_members", "users"
   add_foreign_key "projects", "workspaces"
+  add_foreign_key "states", "boards"
   add_foreign_key "workspace_members", "users"
   add_foreign_key "workspace_members", "workspaces"
 end

@@ -49,6 +49,7 @@ $(function() {
       }
     ]
   });
+  
   $("ul.sortable").sortable({
     connectWith: "ul"
   });

@@ -161,5 +161,15 @@ $(function(){
     $(this).parent().remove();
     
   });
+
+  $('.state-sortable').sortable({
+    handle: '.glip',
+    update: function(){
+      console.log('change')
+    }
+  });
+  $('.remove-state').on('click', function(){
+    $(this).parent().parent().remove();
+  })
   
 });

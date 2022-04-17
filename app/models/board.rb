@@ -1,12 +1,12 @@
 class Board < ApplicationRecord
   include ActiveModel::Validations
   validate :instance_validations, on: :create
+  validates :name, presence: true, length: {maximum: 30}
+  # validates :description, presence: true
   belongs_to :project
   has_many :board_members, dependent: :destroy
   has_many :users, through: :board_members
-
-  validates :name, presence: true, length: {maximum: 30}
-  # validates :description, presence: true 
+  has_many :states, dependent: :destroy
 
   def build_member
     members = []
@@ -57,5 +57,29 @@ class Board < ApplicationRecord
   end
   def instance_validations
     validates_with ::BoardMemberValidator
+  end
+
+  def update_states(new_ids)
+    current_ids = self.states.map { |state| state.id }
+    target_delete_states = current_ids - new_ids.map(&:to_i)
+    result = true
+    if !target_delete_states.empty?
+      target_delete_state_ids.each do |state_id|
+        state = State.find(state_id)
+        if state && !state.destroy
+          result = false
+        end
+      end
+    end
+    if !new_ids.empty?
+      new_ids.map(&:to_i).each_with_index do |new_id, i|
+        state = State.find(new_id)
+        if state
+          state.sort = i
+          result = false unless state.save
+        end
+      end
+    end
+    return result
   end
 end

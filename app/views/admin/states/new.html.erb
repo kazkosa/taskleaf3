@@ -1,0 +1,39 @@
+<section id="container">
+  <%= render 'layouts/admin_sidebar' %>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <!--main content start-->
+  <section id="main-content">
+    <section class="wrapper">
+      <h3><i class="fa fa-angle-right"></i><%= link_to "States", admin_states_path%></h3>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="content-panel">
+            <h4><i class="fa fa-angle-right"></i>Create State</h4>
+            <% if params[:board_id] %>
+              <div style="margin: 0 10px 10px 0;text-align: right;">
+                <%= link_to "Back to Edit Board", edit_admin_board_path(params[:board_id]), class:"btn btn-outline-secondary btn-sm"%>
+              </div>
+            <% end %>
+            <section id="unseen">
+              <%= form_with model: @state, local: true, url: admin_states_path do |f| %>
+                <%= render 'shared/error_state_messages' %>
+                <% if params[:board_id] %>
+                  <input type="hidden" name="state[from_board_id]" value="<%=params[:board_id]%>">
+                <% end %>
+                <%= render partial: "form", locals: { state: @state, f: f, mode_text: 'CREATE'} %>
+              <% end %>
+            </section>
+          </div>
+          <!-- /content-panel -->
+        </div>
+        <!-- /col-lg-4 -->
+      </div>
+      <!-- /row -->
+    </section>
+    <!-- /wrapper -->
+  </section>
+  <!-- /MAIN CONTENT -->
+  <!--main content end-->
+</section><!--/container-->

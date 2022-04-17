@@ -42,7 +42,10 @@ Rails.application.routes.draw do
     resources :projects do
       resources :boards, only: [:new]
     end
-    resources :boards
+    resources :boards do
+      resources :states, only: [:new]
+    end
+    resources :states
     resources :login, only: [:new]
   end
 
