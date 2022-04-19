@@ -3,10 +3,11 @@
     <th><%= f.label :project_id, 'Project' %></th>
     <td>
       <% if params[:project_id] %>
-        <%= f.select :project_id, Project.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {selected: params[:project_id], include_blank: ''}, { class: "form-control" }  %>
+        <%= f.select :project_id, Project.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {selected: params[:project_id], include_blank: ''}, { class: "form-select" }  %>
       <% else %>
-        <%= f.select :project_id, Project.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {include_blank: ''}, { class: "form-control" }  %>
+        <%= f.select :project_id, Project.all.map{|pj| [ "#{pj.id}: #{pj.name}", pj.id]}, {include_blank: ''}, { class: "form-select" }  %>
       <% end %>
+    </td>
   </tr>
   <tr>
     <th><%= f.label :name, 'Name' %></th>
@@ -39,7 +40,7 @@
                 <td class="member-list__sel-user__name"><%= member_info_pj.user.name %></td>
                 <td class="member-list__sel-user__email"><%= member_info_pj.user.email %></td>
                 <td class="member-list__sel-user__authority">
-                  <%= select_tag "board_member[roles][]", options_for_select(ProjectMember.roles, selected: member_info_pj.role_before_type_cast), {class: 'form-control', require: true} %>  
+                  <%= select_tag "board_member[roles][]", options_for_select(ProjectMember.roles, selected: member_info_pj.role_before_type_cast), {class: 'form-select', require: true} %>  
                 </td>
                 <td><span class="remove-member" data-user_id="<%= member_info_pj.user_id %>">削除</span></td>
               </tr>
@@ -60,27 +61,50 @@
         <table class="table">
           <thead>
             <tr>
-              <th style="display: flex; justify-content: space-between;align-items:center;">
+              <th style="position: relative;width: 50%;">
                 <p style="margin: 0;">States</p>
-                <%= link_to new_admin_board_state_path(@board, @state), class:"" do %>
-                  <i style="color:grey;" class="far fa-plus-square"></i>
+                <%= link_to new_admin_board_state_path(@board, @state), class:"add-state" do %>
+                  <i class="fas fa-plus"></i>
                 <% end %>
               </th>
-              <th>Tasks</th>
+              <th style="position: relative">
+                <p style="margin: 0;">Tasks</p>
+                <%= link_to new_admin_board_task_path(@board, @task), class:"add-task" do %>
+                  <i class="fas fa-plus"></i>
+                <% end %>
+               </th>
             </tr>
           </thead>
           <tbody class="state-sortable">
             <% @states.each do |state| %>
-              <tr class="">
+              <tr class="admin_state_ids_list">
                 <input class="state_ids" name="board[state_ids][]" type="hidden" value="<%=state.id%>" >
-                <td class="" style="display: flex; align-items: center;justify-content:space-between;">
+                <td class="" style="position:relative;">
                   <div>
                     <span class="glip" style="cursor: grab; padding: 5px; margin-right: 10px;"><i style="color: grey;" class="fas fa-grip-vertical"></i></span>
                     <%= link_to state.name, edit_admin_state_path(state) %>
                   </div>
-                  <span class="remove-state" data-state_id="<%= state.id %>" style="cursor: pointer ; padding: 5px; float: right;"><i style="color: grey;" class="far fa-minus-square"></i></span>
+                  <span class="remove-state" data-state_id="<%= state.id %>" style="cursor: pointer ; padding: 5px; float: right;"><i class="fas fa-times"></i></span>
                 </td>
-                <td class="">-</td>
+                <td class="">
+                  
+                  <ul class="admin-task-list task-sortable" style="margin:0;padding: 0;">
+                    <% if state.tasks %>
+                      <% state.tasks.order("tasks.sort").each do |task| %>
+                        <li>
+                          <input class="task_ids" name="board[task_ids][<%=state.id%>][]" type="hidden" value="<%=task.id%>" >
+                          <div>
+                            <span class="glip2" style="cursor: grab; padding: 5px; margin-right: 10px;"><i style="color: grey;" class="fas fa-grip-vertical"></i></span>
+                            <%= link_to task.title, admin_task_path(task) %>
+                          </div>
+                          <span class="remove-task" data-task_id="<%= task.id %>" style="cursor: pointer ; padding: 5px; float: right;"><i class="fas fa-times"></i></span>
+                        </li>
+                      <% end %>
+                    <% end %>
+                  </ul>
+                  
+
+                </td>
               </tr>
             <% end %>
           </tbody>

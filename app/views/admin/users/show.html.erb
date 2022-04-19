@@ -58,18 +58,38 @@
                       <table class="table">
                         <thead>
                           <tr>
-                            <th>Projects</th>
+                            <th style="width: 30%;">Projects</th>
                             <th>Boards</th>
                           </tr>
                         </thead>
                         <tbody>
                           <% @user.projects.each do |project| %>
                           <tr>
-                            <td><%= link_to project.id, admin_project_path(project) %></td>
+                            <td><%= link_to project.name, admin_project_path(project) %></td>
                             <td>
                               <ul style="margin:0;padding:0;">
                                 <% registered_boards(project, @user).each do |board| %>
-                                  <li><%= link_to board.id, admin_board_path(board.id) %></li>
+                                  <li style="display: flex">
+                                    <div style="width: 50%;"><%= link_to board.name, admin_board_path(board.id) %></div>
+                                    <ul style="width: 50%;margin:0;padding:0;">
+                                      <% if registered_states(board) %>
+                                        <% registered_states(board).each do |state| %>
+                                          <li>
+                                            <%= link_to state.name, admin_state_path(state.id) %>:
+                                            <ul >
+                                              <% if registered_tasks(board, state, @user) %>
+                                                <% registered_tasks(board, state, @user).each do |task| %>
+                                                  <li>
+                                                    <%= link_to task.title, admin_task_path(task.id) %>
+                                                  </li>
+                                                <% end %>
+                                              <% end %>
+                                            </ul>
+                                          </li>
+                                        <% end %>  
+                                      <% end %>
+                                    </ul>
+                                  </li>
                                 <% end %>
                               </ul>
                             </td>

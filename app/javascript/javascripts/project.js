@@ -134,7 +134,7 @@ $(function(){
           ${email}
         </td>
         <td class="member-list__sel-user__authority">
-          <select name="${type}_member[roles][]" class="form-control" >`
+          <select name="${type}_member[roles][]" class="form-select" >`
            + html_option + 
           `</select>
         </td>
@@ -165,11 +165,105 @@ $(function(){
   $('.state-sortable').sortable({
     handle: '.glip',
     update: function(){
-      console.log('change')
     }
   });
   $('.remove-state').on('click', function(){
     $(this).parent().parent().remove();
   })
-  
+
+  function buildStateOption(state, selected) {
+    let html = selected ? 
+      `<option value="${state.id}" selected>${state.id}: ${state.name} (Boad${state.board.id}: ${state.board.name})</option>`
+      :`<option value="${state.id}" >${state.id}: ${state.name} (Boad${state.board.id}: ${state.board.name})</option>`;
+    return html;
+  }
+
+  function buildMemberOption(user, selected) {
+    let html = selected ? 
+      `<option value="${user.user_id}" selected>${user.name} (${user.email})</option>`
+      :`<option value="${user.user_id}" >${user.name} (${user.email})</option>`;
+    return html;
+  }
+
+  if ($('[name="task[board_id]"]').length && $('[name="task[state_id]"]').length) {
+    $('[name="task[board_id]"]').on('change', function(){
+      if ($(this).val()) {
+        let current_selected_state_id = 0;
+        if ($('[name="task[state_id]"] option:selected').val()) {
+          current_selected_state_id = parseInt($('[name="task[state_id]"] option:selected').val());
+        }
+        let current_selected_user_id = 0;
+        if ($('[name="task[user_id]"] option:selected').val()) {
+          current_selected_user_id = parseInt($('[name="task[user_id]"] option:selected').val());
+        }
+        let board_id = parseInt($(this).val());
+        url = "/api/boards/" + board_id + '/states/';
+        $.ajax({
+          url: url,
+          type:"GET",
+          dataType: "json",
+        })
+        .done(function(result){
+          $('[name="task[state_id]"]').empty();
+          $('[name="task[state_id]"]').append(`<option></option>`);
+          if (result.states && result.states.length) {
+            result.states.forEach(function(val){
+              let selected = false
+              if (val.id === current_selected_state_id) {
+                selected = true
+              }
+              $('[name="task[state_id]"]').append(buildStateOption(val, selected))
+            })
+          }
+
+          url = "/api/boards/" + board_id + '/board_members/';
+          $.ajax({
+            url: url,
+            type:"GET",
+            dataType: "json",
+          })
+          .done(function(result){
+
+            $('[name="task[user_id]"]').empty();
+            $('[name="task[user_id]"]').append(`<option></option>`);
+            if (result.board_members && result.board_members.length) {
+              result.board_members.forEach(function(val){
+                let selected = false
+                if (val.id === current_selected_user_id) {
+                  selected = true
+                }
+                $('[name="task[user_id]"]').append(buildMemberOption(val, selected))
+              })
+            }
+          })
+          .fail(function(){
+            alert("Fail to fetch state");
+          })
+        })
+        .fail(function(){
+          alert("Fail to fetch state");
+        })
+      }
+    });
+    $('[name="task[board_id]"]').trigger('change');
+  }
+  $('.task-sortable').sortable({
+    handle: '.glip2',
+    connectWith: "ul.task-sortable",
+    update: function(){
+      $('.admin_state_ids_list').each(function(k,v){
+        let state_id = parseInt($(this).find('[name="board[state_ids][]"]').val());
+        $(this).find('.task_ids').each(function(k2,v2){
+          let task_id = parseInt($(this).val());
+          $(this).attr('name','board[task_ids]['+state_id+'][]');
+          $(this).val(task_id);
+        });
+      })
+    }
+  });
+  if ($('.remove-task').length) {
+    $('.remove-task').on('click', function(){
+      $(this).parent().remove();
+    })
+  }
 });

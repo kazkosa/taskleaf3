@@ -19,6 +19,7 @@ class User < ApplicationRecord
 
   has_many :board_members, dependent: :destroy
   has_many :boards, through: :board_members
+  has_many :tasks
 
   # Returns a random token
   def User.new_token

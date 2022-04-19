@@ -1,0 +1,135 @@
+<section id="container">
+  <%= render 'layouts/admin_sidebar' %>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <!--main content start-->
+  <section id="main-content">
+    <section class="wrapper">
+      <h3><a href="/admin/tasks" ><i class="fa fa-angle-right"></i> Tasks</a></h3>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="content-panel">
+            <h4><i class="fa fa-angle-right"></i>Task Infomation</h4>
+            <div style="margin: 0 10px 10px 0;text-align: right;">
+              <%= link_to "Edit", edit_admin_task_path(@task), class:"btn btn-outline-secondary btn-sm"%>
+            </div>
+            <section id="unseen">
+              <table class="table table-bordered table-striped table-condensed">
+                <tr>
+                  <th>id</th>
+                  <td><%= @task.id%></td>
+                </tr>
+                <tr>
+                  <th>Title</th>
+                  <td><%= @task.title%></td>
+                </tr>
+                <tr>
+                  <th>Content</th>
+                  <td><%= safe_join(@task.content.split("\n"),tag(:br)) if @task.content %></td>
+                </tr>
+                <tr>
+                  <th>Sort</th>
+                  <td><%= @task.sort %></td>
+                </tr>
+                <tr>
+                  <th>Person In Charge</th>
+                  <td>
+                    <% if @task.user %>
+                      <%= link_to "#{@task.user.id}: #{@task.user.name} (#{@task.user.email})", admin_user_path(@task.user) %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Workspace</th>
+                  <td>
+                    <% if @task.board.project.workspace %>
+                      <%= link_to "#{@task.board.project.workspace.id}: #{@task.board.project.workspace.name}", admin_workspace_path(@task.board.project.workspace) %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Project</th>
+                  <td><%= link_to "#{@task.board.project.id}: #{@task.board.project.name} ", admin_project_path(@task.board.project) %></td>
+                </tr>
+                <tr>
+                  <th>Board</th>
+                  <td><%= link_to "#{@task.board.id}: #{@task.board.name}", admin_board_path(@task.board) %></td>
+                </tr>
+                <tr>
+                  <th>State</th>
+                  <td>
+                    <% if @task.state %>
+                      <%= link_to "#{@task.state.id}: #{@task.state.name}", admin_state_path(@task.state) %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Scheduled Date</th>
+                  <td>
+                    <div>Start:
+                      <% if @task.scheduled_start_date %>
+                        <%= @task.scheduled_start_date %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </div>
+                    <div>End:
+                    <% if @task.scheduled_end_date %>
+                        <%= @task.scheduled_end_date %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Actural Date</th>
+                  <td>
+                    <div>Start:
+                      <% if @task.start_date %>
+                        <%= @task.start_date %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </div>
+                    <div>End:
+                    <% if @task.end_date %>
+                        <%= @task.end_date %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Archive</th>
+                  <td>
+                    <%if @task.archive_flg?%>
+                        Yes
+                      <% else %>
+                        No
+                      <% end %>
+                    </td>
+                  </td>
+                </tr>
+              </table>
+            </section>
+          </div>
+          <!-- /content-panel -->
+        </div>
+        <!-- /col-lg-4 -->
+      </div>
+      <!-- /row -->
+    </section>
+    <!-- /wrapper -->
+  </section>
+  <!-- /MAIN CONTENT -->
+  <!--main content end-->
+</section><!--/container-->

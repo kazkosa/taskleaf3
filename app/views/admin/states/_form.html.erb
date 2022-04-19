@@ -3,10 +3,11 @@
     <th><%= f.label :board_id, 'Board' %></th>
     <td>
       <% if params[:board_id] %>
-        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {selected: params[:board_id], include_blank: ''}, { class: "form-control" }  %>
+        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {selected: params[:board_id], include_blank: ''}, { class: "form-select" }  %>
       <% else %>
-        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {include_blank: ''}, { class: "form-control" }  %>
+        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {include_blank: ''}, { class: "form-select" }  %>
       <% end %>
+    </td>
   </tr>
   <tr>
     <th><%= f.label :name, 'Name' %></th>

@@ -95,11 +95,28 @@ class Project < ApplicationRecord
     if !target_delete_members.empty?
       self.boards.each do |board|
         target_delete_members.each do |target_delete_member|
+          tasks = Task.where(board_id: board.id, user_id: target_delete_member)
+          tasks.each do |task|
+            task.user_id = nil
+            result = false unless task.save
+          end
           bd_member = BoardMember.find_by(board_id: board.id, user_id: target_delete_member)
           if bd_member && !bd_member.destroy
             result = false
           end
         end
+      end
+    end
+    return result
+  end
+
+  def update_members(new_ids, roles)
+    result = true
+    self.project_members.each do |member|
+      index = new_ids.index(member.user_id.to_s)
+      member.role = (roles[index]).to_i
+      unless member.save
+        result = false
       end
     end
     return result

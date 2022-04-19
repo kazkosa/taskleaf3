@@ -1,0 +1,67 @@
+<table class="table table-bordered table-striped table-condensed">
+  <tr>
+    <th><%= f.label :board_id, 'Board' %></th>
+    <td>
+      <% if params[:board_id] %>
+        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {selected: params[:board_id], include_blank: ''}, { class: "form-select" }  %>
+      <% else %>
+        <%= f.select :board_id, Board.all.map{|bd| [ "#{bd.id}: #{bd.name} <<< PJ#{bd.project.id}: #{bd.project.name} #{ ' <<< WS' + bd.project.workspace.id.to_s + ' ' + bd.project.workspace.name if bd.project.workspace }", bd.id]}, {include_blank: ''}, { class: "form-select" }  %>
+      <% end %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= f.label :user_id, 'User' %></th>
+    <td>
+      <% if params[:user_id] %>
+        <%= f.select :user_id, User.all.map{|user| [ "#{user.id}: #{user.name} (#{user.email})", user.id]}, {selected: params[:user_id], include_blank: ''}, { class: "form-select" }  %>
+      <% else %>
+        <%= f.select :user_id, User.all.map{|user| [ "#{user.id}: #{user.name} (#{user.email})", user.id]}, {include_blank: ''}, { class: "form-select" }  %>
+      <% end %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= f.label :state_id, 'State' %></th>
+    <td>
+      <% if params[:state_id] %>
+        <%= f.select :state_id, State.all.map{|state| [ "#{state.id}: #{state.name} (Boad#{state.board.id}: #{state.board.name})", state.id]}, {selected: params[:state_id], include_blank: ''}, {  class: "form-select" }  %>
+      <% else %>
+        <%= f.select :state_id, State.all.map{|state| [ "#{state.id}: #{state.name} (Boad#{state.board.id}: #{state.board.name})", state.id]}, {include_blank: ''}, { class: "form-select" }  %>
+      <% end %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= f.label :title, 'Title' %></th>
+    <td><%= f.text_field :title, required: true, class: 'form-control' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :content, 'Content' %></th>
+    <td><%= f.text_area :content,  class: 'form-control' %></td>
+  </div>
+  <tr>
+    <th><%= f.label :sort, 'Sort' %></th>
+    <td><%= f.number_field :sort, required: false, class: 'form-control' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :start_date, 'Start Date' %></th>
+    <td><%= f.text_field :start_date, required: false, class: 'form-control date-picker' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :end_date, 'End Date' %></th>
+    <td><%= f.text_field :end_date, required: false, class: 'form-control date-picker' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :scheduled_start_date, 'Scheduled Start Date' %></th>
+    <td><%= f.text_field :scheduled_start_date, required: false, class: 'form-control date-picker' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :scheduled_end_date, 'Scheduled End Date' %></th>
+    <td><%= f.text_field :scheduled_end_date, required: false, class: 'form-control date-picker' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :archive_flg, 'Archive_flg' %></th>
+    <td><%= f.select :archive_flg, {'No': 0, 'Yes': 1}, {selected: (!!task.archive_flg)? 1:0 }, class: 'form-select' %></td>
+  </tr>
+</table>
+<div style="text-align: center;">
+  <%= f.submit mode_text, class: "submit_project btn btn-outline-primary" %>
+</div>
