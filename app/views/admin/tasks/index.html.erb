@@ -1,0 +1,65 @@
+<section id="container">
+  <%= render 'layouts/admin_sidebar' %>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <!--main content start-->
+  <section id="main-content">
+    <section class="wrapper">
+      <h3><i class="fa fa-angle-right"></i> Tasks</h3>
+      <div class="row mt">
+        <div class="col-lg-12">
+          <div class="content-panel">
+            <h4><i class="fa fa-angle-right"></i>Task list</h4>
+            <div style="margin: 0 10px 10px 0;text-align: right;">
+              <%= link_to "New", new_admin_task_path, class:"btn btn-outline-secondary btn-sm"%>
+            </div>
+            <section id="unseen">
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th class="numeric">Name</th>
+                    <th class="numeric">State</th>
+                    <th class="numeric">Board</th>
+                    <th class="numeric" colspan="2">Manage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @tasks.each do |task| %>
+                  <tr>
+                    <td><%= link_to task.id, admin_task_path(task) %></td>
+                    <td><%= task.title %></td>
+                    <td>
+                      <% if task.state%>
+                        <%= link_to "#{task.state.id} / #{task.state.name}", admin_state_path(task.state) %>
+                      <% else %>
+                        -
+                      <% end %>
+                    </td>
+                    <td>
+                      <%= link_to "#{task.board.id} / #{task.board.name}", admin_board_path(task.board) %>
+                    </td>
+                    <td class="numeric">
+                      <%= link_to "Edit", edit_admin_task_path(task) %>
+                    </td>
+                    <td class="numeric">
+                      <%= link_to "Delete", admin_task_path(task), method: :delete , data: { confirm: "You sure?" }%>
+                    </td>
+                  </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </section>
+          </div>
+          <!-- /content-panel -->
+        </div>
+        <!-- /col-lg-4 -->
+      </div>
+      <!-- /row -->
+    </section>
+    <!-- /wrapper -->
+  </section>
+  <!-- /MAIN CONTENT -->
+  <!--main content end-->
+</section><!--/container-->

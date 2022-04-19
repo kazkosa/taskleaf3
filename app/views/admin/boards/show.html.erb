@@ -17,12 +17,22 @@
             <section id="unseen">
               <table class="table table-bordered table-striped table-condensed">
                 <tr>
-                  <th>id</th>
-                  <td><%= @board.id%></td>
+                  <th>Workspace ID</th>
+                  <td>
+                    <% if @board.project.workspace %>
+                      <%= link_to @board.project.workspace.id, admin_workspace_path(@board.project.workspace) %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
                 </tr>
                 <tr>
                   <th>Project ID</th>
                   <td><%= link_to @board.project.id, admin_project_path(@board.project) %></td>
+                </tr>
+                <tr>
+                  <th>Board ID</th>
+                  <td><%= @board.id%></td>
                 </tr>
                 <tr>
                   <th>Board name</th>
@@ -64,20 +74,35 @@
                       <table class="table">
                         <thead>
                           <tr>
-                            <th style="display: flex; justify-content: space-between;align-items:center;">
+                            <th style="position: relative;width: 50%;">
                               <p style="margin: 0;">States</p>
-                              <%= link_to new_admin_board_state_path(@board, @state), class:"" do %>
-                                <i style="color:grey;" class="far fa-plus-square"></i>
+                              <%= link_to new_admin_board_state_path(@board, @state), class:"add-state" do %>
+                                <i class="fas fa-plus"></i>
                               <% end %>
                             </th>
-                            <th>Tasks</th>
+                            <th style="position: relative">
+                              <p style="margin: 0;">Tasks</p>
+                              <%= link_to new_admin_board_task_path(@board, @task), class:"add-task" do %>
+                                <i class="fas fa-plus"></i>
+                              <% end %>
+                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           <% @states.each do |state| %>
                             <tr class="">
                               <td class=""><%= link_to state.name, admin_state_path(state) %></td>
-                              <td class="">-</td>
+                              <td >
+                                <% if state.tasks %>
+                                  <ul class="task-list" style="margin:0;padding: 0;">
+                                    <% state.tasks.order("tasks.sort").each do |task| %>
+                                      <li><%= link_to task.title, admin_task_path(task) %></li>
+                                    <% end %>
+                                  </ul>
+                                <% else %>
+                                  -
+                                <% end %>
+                              </td>
                             </tr>
                           <% end %>
                         </tbody>

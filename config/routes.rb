@@ -34,7 +34,9 @@ Rails.application.routes.draw do
   post '/admin/login'     => 'admin/sessions#create'
   delete '/admin/logout'  => 'admin/sessions#destroy'
   namespace :admin do
-    resources :users
+    resources :users do
+      resources :tasks, only: [:new]
+    end
     resources :managers
     resources :workspaces do
       resources :projects, only: [:new]
@@ -44,8 +46,10 @@ Rails.application.routes.draw do
     end
     resources :boards do
       resources :states, only: [:new]
+      resources :tasks, only: [:new]
     end
     resources :states
+    resources :tasks
     resources :login, only: [:new]
   end
 
@@ -85,6 +89,7 @@ Rails.application.routes.draw do
       member do
         put :update_members
       end
+      resources :states, only: [:index]
     end
     resources :board_members, only: [:show, :update, :destroy] do
       collection do

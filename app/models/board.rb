@@ -7,6 +7,7 @@ class Board < ApplicationRecord
   has_many :board_members, dependent: :destroy
   has_many :users, through: :board_members
   has_many :states, dependent: :destroy
+  has_many :tasks, dependent: :destroy
 
   def build_member
     members = []
@@ -60,24 +61,89 @@ class Board < ApplicationRecord
   end
 
   def update_states(new_ids)
-    current_ids = self.states.map { |state| state.id }
-    target_delete_states = current_ids - new_ids.map(&:to_i)
+
     result = true
-    if !target_delete_states.empty?
-      target_delete_state_ids.each do |state_id|
-        state = State.find(state_id)
-        if state && !state.destroy
-          result = false
+    if !self.states.empty?
+      current_ids = self.states.map { |state| state.id }
+      target_delete_states = current_ids - new_ids.map(&:to_i)
+      
+      if !target_delete_states.empty?
+        target_delete_state_ids.each do |state_id|
+          state = State.find(state_id)
+          if state && !state.destroy
+            result = false
+          end
+        end
+      end
+      if !new_ids.empty?
+        new_ids.map(&:to_i).each_with_index do |new_id, i|
+          state = State.find(new_id)
+          if state
+            state.sort = i
+            result = false unless state.save
+          end
         end
       end
     end
-    if !new_ids.empty?
-      new_ids.map(&:to_i).each_with_index do |new_id, i|
-        state = State.find(new_id)
-        if state
-          state.sort = i
-          result = false unless state.save
+    return result
+  end
+
+  def update_tasks(state_ids_task_ids)
+    result = true
+    if !self.tasks.empty?
+      current_task_ids = self.tasks.map { |task| task.id }
+      state_ids_task_ids.each do |state_id_s, task_ids|
+        state_id = state_id_s.to_i
+        task_ids.each_with_index do |task_id_s, i|
+          task_id = task_id_s.to_i
+          task = Task.find(task_id)
+          if task
+            task.sort = i
+            task.state_id = state_id
+            if task.save
+              current_task_ids -= [task.id]
+            else
+              result = false
+            end
+          end
         end
+      end
+      if !current_task_ids.empty?
+        current_task_ids.each do |task_id|
+          task = Task.find(task_id)
+          result = false unless task.destroy
+        end
+      end
+    end
+    return result
+  end
+
+  def diff_member (new_ids)
+    current_ids = self.users.map { |user| user.id }
+    return current_ids - new_ids.map(&:to_i)
+  end
+
+  def delete_child (target_delete_members)
+    result = true
+    if !target_delete_members.empty?
+      target_delete_members.each do |target_delete_member|
+        tasks = Task.where(board_id: self.id, user_id: target_delete_member)
+        tasks.each do |task|
+          task.user_id = nil
+          result = false unless task.save
+        end
+      end
+    end
+    return result
+  end
+
+  def update_members(new_ids, roles)
+    result = true
+    self.board_members.each do |member|
+      index = new_ids.index(member.user_id.to_s)
+      member.role = (roles[index]).to_i
+      unless member.save
+        result = false
       end
     end
     return result

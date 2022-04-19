@@ -42,31 +42,15 @@ class Admin::ProjectsController < AdminController
   def update
     @project = Project.find(params[:id])
     target_delete_members = @project.diff_member(project_params[:user_ids])
-    if project_params[:user_ids] && @project.check_member(project_params[:workspace_id], project_params[:user_ids], project_member_params[:roles]) && @project.update(project_params)
-      # success = true
-      success = @project.delete_child (target_delete_members)
-
-      @project.project_members.each do |member|
-        index = project_params[:user_ids].index(member.user_id.to_s)
-        member.role = (project_member_params[:roles][index]).to_i
-
-        unless member.save
-          success = false
-        end
-      end
-
-      if success
-        flash[:success] = "Project Updated"
-        redirect_to admin_project_url(@project)
-      else
-        @members = @project.build_member
-        render 'edit'
-      end
+    if project_params[:user_ids] && @project.check_member(project_params[:workspace_id], project_params[:user_ids], project_member_params[:roles]) && @project.update(project_params) && @project.delete_child(target_delete_members) && @project.update_members(project_params[:user_ids], project_member_params[:roles])
+      flash[:success] = "Project Updated"
+      redirect_to admin_project_url(@project)
     else
       @members = @project.build_member
       render 'edit'
     end
   end
+
   def destroy
     Project.find(params[:id]).destroy
     redirect_to admin_projects_url

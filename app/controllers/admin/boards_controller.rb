@@ -40,29 +40,12 @@ class Admin::BoardsController < AdminController
   def update
     @board = Board.find(params[:id])
     @states = @board.states.order("states.sort")
-    
-    
-
-    if board_params[:user_ids] && @board.check_member(board_params[:project_id], board_params[:user_ids], board_member_params[:roles]) && @board.update(board_params)
-      success = true
-
-      success = @board.update_states(board_params[:state_ids])
-
-      @board.board_members.each do |member|
-        index = board_params[:user_ids].index(member.user_id.to_s)
-        member.role = (board_member_params[:roles][index]).to_i
-        unless member.save
-          success = false
-        end
-      end
-
-      if success
-        flash[:success] = "Board Updated"
-        redirect_to admin_board_url(@board)
-      else
-        @members = @board.build_member
-        render 'edit'
-      end
+ 
+    target_delete_members = @board.diff_member(board_params[:user_ids])
+ 
+    if board_params[:user_ids] && @board.check_member(board_params[:project_id], board_params[:user_ids], board_member_params[:roles]) && @board.update(board_params) && @board.delete_child(target_delete_members) && @board.update_states(board_params[:state_ids]) && @board.update_tasks(task_params[:task_ids]) && @board.update_members(board_params[:user_ids], board_member_params[:roles])
+      flash[:success] = "Board Updated"
+      redirect_to admin_board_url(@board)
     else
       @members = @board.build_member
       render 'edit'
@@ -82,6 +65,10 @@ class Admin::BoardsController < AdminController
 
   def board_member_params
     params.require(:board_member).permit(roles: [])
+  end
+
+  def task_params
+    params.require(:board).permit(task_ids: {})
   end
 
 end

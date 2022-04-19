@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_16_020026) do
+ActiveRecord::Schema.define(version: 2022_04_17_073923) do
 
   create_table "board_members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "board_id"
@@ -73,6 +73,18 @@ ActiveRecord::Schema.define(version: 2022_04_16_020026) do
     t.boolean "is_done", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "user_id"
+    t.bigint "state_id"
+    t.bigint "board_id", null: false
+    t.integer "sort", default: 0
+    t.date "start_date"
+    t.date "end_date"
+    t.date "scheduled_start_date"
+    t.date "scheduled_end_date"
+    t.boolean "archive_flg", default: false
+    t.index ["board_id"], name: "index_tasks_on_board_id"
+    t.index ["state_id"], name: "index_tasks_on_state_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "trials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -119,6 +131,9 @@ ActiveRecord::Schema.define(version: 2022_04_16_020026) do
   add_foreign_key "project_members", "users"
   add_foreign_key "projects", "workspaces"
   add_foreign_key "states", "boards"
+  add_foreign_key "tasks", "boards"
+  add_foreign_key "tasks", "states"
+  add_foreign_key "tasks", "users"
   add_foreign_key "workspace_members", "users"
   add_foreign_key "workspace_members", "workspaces"
 end

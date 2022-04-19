@@ -51,3 +51,42 @@
   line-height:38px;
   width:100%;
 }
+
+.add-task,
+.add-state {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #6c757d;
+  &:hover {
+    opacity: 0.7;
+  }
+}
+.remove-state,
+.remove-task {
+  color: #6c757d;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  &:hover {
+    opacity: 0.7;
+  }
+}
+ul.admin-task-list {
+  min-height: 16px;
+  & > li {
+    position: relative;
+    border-radius: 4px;
+    border: 1px solid #6c757d !important;
+    padding: 5px !important;
+    background-color: #eaeaea;
+    &:nth-child(n+2) {
+      margin-top: 4px;
+    }
+    .remove-task {
+      position: absolute;
+      top: 0;
+      right: 8px;
+    }
+  }
+}

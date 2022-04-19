@@ -16,10 +16,6 @@
             </div>
             <section id="unseen">
               <table class="table table-bordered table-striped table-condensed">
-                <tr>
-                  <th>id</th>
-                  <td><%= @project.id%></td>
-                </tr>
                  <tr>
                   <th>Workspace ID</th>
                   <td>
@@ -29,6 +25,10 @@
                       -
                     <% end %>
                   </td>
+                </tr>
+                <tr>
+                  <th>Project ID</th>
+                  <td><%= @project.id%></td>
                 </tr>
                 <tr>
                   <th>project name</th>
