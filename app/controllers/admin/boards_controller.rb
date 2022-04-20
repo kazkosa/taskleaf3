@@ -43,7 +43,7 @@ class Admin::BoardsController < AdminController
  
     target_delete_members = @board.diff_member(board_params[:user_ids])
  
-    if board_params[:user_ids] && @board.check_member(board_params[:project_id], board_params[:user_ids], board_member_params[:roles]) && @board.update(board_params) && @board.delete_child(target_delete_members) && @board.update_states(board_params[:state_ids]) && @board.update_tasks(task_params[:task_ids]) && @board.update_members(board_params[:user_ids], board_member_params[:roles])
+    if board_params[:user_ids] && @board.check_member(board_params[:project_id], board_params[:user_ids], board_member_params[:roles]) && @board.update(board_params) && @board.delete_child(target_delete_members) && @board.update_states(board_params[:state_ids]) && @board.update_tasks(task_params[:task_ids]) && @board.update_members(board_params[:user_ids].map!{|x| x.to_i}, board_member_params[:roles].map!{|x| x.to_i})
       flash[:success] = "Board Updated"
       redirect_to admin_board_url(@board)
     else

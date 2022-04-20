@@ -80,7 +80,7 @@
                   </ul>
                 </transition>
               </li>
-              <li class="project">
+              <li v-if="!selectedSpaceId || selectedSpaceRole != 2" class="project">
                 <a class="addbtn">
                   <span class="icon"><i class="fas fa-plus"></i></span>
                   <span class="txt2" @click="openFormProjectEdit">Add Project</span>
@@ -125,6 +125,11 @@ export default {
     },
 
     selectedSpaceId: {
+      type: Number,
+      require: false,
+      default: 0
+    },
+    selectedSpaceRole: {
       type: Number,
       require: false,
       default: 0

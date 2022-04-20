@@ -140,7 +140,7 @@ class Board < ApplicationRecord
   def update_members(new_ids, roles)
     result = true
     self.board_members.each do |member|
-      index = new_ids.index(member.user_id.to_s)
+      index = new_ids.index(member.user_id)
       member.role = (roles[index]).to_i
       unless member.save
         result = false

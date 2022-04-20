@@ -117,12 +117,18 @@ class Workspace < ApplicationRecord
     return result
   end
 
-  def update_members(new_ids, roles)
+  def update_members(new_ids, roles, sendmail_user_ids = [], from_user = nil)
     result = true
     self.workspace_members.each do |member|
-      index = new_ids.index(member.user_id.to_s)
-      member.role = (roles[index]).to_i
-      unless member.save
+      index = new_ids.index(member.user_id)
+      member.role = (roles[index]).is_a?(Integer)? roles[index]: (roles[index]).to_i
+      if member.save
+        if !sendmail_user_ids.empty? && from_user
+          sendmail_user_id = sendmail_user_ids.find { |n| n == member.user_id}
+          sendmail_user = sendmail_user_id && User.find(sendmail_user_id)
+          from_user.send_announcement_email_of_join_the_workspace_mail(sendmail_user, self) if sendmail_user
+        end
+      else
         result = false
       end
     end

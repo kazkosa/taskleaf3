@@ -32,13 +32,13 @@ class Api::BoardsController < ApplicationController
         @project = project
         render :show_ws_manager
       else
-        @project = Project.joins(:users).select("projects.*, project_members.role").where(id: board.project_id, users: { id: current_user.id }).first
+        @project = Project.joins(:users).select("projects.*, project_members.role").where(id: project.id, users: { id: current_user.id }).first
         if @project && @project.role_before_type_cast == 0
           render :show_pj_manager
         end
       end
     else
-      @project = Project.joins(:users).select("projects.*, project_members.role").where(id: @board.project_id, users: { id: current_user.id }).first
+      @project = Project.joins(:users).select("projects.*, project_members.role").where(id: project.id, users: { id: current_user.id }).first
       if @project && @project.role_before_type_cast == 0
         render :show_pj_manager
       end
@@ -67,23 +67,15 @@ class Api::BoardsController < ApplicationController
 
   def update_members
     @board = Board.find(params[:id])
-    if board_params_update[:user_ids] && @board.check_member(board_params[:project_id], board_params_update[:user_ids], board_member_params[:roles]) && @board.update(board_params_update)
-      success = true
-      @board.board_members.each do |member|
-        index = board_params_update[:user_ids].index(member.user_id)
-        member.role = (board_member_params[:roles][index])
+    if board_params_update[:user_ids] && \
+      @board.check_member(board_params[:project_id], board_params_update[:user_ids], board_member_params[:roles]) && \
+      @board.update(board_params_update) && \
+      @board.update_members(board_params_update[:user_ids], board_member_params[:roles])
 
-        unless member.save
-          success = false
-        end
-      end
-      if success
-        @board = Board.joins(:users).where(id: @board.id).where(users: {id: current_user.id} ).select("boards.*, board_members.role").first
-        @members = @board.build_member
-        render :show, status: :created
-      else
-        render json: @board.errors, status: :unprocessable_entity
-      end
+      @board = Board.joins(:users).where(id: @board.id).where(users: {id: current_user.id} ).select("boards.*, board_members.role").first
+      @members = @board.build_member
+      render :show, status: :created
+
     else
       render json: @board.errors, status: :unprocessable_entity
     end

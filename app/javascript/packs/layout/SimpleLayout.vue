@@ -447,6 +447,7 @@ p {
 main {
   width: 100%;
   background-color: #f3f3f3;
+  overflow: auto;
 }
 
 .modal {
