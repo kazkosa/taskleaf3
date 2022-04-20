@@ -104,26 +104,13 @@ class Api::ProjectsController < ApplicationController
   def update_members
     @project = Project.joins(:users).select("projects.*, project_members.role").find_by(id: params[:id])
     @boards = @project.boards.joins(:users).where(users: {id: current_user.id} ).select("boards.*, board_members.role")
-    if project_params_update[:user_ids] && @project.check_member(project_params_update[:workspace_id], project_params_update[:user_ids], project_member_params[:roles])  && @project.update(project_params_update)
-      success = true
-      @project.project_members.each do |member|
-        index = project_params_update[:user_ids].index(member.user_id)
-        member.role = (project_member_params[:roles][index])
-
-        if member.save
-          sendmail_user_id = project_member_params[:sendmail_user_ids].find { |n| n == member.user_id}
-          @sendmail_user = sendmail_user_id && User.find(sendmail_user_id)
-          current_user.send_announcement_email_of_join_the_project_mail(@sendmail_user, @project) if @sendmail_user
-        else
-          success = false
-        end
-      end
-      if success
-        @members = @project.build_member
-        render :show, status: :created
-      else
-        render json: @project.errors, status: :unprocessable_entity
-      end
+    if project_params_update[:user_ids] && \
+      @project.check_member(project_params_update[:workspace_id], project_params_update[:user_ids], project_member_params[:roles])  && \
+      @project.update(project_params_update) && \
+      @project.update_members(project_params_update[:user_ids], project_member_params[:roles], project_member_params[:sendmail_user_ids], current_user)
+      
+      @members = @project.build_member
+      render :show, status: :created
     else
       render json: @project.errors, status: :unprocessable_entity
     end

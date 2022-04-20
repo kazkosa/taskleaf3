@@ -32,7 +32,7 @@
       <ul class="content-list">
         <li v-if="openTabFlg[0]">
           <div class="control-header">
-            <a class="addbtn" @click="openFormProjectNew">
+            <a v-if="!selectedSpaceId || workspace.role != 2" class="addbtn" @click="openFormProjectNew">
               <span class="icon"><i class="fas fa-plus"></i></span>
               <span class="txt2">Add Project</span>
             </a>

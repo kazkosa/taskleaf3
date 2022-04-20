@@ -101,8 +101,8 @@ Rails.application.routes.draw do
 
   get '/app/' => 'dashboard#index'
   get '/app/mystation' => 'dashboard#index'
-  get '/app/ws' => 'dashboard#index'
-  get '/app/ws/:id' => 'dashboard#index'
+  get '/app/ws' => 'dashboard#index', as: 'app_workspaces'
+  get '/app/ws/:id' => 'dashboard#index', as: 'app_workspace'
   get '/app/ws/:id/members' => 'dashboard#index', as: 'app_workspace_members'
   get '/app/ws/:id/setting' => 'dashboard#index', as: 'app_workspace_setting'
   get '/app/projects' => 'dashboard#index'

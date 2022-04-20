@@ -41,7 +41,7 @@ class Admin::WorkspacesController < AdminController
   def update
     @workspace = Workspace.find(params[:id])
     target_delete_members = @workspace.diff_member(workspace_params[:user_ids])
-    if workspace_params[:user_ids] && @workspace.check_member(workspace_params[:user_ids], workspace_member_params[:roles]) && @workspace.update(workspace_params) && @workspace.delete_child(target_delete_members) && @workspace.update_members(workspace_params[:user_ids], workspace_member_params[:roles])
+    if workspace_params[:user_ids] && @workspace.check_member(workspace_params[:user_ids], workspace_member_params[:roles]) && @workspace.update(workspace_params) && @workspace.delete_child(target_delete_members) && @workspace.update_members(workspace_params[:user_ids].map!{|x| x.to_i}, workspace_member_params[:roles].map!{|x| x.to_i})
       flash[:success] = "Workspace Updated"
       redirect_to admin_workspace_url(@workspace)
     else

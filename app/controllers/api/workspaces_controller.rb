@@ -45,26 +45,10 @@ class Api::WorkspacesController < ApplicationController
   def update_members
     @workspace = Workspace.joins(:users).select("workspaces.*, workspace_members.role").where({ id: params[:id] }).where(users: { id: current_user.id } ).first
     @projects = @workspace.projects.joins(:users).where(users: {id: current_user.id} ).select("projects.*, project_members.role")
-    if workspace_params_update[:user_ids] && @workspace.check_member(workspace_params_update[:user_ids], workspace_member_params[:roles])  && @workspace.update(workspace_params_update)
-      success = true
-      @workspace.workspace_members.each do |member|
-        index = workspace_params_update[:user_ids].index(member.user_id)
-        member.role = (workspace_member_params[:roles][index])
 
-        if member.save
-          sendmail_user_id = workspace_member_params[:sendmail_user_ids].find { |n| n == member.user_id}
-          @sendmail_user = sendmail_user_id && User.find(sendmail_user_id)
-          current_user.send_announcement_email_of_join_the_workspace_mail(@sendmail_user, @workspace) if @sendmail_user
-        else
-          success = false
-        end
-      end
-      if success
-        @members = @workspace.build_member
-        render :show, status: :created
-      else
-        render json: @workspace.errors, status: :unprocessable_entity
-      end
+    if workspace_params_update[:user_ids] && @workspace.check_member(workspace_params_update[:user_ids], workspace_member_params[:roles])  && @workspace.update(workspace_params_update) && @workspace.update_members(workspace_params_update[:user_ids], workspace_member_params[:roles], workspace_member_params[:sendmail_user_ids], current_user)
+      @members = @workspace.build_member
+      render :show, status: :created
     else
       render json: @workspace.errors, status: :unprocessable_entity
     end

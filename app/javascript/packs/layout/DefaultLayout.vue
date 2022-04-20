@@ -16,6 +16,7 @@
         :current-user="current_user"
 
         :selected-space-id="selected_space_id"
+        :selected-space-role="selected_space_role"
         :workspaces="workspaces"
         :projects="projects"
         :target-open-projectid="selected_project_id"
@@ -509,6 +510,7 @@ p {
 main {
   width: 100%;
   background-color: #f3f3f3;
+  overflow: auto;
 }
 
 .modal {

@@ -3,7 +3,7 @@
     <section class="section-project-members">
       <h3>Workspace Member({{members.length}})</h3>
       <div class="cntrol-container">
-        <a class="addbtn" @click="openFormAddWorkspaceMember">
+        <a v-if="workspace.role != 2" class="addbtn" @click="openFormAddWorkspaceMember">
           <span class="icon"><i class="fas fa-plus"></i></span>
           <span class="txt2">Add Member</span>
         </a>
