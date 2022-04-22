@@ -31,16 +31,40 @@
 
       <ul class="content-list">
         <li v-if="openTabFlg[0]">
-          <div class="cntrol-container">
-            <a class="addbtn" @click="openFormStatusEdit()">
+          <!-- <div class="cntrol-container">
+            <a class="addbtn" @click="openFormStateEdit(board.id)">
               <span class="icon"><i class="fas fa-plus"></i></span>
               <span class="txt2">Add Status List</span>
             </a>
-          </div>
-          <ul class="board-list">
-            <li v-for="(item,index) in states" v-bind:key="index" class="board-list__item">
-              {{item.name}}
+          </div> -->
+          <ul class="state-list">
+            <li v-for="(item,index) in states" v-bind:key="index" class="state-list__item">
+              <div class="state-list__item__inner">
+                <p class="state-list__item__name">{{item.name}}</p>
+                <ul class="task-list">
+                  <li v-for="(item2,index2) in item.tasks" v-bind:key="index2" class="task-list__item">
+                    {{item2.title}}
+                  </li>
+                </ul>
+              </div>
+              <div class="sw-cnt" @click.stop="toggleCntList(item.id)">
+                <i class="fas fa-ellipsis-v"></i>
+              </div>
+              <transition name="fade">
+                <ul v-if="item.id === selectedCntListId" class="cnt-list">
+                  <li class="cnt-list__item" @click="openFormStateEdit(board.id, item.id)">Edit</li>
+                  <li v-if="board.role <= 1" class="cnt-list__item" @click="openConfirmStateDelete(item.id)">Delete</li>
+                </ul>
+              </transition>
+              
             </li>
+            <li class="state-list__item add-state-box">
+              <div class="state-list__item__inner addbtn" @click="openFormStateEdit(board.id)">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span class="txt2">New Status</span>
+              </div>
+            </li>
+
           </ul>
 
         </li>
@@ -126,6 +150,15 @@ export default {
       },
       // deep: true,
       // immediate: true
+    },
+    'reloadStatesFlg': {
+      handler: function(newVal, oldVal) {
+        if (newVal) {
+          this.fetchStates(parseInt(this.$route.params.id))
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   props: {
@@ -140,6 +173,11 @@ export default {
     projects: {
       type: Array,
       require: false
+    },
+    reloadStatesFlg: {
+      type: Boolean,
+      require: false,
+      default: false
     }
   },
   data: function () {
@@ -147,6 +185,7 @@ export default {
       workspace: {},
       project: {},
       board: {},
+      states: [],
       editNameMode: false,
       editDescMode: false,
       openTabFlg: [false, false, false],
@@ -163,7 +202,8 @@ export default {
       deleteMember: {},
       targetMember: {},
       currentOrner: {},
-      showModalChangeBoardOrner: false
+      showModalChangeBoardOrner: false,
+      selectedCntListId: 0,
     }
   },
   mounted() {
@@ -195,9 +235,12 @@ export default {
           break;
       }
     },
-    openFormStatusEdit: function() {
-      console.log('openFormStatusEdit')
-      // this.$emit('open-form-status-edit', this.board.id)
+    openFormStateEdit: function(board_id, state_id = 0) {
+      // console.log('openFormStateEdit')
+      this.$emit('open-form-state-edit', board_id, state_id)
+    },
+    openConfirmStateDelete: function(state_id) {
+      this.$emit('open-confirm-state-delete', state_id)
     },
     fetchBoard: function(board_id) {
       axios.get('/api/boards/' + board_id).then((res) => {
@@ -206,6 +249,15 @@ export default {
         this.workspace = res.data.workspace
         this.$emit('get-projectid-from-url', this.project.id)
         this.$emit('get-workspaceid-from-url', this.project.workspace_id === null? 0 : this.project.workspace_id)
+      }, (error) => {
+        console.log(error);
+      });
+      this.fetchStates(board_id)
+    },
+    fetchStates: function(board_id) {
+      axios.get('/api/boards/' + board_id + '/states/').then((res) => {
+        this.states = res.data.states
+        this.$emit('off-trigger-flg')
       }, (error) => {
         console.log(error);
       });
@@ -239,6 +291,15 @@ export default {
         console.log(error);
       });
     },
+    toggleCntList: function (state_id) {
+      this.selectedCntListId = state_id
+    },
+    closeCntList: function(event) {
+      if (this.selectedCntListId && !this.$el.querySelector('.cnt-list').contains(event.target) && !this.$el.querySelector('.sw-cnt').contains(event.target)) {
+        this.selectedCntListId = 0
+      }
+    },
+
     onKeyDown: function (event) {
       if (event.key === 'Escape') {
         if (this.showModalChangeBoardOrner) {
@@ -321,20 +382,20 @@ export default {
   .cntrol-container {
     text-align: right;
   }
-  .addbtn {
-    padding: 0 0 0 10px;
-    display: inline-block;
-    cursor: pointer;
-    .icon {
-      font-size: 18px;
-    }
-    .txt2 {
-      font-size: 18px;
-    }
-  }
-  .addbtn:hover {
-    color:  #551a8b;
-  }
+  // .addbtn {
+  //   padding: 0 0 0 10px;
+  //   display: inline-block;
+  //   cursor: pointer;
+  //   .icon {
+  //     font-size: 18px;
+  //   }
+  //   .txt2 {
+  //     font-size: 18px;
+  //   }
+  // }
+  // .addbtn:hover {
+  //   color:  #551a8b;
+  // }
   .enb-edit {
     svg {
       width: 12px;
@@ -349,37 +410,128 @@ export default {
       margin-left: 20px;
     }
   }
-  .board-list {
+  .state-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
     flex-flow: column;
     @media screen and (min-width:768px) {
       flex-flow: row;
-      flex-wrap: wrap;
+      flex-wrap:nowrap;
+      overflow: auto;
     }
     &__item {
       width: 80%;
       margin:0 5px 30px;
+      position: relative;
       @media screen and (min-width: 768px) {
-        width: 220px;
+        width: 240px;
+        min-width: 240px;
         margin:0 10px 30px;
       }
-
-      &__link {
-        margin: 0 auto;
-        width: 100%;
-        max-width: 220px;
-        display: block;
-        min-height:80px;
-        border-radius: 5px;
-        background-color: #fff;
-        box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .2);
-        .name {
-          padding: 10px;
-          color: #000;
+      &.add-state-box {
+         @media screen and (min-width: 768px) {
+          width: 180px;
+          min-width: 180px;
         }
       }
+
+      &__inner {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 240px;
+        display: block;
+        min-height: 180px;
+        border-radius: 5px;
+        background-color: #f9f7f5;
+        box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, .2);
+        padding: 8px;
+        @media screen and (min-width: 768px) {
+          height: 100%;
+        }
+        
+        &.addbtn {
+          // padding: 0 0 0 10px;
+          cursor: pointer;
+          min-height: 48px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .icon {
+            font-size: 18px;
+            margin-right: 16px;
+          }
+          .txt2 {
+            font-size: 18px;
+          }
+          min-height: 48px;
+          &:hover {
+            color:  #551a8b;
+            opacity: .7;
+          }
+          @media screen and (min-width: 768px) {
+            width: 180px;
+            
+          }
+        }
+        
+        
+      }
+      &__name {
+        padding: 5px 0 10px;
+        color: #000;
+      }
+      .sw-cnt {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        cursor: pointer;
+        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover {
+          color: #551A8B
+        }
+      }
+      .cnt-list {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 30px;
+        padding: 10px;
+        box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, .2);
+        border-radius: 4px;
+        background: #fff;
+        li {
+          padding: 10px;
+          border-top: 1px solid #ccc;
+          cursor: pointer;
+          &:first-child {
+            border-top: none;
+          }
+          &:hover {
+            opacity: 0.7;
+          }
+          
+        }
+
+      }
+    }
+  }
+  .task-list {
+    &__item {
+      padding: 5px;
+      background-color: #fff;
+      border-radius: 6px;
+      box-shadow: 1px 2px 1px 1px rgba(155, 155, 155, 0.2);
+      cursor: pointer;
+      word-break: break-word;
+      margin-bottom: 10px;
+      min-height: 60px;
     }
   }
   .head-tab-list {

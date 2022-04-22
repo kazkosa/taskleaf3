@@ -96,6 +96,8 @@ Rails.application.routes.draw do
         get :search
       end
     end
+    resources :states, only: [:create, :show, :update, :destroy]
+
     # get '/static_pages'   => 'static_pages#index'
   end
 
