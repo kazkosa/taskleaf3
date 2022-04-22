@@ -52,6 +52,11 @@
             @update-board="updateBoard"
 
             @open-confirm-workspace-delete="openConfirmWorkspaceDelete"
+            @open-form-state-edit="openFormStateEdit"
+            @open-confirm-state-delete="openConfirmStateDelete"
+            :reload-states-flg="reloadStatesFlg"
+            @off-trigger-flg="offTriggerFlg"
+
           ></router-view>
         </div>
       </main>
@@ -79,6 +84,15 @@
         @add-board="addBoard"
         @update-board="updateBoard"
       ></FormBoardEdit>
+
+      <FormStateEdit
+        :is-show="showFormStateEdit"
+        :board-id="targetBoardIdFormState"
+        :state-id="targetStateIdFormState"
+        @close-modal="closeModal"
+        @add-state="addState"
+        @update-state="updateState"
+      ></FormStateEdit>
       
       <ModalWorkspaceDelete
         :is-show="showConfirmWorkspaceDelete"
@@ -99,6 +113,12 @@
         @update-board="updateBoard"
         @close-modal="closeModal"
       ></ModalBoardDelete>
+      <ModalStateDelete
+        :is-show="showConfirmStateDelete"
+        :state-id="deleteStateId"
+        @update-state="updateState"
+        @close-modal="closeModal"
+      ></ModalStateDelete>
 
 
       <FlashMessage
@@ -115,12 +135,14 @@
 <script>
 import Navbar from 'packs/components/common/Navbar'
 import Sidebar from 'packs/components/common/Sidebar'
+import FormWorkspaceEdit from 'packs/components/modal/FormWorkspaceEdit'
 import FormProjectEdit from 'packs/components/modal/FormProjectEdit'
 import FormBoardEdit from 'packs/components/modal/FormBoardEdit'
-import FormWorkspaceEdit from 'packs/components/modal/FormWorkspaceEdit'
+import FormStateEdit from 'packs/components/modal/FormStateEdit'
 import ModalWorkspaceDelete from 'packs/components/modal/ModalWorkspaceDelete'
 import ModalProjectDelete from 'packs/components/modal/ModalProjectDelete'
 import ModalBoardDelete from 'packs/components/modal/ModalBoardDelete'
+import ModalStateDelete from 'packs/components/modal/ModalStateDelete'
 import FlashMessage from 'packs/components/flash/FlashMessage'
 import axios from 'axios';
 
@@ -174,19 +196,29 @@ export default {
 
       showConfirmWorkspaceDelete: false,
       deleteWorkspaceId: 0,
-      ws_owner_flg: false
+      ws_owner_flg: false,
+
+      targetBoardIdFormState: 0,
+      targetStateIdFormState: 0,
+      showFormStateEdit: false,
+      showConfirmStateDelete: false,
+      deleteStateId: 0,
+      reloadStatesFlg: false
     }
   },
   components: {
-    'Navbar': Navbar,
-    'Sidebar': Sidebar,
-    'FormWorkspaceEdit': FormWorkspaceEdit,
-    'FormProjectEdit': FormProjectEdit,
-    'FormBoardEdit': FormBoardEdit,
-    'ModalWorkspaceDelete': ModalWorkspaceDelete,
-    'ModalProjectDelete': ModalProjectDelete,
-    'ModalBoardDelete': ModalBoardDelete,
-    'FlashMessage': FlashMessage
+    Navbar,
+    Sidebar,
+    FormWorkspaceEdit,
+    FormProjectEdit,
+    FormBoardEdit,
+    FormStateEdit,
+    ModalWorkspaceDelete,
+    ModalProjectDelete,
+    ModalBoardDelete,
+    ModalStateDelete,
+    FlashMessage
+    
   },
   created: function() {
     this.initialize()
@@ -298,6 +330,10 @@ export default {
     addBoard: function(obj) {
       this.fetchProjects()
     },
+    addState: function(obj) {
+      this.reloadStatesFlg = true
+    },
+
     openFormWorkspaceEdit: function() {
       this.showFormWorkspaceEdit = true
     },
@@ -322,6 +358,11 @@ export default {
       this.deleteBoardId = 0
       this.showConfirmBoardDelete = false
 
+      this.showFormStateEdit = false
+      this.targetBoardIdFormState = 0
+      this.targetStateIdFormState = 0
+      this.deleteStateId = 0
+      this.showConfirmStateDelete = false
     },
     getWorkspaceIdFromUrl: function(workspaceid) {
       if (this.selected_space_id != workspaceid || !this.initProjectsLoadedFlg) {
@@ -370,6 +411,21 @@ export default {
     openConfirmBoardDelete: function(board_id) {
       this.showConfirmBoardDelete = true
       this.deleteBoardId = board_id
+    },
+    openFormStateEdit: function(board_id = 0, state_id = 0) {
+      this.showFormStateEdit = true 
+      this.targetBoardIdFormState = board_id
+      this.targetStateIdFormState = state_id
+    },
+    updateState: function() {
+      this.reloadStatesFlg = true
+    },
+    openConfirmStateDelete: function(state_id) {
+      this.showConfirmStateDelete = true
+      this.deleteStateId = state_id
+    },
+    offTriggerFlg: function() {
+      this.reloadStatesFlg = false
     },
     flashOn: function(msg, type) {
       this.showFlash = true
