@@ -1,18 +1,22 @@
 <template>
   <div class="page-container" v-if="Object.keys(workspace).length">
-    <!-- <h1>{{workspace.name}}</h1> -->
     <div class="page-head">
       <h1 v-if="workspace.role >= 2 || !selectedSpaceId" class="page-title">{{workspace.name}}</h1>
       <h1 v-else-if="!editNameMode" class="page-title enb-edit">
         {{workspace.name}}
         <svg @click.stop="editName" style="height: 12px;width: 12px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
       </h1>
-      <h1 v-else class="page-title page-title-edit" ><input type="text" v-model="workspace.name"></h1>
+      <h1 v-else class="page-title page-title-edit" >
+        <input type="text" v-model="tmpWorkspaceName">
+        <div class="edit-set">
+          <span v-if="!enbSubmit" class="submit-btn submit-workspace-name disable">Save</span>
+          <span v-else @click="submitEdit" class="submit-btn submit-workspace-name">Save</span>
+          <span @click="closeEdit" class="cancel-btn cancel-workspace-name"><i class="fas fa-times"></i></span>
+        </div>
+      </h1>
     </div>
 
     <section class="main-section">
-      <!-- <h2>Projects</h2> -->
-
       <ul class="head-tab-list">
         <li class="head-tab-list__tab" :class="openTabFlg[0]? 'is-active': ''" @click="selTab(0)">
           <h2 v-if="openTabFlg[0]">Project List</h2>
@@ -75,7 +79,6 @@
         </li>
       </ul>
     </section>
-
 
     <FormAddWorkspaceMember
       :selected-space-id="selectedSpaceId"
@@ -161,11 +164,13 @@ export default {
       deleteMember: {},
       targetMember: {},
       currentOrner: {},
-      showModalChangeWorkspaceOrner: false
+      showModalChangeWorkspaceOrner: false,
+      tmpProjectName: null,
+      enbSubmit: false
     }
   },
   mounted() {
-    window.addEventListener('click', this.closeEdit)
+    // window.addEventListener('click', this.closeEdit)
     window.addEventListener('click', this.closeCntList)
     document.addEventListener('keydown', this.onKeyDown)
   },
@@ -203,7 +208,6 @@ export default {
       if (this.selectedSpaceId) {
         axios.get('/api/workspaces/' + this.selectedSpaceId).then((res) => {
           this.workspace = res.data.workspace
-          // this.projects = res.data.projects
           this.$emit('get-workspaceid-from-url', this.workspace.id === null? 0 : this.workspace.id)
         }, (error) => {
           console.log(error);
@@ -217,10 +221,8 @@ export default {
     openFormProjectNew: function() {
       this.$emit('open-form-project-edit')
     },
-    
     openFormProjectEdit: function (project_id) {
       this.$emit('open-form-project-edit', project_id)
-
     },
     toggleCntList: function (project_id) {
       this.selectedCntListId = project_id
@@ -229,38 +231,42 @@ export default {
       if (this.selectedCntListId && !this.$el.querySelector('.cnt-list').contains(event.target) && !this.$el.querySelector('.sw-cnt').contains(event.target)) {
         this.selectedCntListId = 0
       }
-
     },
     editName: function() {
       this.editNameMode = true
+      this.tmpWorkspaceName = this.workspace.name
+      this.checkSubmit()
     },
-    closeEdit: function(event) {
-      let editFlg = false
-      if (this.editNameMode && !this.$el.querySelector('.page-title-edit').contains(event.target)) {
-        editFlg = true
-        this.editNameMode = false
+    checkSubmit: function() {
+      if (this.tmpWorkspaceName && this.tmpWorkspaceName.length) {
+        this.enbSubmit = true
+      } else {
+        this.enbSubmit = false
       }
-    
-      if (editFlg) {
-        this.updateData()
-      }
-      
     },
-    updateData: function() {
+    submitEdit: function() {
       if (this.selectedSpaceId) {
+        this.workspace.name = this.tmpWorkspaceName
         let params  =  {
           workspace: { name: this.workspace.name }
         }
-        
         axios.put('/api/workspaces/' + this.selectedSpaceId, params)
         .then((res) => {
           this.$emit('update-workspace', this.selectedSpaceId)
+          this.closeEdit()
         }, (error) => {
           console.log(error);
         });
       }
     },
-
+    closeEdit: function(event) {
+      this.editNameMode = false
+    },
+    reloadWorkspaces: function() {
+      if (this.selectedSpaceId) {
+        this.$emit('update-workspace', this.selectedSpaceId)
+      }
+    },
     openConfirmProjectDelete: function (project_id) {
       this.$emit('open-confirm-project-delete', project_id)
     },
@@ -272,7 +278,6 @@ export default {
         this.closeModal()
       }
     },
-
     selTab: function (tabid) {
       this.openTabFlg.fill(false)
       this.openTabFlg[tabid] = true
@@ -297,7 +302,6 @@ export default {
     },
     updateWorkspaceMember: function() {
       this.fetchMembers(parseInt(this.$route.params.ws_id))
-      // this.$emit('reload-workspace', parseInt(this.$route.params.ws_id))
       this.$emit('update-workspace')
     },
     closeModal: function() {
@@ -327,7 +331,7 @@ export default {
     next();
   },
   beforeDestroy() {
-    window.removeEventListener('click', this.closeEdit)
+    // window.removeEventListener('click', this.closeEdit)
     window.removeEventListener('click', this.closeCntList)
     document.removeEventListener('keydown', this.onKeyDown)
   }
@@ -367,7 +371,42 @@ export default {
     cursor: pointer;
   }
 }
+.edit-set {
+  display: flex;
+  padding-top: 10px;
+  .submit-btn {
+    border-radius: 4px;
+    background-color: #2c7cff;
+    color: #fff;
+    font-size:14px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
+    }
+    &.disable {
+      background-color: #f1f1f1;
+      cursor: not-allowed;
+      color: #000;
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
+  }
+  .cancel-btn {
+    font-size:14px;
+    border-radius: 4px;
+    font-size: 20px;
+    border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 
+}
 .icon_char {
   width: 30px;
   background: grey;

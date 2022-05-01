@@ -85,7 +85,17 @@ const router = new VueRouter({
           path: 'setting',
           name: 'board-setting',
           component: Board
-        }
+        },
+        {
+          path: 'ticket/:task_id',
+          name: 'board-task',
+          component: Board
+        },
+        {
+          path: 'ticket/:task_id/edit',
+          name: 'board-task-edit',
+          component: Board
+        },
       ]
     },
   ],

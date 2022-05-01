@@ -296,7 +296,7 @@ export default {
   background-color: rgb(255, 255, 255);
   scroll-behavior: smooth;
   border-right: 1px solid rgb(238, 238, 238);
-  height: 100%;
+  height: calc(100vh - 50px);
   transition-duration: .3s;
   position: absolute;
   z-index: 1;
@@ -305,6 +305,7 @@ export default {
     min-width: 216px;
     position: static;
     z-index: 0;
+    height: 100%;
 
   }
   .sidebar-toggle-box {

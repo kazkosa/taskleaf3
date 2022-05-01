@@ -81,6 +81,26 @@ class Api::BoardsController < ApplicationController
     end
   end
 
+  def update_states
+    @board = Board.find(params[:id])
+    if @board.update_states(board_params_update[:state_ids])
+      head :no_content
+    else
+      render json: @board.errors, status: :unprocessable_entity
+    end
+  end
+
+  def update_tasks
+    @board = Board.find(params[:id])
+    if @board.update_tasks(board_params_update[:task_ids])
+      head :no_content
+    else
+      render json: @board.errors, status: :unprocessable_entity
+    end
+  end
+
+  
+
   private
 
   # Never trust parameters from the scary internet, only allow the white list through.
@@ -93,7 +113,7 @@ class Api::BoardsController < ApplicationController
   end
 
   def board_params_update
-    params.require(:board).permit(user_ids: [] )
+    params.require(:board).permit(user_ids: [], state_ids: [], task_ids: {})
   end
 
   def board_member_params

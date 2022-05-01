@@ -10,6 +10,8 @@ class Api::StatesController < ApplicationController
 
   def create
     @state = State.new(state_params)
+    @states = State.where(board_id: @state.board_id).order("states.sort")
+    @state.sort = @states? @states.length : 0
     if @state.save
       @states = State.where(board_id: @state.board_id).order("states.sort")
       render :index, status: :created

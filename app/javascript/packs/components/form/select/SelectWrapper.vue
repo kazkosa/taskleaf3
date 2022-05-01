@@ -1,9 +1,10 @@
 <template>
   <div class="select-wrapper">
-    <div class="select-dropdown" :class="className" @click="switchDropdown">{{optionList[slectedIndex].name}}</div>
+    <div v-if="noSelectFlg" class="select-dropdown" :class="className" @click="switchDropdown"></div>
+    <div v-else class="select-dropdown" :class="className" @click="switchDropdown">{{optionList[slectedIndex].name}}</div>
     <svg class="caret" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg>
     <transition>
-      <ul class="select-options" v-show="isOpen">
+      <ul v-if="optionList.length" class="select-options" v-show="isOpen">
         <li class="option"><span class="head">{{initText}}</span></li>
         <li v-for="(item,index) in optionList" v-bind:key="index" class="option">
           <span class="option__content" :class="index==slectedIndex? 'selected':''" @click="changeOption(item.id)">{{item.name}}</span>
@@ -73,14 +74,15 @@ export default {
   data: function () {
     return {
       slectedIndex: 0,
-      isOpen: false
+      isOpen: false,
+      noSelectFlg: false
     }
   },
   mounted() {
     window.addEventListener('click', this.closeDropDown);
   },
   created: function() {
-    this.initialize()
+    // this.initialize()
   },
   beforeDestroy() {
     window.removeEventListener('click', this.closeDropDown);
@@ -93,20 +95,23 @@ export default {
 
   methods: {
     initialize: function() {
-      // if (this.initSelected) {
-        this.changeOption(this.initSelected)
-      // }
+      this.changeOption(this.initSelected, true)
     },
     switchDropdown: function() {
       this.isOpen = !this.isOpen
     },
-    changeOption: function(id) {
+    changeOption: function(id, init=false) {
       const index = this.optionList.findIndex((option) => option.id == id)
-
-      this.slectedIndex = index
+      // this.slectedIndex = index
       this.isOpen = false
       if (this.optionList[index]) {
-        this.$emit('change-value', this.optionList[index].id)
+        this.slectedIndex = index
+        if (!init) {
+          this.$emit('change-value', this.optionList[index].id)
+        }
+        this.noSelectFlg = false
+      } else {
+        this.noSelectFlg = true
       }
     },
     closeDropDown(event) {
@@ -160,6 +165,11 @@ export default {
   transform-origin: 0 0;
   width: 100%;
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.5);
+}
+.move-ticket-select {
+  .select-options {
+    max-height: 200px;
+  }
 }
 .select-wrapper .caret {
   position: absolute;

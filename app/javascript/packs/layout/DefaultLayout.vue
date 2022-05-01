@@ -56,6 +56,7 @@
             @open-confirm-state-delete="openConfirmStateDelete"
             :reload-states-flg="reloadStatesFlg"
             @off-trigger-flg="offTriggerFlg"
+            @open-confirm-task-delete="openConfirmTaskDelete"
 
           ></router-view>
         </div>
@@ -119,6 +120,12 @@
         @update-state="updateState"
         @close-modal="closeModal"
       ></ModalStateDelete>
+      <ModalTaskDelete
+        :is-show="showConfirmTaskDelete"
+        :task-id="deleteTaskId"
+        @update-state="updateState"
+        @close-modal="closeModal"
+      ></ModalTaskDelete>
 
 
       <FlashMessage
@@ -143,6 +150,7 @@ import ModalWorkspaceDelete from 'packs/components/modal/ModalWorkspaceDelete'
 import ModalProjectDelete from 'packs/components/modal/ModalProjectDelete'
 import ModalBoardDelete from 'packs/components/modal/ModalBoardDelete'
 import ModalStateDelete from 'packs/components/modal/ModalStateDelete'
+import ModalTaskDelete from 'packs/components/modal/ModalTaskDelete'
 import FlashMessage from 'packs/components/flash/FlashMessage'
 import axios from 'axios';
 
@@ -203,7 +211,10 @@ export default {
       showFormStateEdit: false,
       showConfirmStateDelete: false,
       deleteStateId: 0,
-      reloadStatesFlg: false
+      reloadStatesFlg: false,
+
+      deleteTaskId:0,
+      showConfirmTaskDelete: false
     }
   },
   components: {
@@ -217,6 +228,7 @@ export default {
     ModalProjectDelete,
     ModalBoardDelete,
     ModalStateDelete,
+    ModalTaskDelete,
     FlashMessage
     
   },
@@ -363,6 +375,10 @@ export default {
       this.targetStateIdFormState = 0
       this.deleteStateId = 0
       this.showConfirmStateDelete = false
+
+      this.deleteTaskId = 0,
+      this.showConfirmTaskDelete = false
+
     },
     getWorkspaceIdFromUrl: function(workspaceid) {
       if (this.selected_space_id != workspaceid || !this.initProjectsLoadedFlg) {
@@ -426,6 +442,10 @@ export default {
     },
     offTriggerFlg: function() {
       this.reloadStatesFlg = false
+    },
+    openConfirmTaskDelete: function(task_id) {
+      this.showConfirmTaskDelete = true
+      this.deleteTaskId = task_id
     },
     flashOn: function(msg, type) {
       this.showFlash = true
@@ -683,5 +703,55 @@ main {
 }
 .logo-top {
   width: 160px;
+}
+.modal__content {
+  .form-ctl {
+    input,
+    textarea {
+      width: 100%;
+      max-width: initial;
+    }
+  }
+}
+
+
+.form-ctl {
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: left;
+  label {
+    padding: 10px 0;
+    display: inline-block;
+  }
+  input,
+  textarea {
+    width: 100%;
+    // max-width: 600px;
+  }
+  select {
+    width: 50%;
+    max-width: 600px;
+  }
+  .form-ctl__body--row {
+    display: flex;
+    align-items: center;
+    span {
+      display: flex;
+      align-items: center;
+    }
+    input[type="date"] {
+      width: 160px;
+    }
+  }
+  &__text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align: left;
+  }
+  &__body {
+    .form-ctl__text {
+      padding-left: 20px;
+    }
+  }
 }
 </style>
