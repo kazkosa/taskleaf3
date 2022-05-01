@@ -45,8 +45,20 @@ class Api::ProjectMembersController < ApplicationController
     success = true
     ApplicationRecord.transaction do
       @project_member = ProjectMember.find(params[:id])
-      board_members = @project_member.project.boards.joins(:users).where(users:{id:@project_member.user_id}).select("board_members.id")
+      board_members = @project_member.project.boards.joins(:users).where(users:{id:@project_member.user_id}).select("board_members.id, board_members.user_id, board_members.board_id")
       board_members.each do |member|
+
+        tasks = Task.where({
+          board_id: member.board_id,
+          user_id: member.user_id
+        })
+        if tasks
+          tasks.each do |task|
+            task.user_id = nil
+            task.save
+          end
+        end
+
         board_member = BoardMember.find(member.id)
         unless board_member.destroy
           success = false

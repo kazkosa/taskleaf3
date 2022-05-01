@@ -41,15 +41,30 @@ class Api::WorkspaceMembersController < ApplicationController
       
       project_members.each do |member|
         project_member = ProjectMember.find(member.id)
-        
-        
-        board_members = Board.where({project_id: member.project_id}).joins(:users).where(users:{id: member.user_id}).select("board_members.id")
+
+        board_members = Board.where({project_id: member.project_id}).joins(:users).where(users:{id: member.user_id}).select("board_members.id, board_members.user_id, board_members.board_id")
         # member.project_id
         board_members.each do |bd_member|
+
+          tasks = Task.where({
+            board_id: bd_member.board_id,
+            user_id: bd_member.user_id
+          })
+          if tasks
+            tasks.each do |task|
+              task.user_id = nil
+              task.save
+            end
+          end
+
           board_member = BoardMember.find(bd_member.id)
           unless board_member.destroy
             success = false
           end
+
+          
+
+
         end
 
         unless project_member.destroy

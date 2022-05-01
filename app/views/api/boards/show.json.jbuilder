@@ -2,6 +2,7 @@ if @board
   json.set! :board do
     json.extract! @board, :id, :name, :description, :created_at, :updated_at, :project_id, :role
     json.join @board_check_join
+    json.states @board.states.order("states.sort")
   end
 end
 if @project

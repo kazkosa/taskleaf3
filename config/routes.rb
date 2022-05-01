@@ -54,7 +54,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api, format: 'json' do
-    resources :tasks, only: [:index, :create, :update]
+    resources :tasks, only: [:index, :create, :show, :update, :destroy]
     resources :users, only: [:index, :show] do
       collection do
         get :count
@@ -88,6 +88,8 @@ Rails.application.routes.draw do
       resources :board_members,     only: [:index, :update]
       member do
         put :update_members
+        put :update_states
+        put :update_tasks
       end
       resources :states, only: [:index]
     end
@@ -114,4 +116,6 @@ Rails.application.routes.draw do
   get '/app/boards/:id' => 'dashboard#index', as: 'app_boards'
   get '/app/boards/:id/members' => 'dashboard#index', as: 'app_board_members'
   get '/app/boards/:id/setting' => 'dashboard#index', as: 'app_board_setting'
+  get '/app/boards/:id/ticket/:task_id' => 'dashboard#index', as: 'app_board_task'
+  get '/app/boards/:id/ticket/:task_id/edit' => 'dashboard#index', as: 'app_board_task_edit'
 end

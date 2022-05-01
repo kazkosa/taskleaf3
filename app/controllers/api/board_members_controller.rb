@@ -20,6 +20,16 @@ class Api::BoardMembersController < ApplicationController
 
   def destroy
     @board_member = BoardMember.find(params[:id])
+    tasks = Task.where({
+      board_id: @board_member.board_id,
+      user_id: @board_member.user_id
+    })
+    if tasks
+      tasks.each do |task|
+        task.user_id = nil
+        task.save
+      end
+    end
     if @board_member.destroy
       head :no_content
     else
