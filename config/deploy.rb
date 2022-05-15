@@ -73,7 +73,7 @@ namespace :deploy do
   task :yarn_production do
     on roles(:app) do
       within release_path do
-        execute :yarn, 'build:prd'
+        execute 'yarn build:prd'
       end
     end
   end
@@ -93,5 +93,5 @@ namespace :deploy do
   end
   before :starting, 'deploy:upload'
   after :finishing, 'deploy:cleanup'
-  after 'deploy:updated', 'deploy:yarn_production'
+  after "deploy:assets:precompile", 'deploy:yarn_production'
 end
