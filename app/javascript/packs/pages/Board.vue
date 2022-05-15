@@ -163,14 +163,14 @@
   </div>
 </template>
 <script>
-import BoardMember from 'packs/pages/BoardMember'
-import FormAddBoardMember from  'packs/components/modal/FormAddBoardMember'
-import FormDeleteBoardMember from 'packs/components/modal/FormDeleteBoardMember'
-import ModalChangeBoardOrner from 'packs/components/modal/ModalChangeBoardOrner'
+import BoardMember from '@/pages/BoardMember'
+import FormAddBoardMember from '@/components/modal/FormAddBoardMember'
+import FormDeleteBoardMember from '@/components/modal/FormDeleteBoardMember'
+import ModalChangeBoardOrner from '@/components/modal/ModalChangeBoardOrner'
 import axios from 'axios';
 import draggable from "vuedraggable";
-import TaskTicket from 'packs/components/modal/TaskTicket'
-import MoveTicket from 'packs/components/modal/MoveTicket'
+import TaskTicket from '@/components/modal/TaskTicket'
+import MoveTicket from '@/components/modal/MoveTicket'
 export default {
   components: {
     BoardMember,

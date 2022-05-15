@@ -74,7 +74,7 @@
 </template>
 <script>
 import axios from 'axios';
-import SelectWrapper from 'packs/components/form/select/SelectWrapper'
+import SelectWrapper from '@/components/form/select/SelectWrapper'
 
 export default {
   components: {

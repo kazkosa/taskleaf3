@@ -4,34 +4,27 @@
 // that code so it'll be compiled.
 
 require("@rails/ujs").start()
-// require("turbolinks").start()
 require("@rails/activestorage").start()
-require("channels")
+require("../channels")
 
-
-// Uncomment to copy all static images under ../images to the output folder and reference
-// them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
-// or the `imagePath` JavaScript helper below.
-//
-const images = require.context('../images', true)
-const imagePath = (name) => images(name, true)
-
+// common
 import '../stylesheets/application';
 import '../javascripts/application';
 
-// CSS
+// +alfa
 import '../stylesheets/reset';
 import '../stylesheets/login';
 
-// JS
+import $ from 'jquery';
+
+// special background-image
+import bgImg from '~/images/login/19936.jpg';
+$(':root')[0].style.setProperty('--url-image-path-login', "url("+ bgImg+")");
+
 //  Materialize
 import "materialize-css/dist/js/materialize.min.js";
+
+// initial
 $(function(){
-
-  //materializeで使うdropdownの初期化。option設定も可能。
-  $('.dropdown-button').dropdown();
-
-  // class'show'をdiv要素に追加
   $('.login-container').addClass('show');
-
 });

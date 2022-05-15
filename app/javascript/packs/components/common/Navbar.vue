@@ -3,7 +3,7 @@
       <div class="inner">
         <div class="header-logo-container">
           <a href="/app" class="imgBox">
-            <img src="../../../images/dashboards/common/logoTop2.png" alt="TicketLine" width="160" height="37" class="logo-top">
+            <img :src="require(`@images/dashboards/common/logoTop2.png`)" alt="TicketLine" width="160" height="37" class="logo-top">
           </a>
         </div>
 
@@ -57,7 +57,7 @@
 </template>
 <script>
 
-import SelectWrapper from 'packs/components/form/select/SelectWrapperWs'
+import SelectWrapper from '@/components/form/select/SelectWrapperWs'
 
 export default {
   components: {

@@ -18,14 +18,14 @@ $(function() {
   return false;
 });
 $(function() {
-  $("#date-popover").popover({
-    html: true,
-    trigger: "manual"
-  });
-  $("#date-popover").hide();
-  $("#date-popover").on('click',function(e) {
-    $(this).hide();
-  });
+  // $("#date-popover").popover({
+  //   html: true,
+  //   trigger: "manual"
+  // });
+  // $("#date-popover").hide();
+  // $("#date-popover").on('click',function(e) {
+  //   $(this).hide();
+  // });
 
   $("#my-calendar").zabuto_calendar({
     action: function() {

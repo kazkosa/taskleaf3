@@ -2,7 +2,7 @@
   <div id="sidebar" :class="[!isOpenSidebar? 'isClosed':'']">
     <div class="inner">
       <div class="sidebar-toggle-box" @click="opencloseSidebar">
-        <img src="../../../images/dashboards/common/side-menu-toggle.svg"  width="14" height="16">
+        <img :src="require(`@images/dashboards/common/side-menu-toggle.svg`)" width="14" height="16">
       </div>
       <div class="sidebar-main" v-show="isOpenSidebar">
         <div class="user-container__wrapper">
@@ -97,7 +97,7 @@
 </template>
 <script>
 
-import SelectWrapper from 'packs/components/form/select/SelectWrapperWs'
+import SelectWrapper from '@/components/form/select/SelectWrapperWs'
 
 export default {
   props: {
