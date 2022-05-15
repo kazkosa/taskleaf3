@@ -124,10 +124,10 @@
   </div>
 </template>
 <script>
-import ProjectMember from 'packs/pages/ProjectMember'
-import FormAddProjectMember from  'packs/components/modal/FormAddProjectMember'
-import FormDeleteProjectMember from  'packs/components/modal/FormDeleteProjectMember'
-import ModalChangeProjectOrner from 'packs/components/modal/ModalChangeProjectOrner'
+import ProjectMember from '@/pages/ProjectMember'
+import FormAddProjectMember from '@/components/modal/FormAddProjectMember'
+import FormDeleteProjectMember from '@/components/modal/FormDeleteProjectMember'
+import ModalChangeProjectOrner from '@/components/modal/ModalChangeProjectOrner'
 import axios from 'axios';
 export default {
   components: {

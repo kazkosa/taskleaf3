@@ -140,18 +140,18 @@
 </template>
 
 <script>
-import Navbar from 'packs/components/common/Navbar'
-import Sidebar from 'packs/components/common/Sidebar'
-import FormWorkspaceEdit from 'packs/components/modal/FormWorkspaceEdit'
-import FormProjectEdit from 'packs/components/modal/FormProjectEdit'
-import FormBoardEdit from 'packs/components/modal/FormBoardEdit'
-import FormStateEdit from 'packs/components/modal/FormStateEdit'
-import ModalWorkspaceDelete from 'packs/components/modal/ModalWorkspaceDelete'
-import ModalProjectDelete from 'packs/components/modal/ModalProjectDelete'
-import ModalBoardDelete from 'packs/components/modal/ModalBoardDelete'
-import ModalStateDelete from 'packs/components/modal/ModalStateDelete'
-import ModalTaskDelete from 'packs/components/modal/ModalTaskDelete'
-import FlashMessage from 'packs/components/flash/FlashMessage'
+import Navbar from '@/components/common/Navbar'
+import Sidebar from '@/components/common/Sidebar'
+import FormWorkspaceEdit from '@/components/modal/FormWorkspaceEdit'
+import FormProjectEdit from '@/components/modal/FormProjectEdit'
+import FormBoardEdit from '@/components/modal/FormBoardEdit'
+import FormStateEdit from '@/components/modal/FormStateEdit'
+import ModalWorkspaceDelete from '@/components/modal/ModalWorkspaceDelete'
+import ModalProjectDelete from '@/components/modal/ModalProjectDelete'
+import ModalBoardDelete from '@/components/modal/ModalBoardDelete'
+import ModalStateDelete from '@/components/modal/ModalStateDelete'
+import ModalTaskDelete from '@/components/modal/ModalTaskDelete'
+import FlashMessage from '@/components/flash/FlashMessage'
 import axios from 'axios';
 
 export default {

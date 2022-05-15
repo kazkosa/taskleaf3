@@ -79,8 +79,8 @@
 </template>
 <script>
 import axios from 'axios';
-import SelectWrapper from 'packs/components/form/select/SelectWrapper'
-import FormCheckbox from 'packs/components/form/checkbox/FormCheckbox'
+import SelectWrapper from '@/components/form/select/SelectWrapper'
+import FormCheckbox from '@/components/form/checkbox/FormCheckbox'
 
 export default {
   components: {

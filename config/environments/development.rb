@@ -1,3 +1,5 @@
+require_relative '../../lib/tasks/dev_server_proxy'
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -64,4 +66,5 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :test
   host = 'localhost:3000'
   config.action_mailer.default_url_options = { host: host, protocol: 'https' }
+  config.middleware.use DevServerProxy
 end

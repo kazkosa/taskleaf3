@@ -13,9 +13,8 @@ $(function() {
   });
 });
 
-//var Script = function() {
-$(function() {
-
+// $(function() {
+var Script = function() {
   //    sidebar dropdown menu auto scrolling
   $(document).on('click','#sidebar .sub-menu > a',function(){
     var o = ($(this).offset());
@@ -124,4 +123,5 @@ $(function() {
     e.preventDefault();
     $('html, body').animate({scrollTop : 0},500);
   });
-});
+// });
+}

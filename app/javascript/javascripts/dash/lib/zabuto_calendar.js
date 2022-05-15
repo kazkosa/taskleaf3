@@ -51,10 +51,10 @@ $.fn.zabuto_calendar = function (options) {
 
             var tableClassHtml = ($calendarElement.data('cellBorder') === true) ? ' table-bordered' : '';
 
-            $tableObj = $('<table class="table' + tableClassHtml + '"></table>');
+            var $tableObj = $('<table class="table' + tableClassHtml + '"></table>');
             $tableObj = drawTable($calendarElement, $tableObj, dateInitObj.getFullYear(), dateInitObj.getMonth());
 
-            $legendObj = drawLegend($calendarElement);
+            let $legendObj = drawLegend($calendarElement);
 
             var $containerHtml = $('<div class="zabuto_calendar" id="' + $calendarElement.attr('id') + '"></div>');
             $containerHtml.append($tableObj);
@@ -157,8 +157,8 @@ $.fn.zabuto_calendar = function (options) {
             $prevMonthNav.attr('id', $calendarElement.attr('id') + '_nav-prev');
             $prevMonthNav.data('navigation', 'prev');
             if (prevIsValid !== false) {
-                prevMonth = (month - 1);
-                prevYear = year;
+                let prevMonth = (month - 1);
+                let prevYear = year;
                 if (prevMonth == -1) {
                     prevYear = (prevYear - 1);
                     prevMonth = 11;
@@ -182,8 +182,8 @@ $.fn.zabuto_calendar = function (options) {
             $nextMonthNav.attr('id', $calendarElement.attr('id') + '_nav-next');
             $nextMonthNav.data('navigation', 'next');
             if (nextIsValid !== false) {
-                nextMonth = (month + 1);
-                nextYear = year;
+                let nextMonth = (month + 1);
+                let nextYear = year;
                 if (nextMonth == 12) {
                     nextYear = (nextYear + 1);
                     nextMonth = 0;
@@ -428,8 +428,8 @@ $.fn.zabuto_calendar = function (options) {
         }
 
         function dateAsString(year, month, day) {
-            d = (day < 10) ? '0' + day : day;
-            m = month + 1;
+            let d = (day < 10) ? '0' + day : day;
+            let m = month + 1;
             m = (m < 10) ? '0' + m : m;
             return year + '-' + m + '-' + d;
         }

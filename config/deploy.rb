@@ -68,6 +68,16 @@ set :unicorn_pid, -> { "#{shared_path}/tmp/pids/unicorn.pid" }
 # デプロイ処理が終わった後、Unicornを再起動するための記述
 after 'deploy:publishing', 'deploy:restart'
 namespace :deploy do
+
+  desc 'Build JavaScript for production'
+  task :yarn_production do
+    on roles(:app) do
+      within release_path do
+        execute :yarn, 'build:prd'
+      end
+    end
+  end
+
   task :restart do
     invoke 'unicorn:restart'
   end
@@ -83,4 +93,5 @@ namespace :deploy do
   end
   before :starting, 'deploy:upload'
   after :finishing, 'deploy:cleanup'
+  after :upload, 'yarn_production'
 end

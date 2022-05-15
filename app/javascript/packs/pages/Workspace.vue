@@ -113,10 +113,10 @@
 <script>
 
 import axios from 'axios';
-import WorkspaceMember from 'packs/pages/WorkspaceMember'
-import FormDeleteWorkspaceMember from 'packs/components/modal/FormDeleteWorkspaceMember'
-import FormAddWorkspaceMember from 'packs/components/modal/FormAddWorkspaceMember'
-import ModalChangeWorkspaceOrner from 'packs/components/modal/ModalChangeWorkspaceOrner'
+import WorkspaceMember from '@/pages/WorkspaceMember'
+import FormDeleteWorkspaceMember from '@/components/modal/FormDeleteWorkspaceMember'
+import FormAddWorkspaceMember from '@/components/modal/FormAddWorkspaceMember'
+import ModalChangeWorkspaceOrner from '@/components/modal/ModalChangeWorkspaceOrner'
 export default {
   components: {
     WorkspaceMember,
