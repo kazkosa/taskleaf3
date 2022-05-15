@@ -93,5 +93,5 @@ namespace :deploy do
   end
   before :starting, 'deploy:upload'
   after :finishing, 'deploy:cleanup'
-  after :upload, 'yarn_production'
+  after 'deploy:updated', 'deploy:yarn_production'
 end
