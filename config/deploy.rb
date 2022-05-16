@@ -73,7 +73,7 @@ namespace :deploy do
   task :yarn_production do
     on roles(:app) do
       within release_path do
-        execute 'yarn build:prd'
+        execute "cd #{release_path} && yarn build:prd"
       end
     end
   end
