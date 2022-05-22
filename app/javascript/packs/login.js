@@ -5,11 +5,11 @@
 
 require("@rails/ujs").start()
 require("@rails/activestorage").start()
-require("../channels")
+// require("../channels")
 
 // common
 import '../stylesheets/application';
-import '../javascripts/application';
+// import '../javascripts/application';
 
 // +alfa
 import '../stylesheets/reset';
@@ -17,9 +17,8 @@ import '../stylesheets/login';
 
 import $ from 'jquery';
 
-// special background-image
-import bgImg from '~/images/login/19936.jpg';
-$(':root')[0].style.setProperty('--url-image-path-login', "url("+ bgImg+")");
+const images = require.context("../images", true);
+const imagePath = name => images(name, true);
 
 //  Materialize
 import "materialize-css/dist/js/materialize.min.js";

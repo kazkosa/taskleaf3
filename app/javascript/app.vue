@@ -9,8 +9,8 @@
 
 <script>
 
-import DefaultLayout from './packs/layout/DefaultLayout.vue';
-import SimpleLayout from './packs/layout/SimpleLayout.vue';
+import DefaultLayout from '@/layout/DefaultLayout.vue';
+import SimpleLayout from '@/layout/SimpleLayout.vue';
 
 export default {
   components: {

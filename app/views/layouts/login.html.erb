@@ -6,15 +6,18 @@
     <%= csp_meta_tag %>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <%= stylesheet_pack_tag 'login', media: 'all'%>
+    <%= javascript_packs_with_chunks_tag 'vendor.js' %>
+    <%= stylesheet_packs_with_chunks_tag 'vendor.css' %>
+    <%= stylesheet_pack_tag 'login' %>
     <%= javascript_pack_tag 'login' %>
-    <%# <%= stylesheet_link_tag 'login', media: 'all' %>
   </head>
   <body>
     <% flash.each do |message_type, message| %>
       <div class="alert alert-<%= message_type %>"><%= message %></div>
     <% end %>
     <%= yield %>
-    <%# <%= debug(params) if Rails.env.development? %>
+    <div class="bg-cover">
+      <%= image_bundle_tag 'images/login/19936.jpg' %>
+    </div>
   </body>
 </html>

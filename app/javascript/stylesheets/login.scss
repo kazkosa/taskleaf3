@@ -60,23 +60,24 @@ a:hover {
   width: 100%;
   height: 100%;
 }
-:root {
-  --image-path-login: "../images/login/19936.jpg";
-  // --url-image-path-login: url(var(--image-path-login));
-  --url-image-path-login: url("../images/login/19936.jpg");
-}
-// $publicpath: "../images";
+// :root {
+//   --image-path-login: "../images/login/19936.jpg";
+//   // --url-image-path-login: url(var(--image-path-login));
+//   --url-image-path-login: url("../images/login/19936.jpg");
+// }
+// $publicpath: "../images/";
 @media screen and (min-width:480px) { 
   /*　画面サイズが480pxからはここを読み込む　*/
-  body{
-    // background-image: url("@images/login/19936.jpg");
-    // background-image: url($publicpath + "login/19936-" + $hash +".jpg");
-    background-image: var(--url-image-path-login);
-    // background-image: url("/packs/images/login/19936.jpg");
-    background-size: contain;
-    background-position: center;
-    background-repeat  : no-repeat;
-  }
+  // body{
+  //   // background-image: url("@images/login/19936.jpg");
+  //   background-image: url($publicpath + "login/19936.jpg");
+  //   // background-image: url($publicpath + "login/19936-" + $hash +".jpg");
+  //   // background-image: var(--url-image-path-login);
+  //   // background-image: url("/packs/images/login/19936.jpg");
+  //   background-size: contain;
+  //   background-position: center;
+  //   background-repeat  : no-repeat;
+  // }
   .login-container {
     opacity: 0;
     transition: 1.0s;
@@ -96,7 +97,6 @@ a:hover {
 
   .login-container.show {
     opacity: 0.9;
-    // margin: 50px auto 50px;
     top: 45%;
   }
 }
@@ -105,8 +105,6 @@ a:hover {
   .login-container {
     min-width: 320px;
     width: 50%;
-    // margin: 100px auto 50px;
-    // padding: 20px;
   }
 }
 
@@ -146,4 +144,21 @@ a:hover {
   color: #842029;
   background-color: #f8d7da;
   border-color: #f5c2c7;
+}
+
+.bg-cover {
+  display: none;
+  @media screen and (min-width:768px) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 1600px;
+    width: 90%;
+    height: 100vh;
+  }
+  img {
+    width: 100%;
+    object-fit: contain;
+    height: auto; 
+  }
 }
