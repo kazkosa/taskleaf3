@@ -163,11 +163,12 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 import BoardMember from '@/pages/BoardMember'
 import FormAddBoardMember from '@/components/modal/FormAddBoardMember'
 import FormDeleteBoardMember from '@/components/modal/FormDeleteBoardMember'
 import ModalChangeBoardOrner from '@/components/modal/ModalChangeBoardOrner'
-import axios from 'axios';
+// import axios from 'axios';
 import draggable from "vuedraggable";
 import TaskTicket from '@/components/modal/TaskTicket'
 import MoveTicket from '@/components/modal/MoveTicket'

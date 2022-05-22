@@ -7,6 +7,8 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= javascript_packs_with_chunks_tag 'vendor_admin.js' %>
+    <%= stylesheet_packs_with_chunks_tag 'vendor_admin.css', rel: 'preload'%>
     <%= stylesheet_pack_tag 'application_admin', media: 'all'%>
     <%= javascript_pack_tag 'application_admin' %>
   </head>

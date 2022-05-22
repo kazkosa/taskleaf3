@@ -1,12 +1,12 @@
+// import Index from '../components/index.vue'
+// import About from '../components/about.vue'
+// import Contact from '../components/contact.vue'
 import Vue from 'vue/dist/vue.esm.js'
 import VueRouter from 'vue-router'
-import Index from '../components/index.vue'
-import About from '../components/about.vue'
-import Contact from '../components/contact.vue'
-import Mystation from '../pages/Mystation.vue'
-import Workspace from '../pages/Workspace.vue'
-import Project from '../pages/Project.vue'
-import Board from '../pages/Board.vue'
+import Mystation from '@/pages/Mystation.vue'
+import Workspace from '@/pages/Workspace.vue'
+import Project from '@/pages/Project.vue'
+import Board from '@/pages/Board.vue'
 
 Vue.use(VueRouter)
 
@@ -21,8 +21,8 @@ const router = new VueRouter({
       meta: { layout: 'simple'},
       component: Mystation
     },
-    { path: '/about', component: About },
-    { path: '/contact', component: Contact },
+    // { path: '/about', component: About },
+    // { path: '/contact', component: Contact },
     { 
       path: '/mystation',
       name: 'mystation',

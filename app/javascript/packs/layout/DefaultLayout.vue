@@ -481,7 +481,7 @@ export default {
   font-family: 'Roboto', sans-serif;
 }
 p {
-  font-size: 2em;
+  // font-size: 2em;
   text-align: center;
 }
 .page-container {

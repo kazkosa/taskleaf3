@@ -5,13 +5,24 @@
 // like app/views/layouts/application.html.erb.
 // All it does is render <div>Hello Vue</div> at the bottom of the page.
 
+require("@rails/ujs").start()
+// require("turbolinks").start()
+require("@rails/activestorage").start()
+require("../channels")
+
+
+// Fontawesome
+import '@fortawesome/fontawesome-free/js/all';
+
+import '../stylesheets/todo';
+
 // import Vue from 'vue'
 import Vue from 'vue/dist/vue.esm.js'
 import App from '../app.vue'
 import Router from './router/router'
 
-import '../stylesheets/todo';
-import '../javascripts/todo';
+
+// import '../javascripts/todo';
 
 // document.addEventListener('DOMContentLoaded', () => {
 //   const app = new Vue({
@@ -21,9 +32,6 @@ import '../javascripts/todo';
 
 //   console.log(app)
 // })
-
-// import Vue from 'vue/dist/vue.esm.js'
-// import Header from './components/header.vue'
 
 var app = new Vue({
   router: Router,
@@ -48,41 +56,3 @@ var app = new Vue({
 // </div>
 
 
-// import Vue from 'vue/dist/vue.esm'
-// import App from '../app.vue'
-//
-// document.addEventListener('DOMContentLoaded', () => {
-//   const app = new Vue({
-//     el: '#hello',
-//     data: {
-//       message: "Can you say hello?"
-//     },
-//     components: { App }
-//   })
-// })
-//
-//
-//
-// If the project is using turbolinks, install 'vue-turbolinks':
-//
-// yarn add vue-turbolinks
-//
-// Then uncomment the code block below:
-//
-// import TurbolinksAdapter from 'vue-turbolinks'
-// import Vue from 'vue/dist/vue.esm'
-// import App from '../app.vue'
-//
-// Vue.use(TurbolinksAdapter)
-//
-// document.addEventListener('turbolinks:load', () => {
-//   const app = new Vue({
-//     el: '#hello',
-//     data: () => {
-//       return {
-//         message: "Can you say hello?"
-//       }
-//     },
-//     components: { App }
-//   })
-// })
