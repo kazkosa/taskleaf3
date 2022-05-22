@@ -74,7 +74,7 @@ namespace :deploy do
     on roles(:app) do
       within release_path do
         execute "cd #{release_path} && yarn install"
-        execute "cd #{release_path} && yarn build:prd"
+        execute "cd #{release_path} && yarn build:prd2"
       end
     end
   end
