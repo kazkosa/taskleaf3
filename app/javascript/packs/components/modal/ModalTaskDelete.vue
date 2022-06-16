@@ -60,7 +60,6 @@ export default {
       
     },
     fetchData: function() {
-      console.log(this.taskId)
       if (this.taskId) {
         axios.get('/api/tasks/' + this.taskId).then((res) => {
           this.task = res.data.task

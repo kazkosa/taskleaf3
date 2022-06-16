@@ -98,7 +98,6 @@
         <li v-if="openTabFlg[1]">
           <BoardMember
             :board="board"
-            :current-user="currentUser"
             :members="members"
             @open-form-add-board-member="openFormAddBoardMember"
             @open-form-delete-board-member="openFormDeleteBoardMember"
@@ -115,7 +114,6 @@
     <FormAddBoardMember
       :is-show="showFormAddBoardMember"
        :members="members"
-       :current-user="currentUser"
       @close-modal="closeModal"
       :board-id="editBoardId"
       :project-id="editProjectId"
@@ -124,7 +122,6 @@
     <FormDeleteBoardMember
       :is-show="showFormDeleteBoardMember"
       :user="deleteMember"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :board="board"
       @update-board-member="updateBoardMember"
@@ -134,7 +131,6 @@
       :is-show="showModalChangeBoardOrner"
       :user="targetMember"
       :current-orner="currentOrner"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :board="board"
       @update-board-member="updateBoardMember"
@@ -144,7 +140,6 @@
       :is-show="showTaskTicket"
       :board="board"
       :members="members"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :selected-task-id="editTaskId"
       @update-task="updateTask"
@@ -168,10 +163,11 @@ import BoardMember from '@/pages/BoardMember'
 import FormAddBoardMember from '@/components/modal/FormAddBoardMember'
 import FormDeleteBoardMember from '@/components/modal/FormDeleteBoardMember'
 import ModalChangeBoardOrner from '@/components/modal/ModalChangeBoardOrner'
-// import axios from 'axios';
 import draggable from "vuedraggable";
 import TaskTicket from '@/components/modal/TaskTicket'
 import MoveTicket from '@/components/modal/MoveTicket'
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
     BoardMember,
@@ -210,19 +206,6 @@ export default {
     }
   },
   props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
-    selectedSpaceId: {
-      type: Number,
-      require: false
-    },
-    projects: {
-      type: Array,
-      require: false,
-      default: []
-    },
     reloadStatesFlg: {
       type: Boolean,
       require: false,
@@ -263,14 +246,17 @@ export default {
     }
   },
   mounted() {
-    // window.addEventListener('click', this.closeEdit)
     window.addEventListener('click', this.closeCntList)
     window.addEventListener('click', this.closeCntListTask)
     document.addEventListener('keydown', this.onKeyDown)
   },
-  created: function() {
-    // this.initialize()
-    
+  created: function() {},
+  computed: {
+    ...mapGetters({
+      currentUser: 'getCurrentUser',
+      selectedWsId: 'getSelectedWsId',
+      projects: 'getProjects'
+    }),
   },
   methods: {
     initialize: async function() {
@@ -310,8 +296,11 @@ export default {
         this.board = res.data.board
         this.project = res.data.project
         this.workspace = res.data.workspace
-        this.$emit('get-projectid-from-url', this.project.id)
-        this.$emit('get-workspaceid-from-url', this.project.workspace_id === null? 0 : this.project.workspace_id)
+        this.$store.commit('setSelectedPjId', this.project.id)
+        if ((!!this.selectedWsId || !!this.project.workspace_id) &&  this.selectedWsId != this.project.workspace_id) {
+          this.$store.commit('setSelectedWsId', this.project.workspace_id === null? 0 : this.project.workspace_id)
+          this.$emit('reload-workspace', this.project.workspace_id === null? 0 : this.project.workspace_id)
+        }
         if (!this.initLoaded) this.initLoaded = true
       }, (error) => {
         console.log(error);
@@ -567,7 +556,6 @@ export default {
     next();
   },
   beforeDestroy() {
-    // window.removeEventListener('click', this.closeEdit)
     window.removeEventListener('click', this.closeCntList)
     window.removeEventListener('click', this.closeCntListTask)
     document.removeEventListener('keydown', this.onKeyDown)
@@ -829,9 +817,6 @@ export default {
         text-align: left;
 
       }
-
-      
-
 
       .sw-cnt {
         position: absolute;

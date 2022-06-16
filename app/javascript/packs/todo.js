@@ -18,8 +18,10 @@ import '../stylesheets/todo';
 
 // import Vue from 'vue'
 import Vue from 'vue/dist/vue.esm.js'
+// import Vuex from 'vuex'
 import App from '../app.vue'
 import Router from './router/router'
+import store  from './store'
 
 
 // import '../javascripts/todo';
@@ -33,9 +35,13 @@ import Router from './router/router'
 //   console.log(app)
 // })
 
+// Vue.use(Vuex);
+Vue.config.productionTip = false
+
 var app = new Vue({
   router: Router,
   el: '#app',
+  store,
   components: {
     'app': App,
   },

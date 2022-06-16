@@ -1,13 +1,8 @@
 <template>
   <div>
     <Navbar
-      :current-user="current_user"
       @toggle-sidemenu="toggleSideMenu"
       :rst-global-menu-btn-flg="rstGlobalMenuBtnFlg"
-      :selected-space-id="selected_space_id"
-      :workspaces="workspaces"
-      :is-pc="isPC"
-      @reload-workspace="reloadWorkspace"
       @open-form-workspace-edit="openFormWorkspaceEdit"
     ></Navbar>
     <div id="body">
@@ -15,50 +10,19 @@
         <div class="container">
           <router-view
             ref="page"
-            :current-user="current_user"
-            :selected-space-id="selected_space_id"
-            :projects="projects"
-            :workspaces="workspaces"
-            @open-form-project-edit="openFormProjectEdit"
-            @open-form-board-edit="openFormBoardEdit"
-            @get-workspaceid-from-url="getWorkspaceIdFromUrl"
-            @get-projectid-from-url="getProjectIdFromUrl"
             @update-workspace="updateWorkspace"
-            @update-project="updateProject"
-            @open-confirm-project-delete="openConfirmProjectDelete"
-            @open-confirm-board-delete="openConfirmBoardDelete"
             @flash-on="flashOn"
             @keypress.esc="closeModal"
-            @update-board="updateBoard"
             @open-confirm-workspace-delete="openConfirmWorkspaceDelete"
             @open-form-workspace-edit="openFormWorkspaceEdit"
           ></router-view>
         </div>
       </main>
 
-
       <FormWorkspaceEdit
         :is-show="showFormWorkspaceEdit"
-        :selected-space-id="selected_space_id"
         @close-modal="closeModal"
-        @create-workspace="createWorkspace"
       ></FormWorkspaceEdit>
-      <FormProjectEdit
-        :is-show="showFormProjectEdit"
-        :selected-space-id="selected_space_id"
-        @close-modal="closeModal"
-        @add-project="addProject"
-        :project-id="editProjectId"
-        @update-project="updateProject"
-      ></FormProjectEdit>
-      <FormBoardEdit
-        :is-show="showFormBoardEdit"
-        :project-id="targetProjectIdFormBoard"
-        :board-id="targetBoardIdFormBoard"
-        @close-modal="closeModal"
-        @add-board="addBoard"
-        @update-board="updateBoard"
-      ></FormBoardEdit>
       
       <ModalWorkspaceDelete
         :is-show="showConfirmWorkspaceDelete"
@@ -66,20 +30,6 @@
         @update-workspace="updateWorkspace"
         @close-modal="closeModal"
       ></ModalWorkspaceDelete>
-
-      <ModalProjectDelete
-        :is-show="showConfirmProjectDelete"
-        :project-id="deleteProjectId"
-        @update-project="updateProject"
-        @close-modal="closeModal"
-      ></ModalProjectDelete>
-      <ModalBoardDelete
-        :is-show="showConfirmBoardDelete"
-        :board-id="deleteBoardId"
-        @update-board="updateBoard"
-        @close-modal="closeModal"
-      ></ModalBoardDelete>
-
 
       <FlashMessage
         :is-show="showFlash"
@@ -94,62 +44,24 @@
 
 <script>
 import Navbar from '@/components/common/NavbarSimple'
-import FormProjectEdit from '@/components/modal/FormProjectEdit'
-import FormBoardEdit from '@/components/modal/FormBoardEdit'
 import FormWorkspaceEdit from '@/components/modal/FormWorkspaceEdit'
 import ModalWorkspaceDelete from '@/components/modal/ModalWorkspaceDelete'
-import ModalProjectDelete from '@/components/modal/ModalProjectDelete'
-import ModalBoardDelete from '@/components/modal/ModalBoardDelete'
 import FlashMessage from '@/components/flash/FlashMessage'
-import axios from 'axios';
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'simple',
   props: {
-    currentUserId: {
-      type: Number,
-      require: false
-    }
   },
-  // watch: {
-  //   '$route' : {
-  //     handler: function(newVal, oldVal) {
-  //     }
-  //   }
-  // },
   data: function () {
     return {
-      selected_space_id: 0,
-      selected_project_id: 0,
-      current_user: {
-        id: null,
-        email:'',
-        name: ''
-      },
-      workspaces: [],
       projects: [],
       showFormWorkspaceEdit: false,
-      showFormProjectEdit: false,
-      showFormBoardEdit: false,
-      targetProjectIdFormBoard: 0,
-      editProjectId: 0,
-      showConfirmProjectDelete: false,
-      deleteProjectId: 0,
-      targetBoardIdFormBoard: 0,
-      showConfirmBoardDelete: false,
-      deleteBoardId: 0,
       showFlash: false,
       flashMessage: '',
       flashType: '',
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
       isOpenSideMenuSp: false,
-      isPC: false,
-      breakPoint: 768,
       rstGlobalMenuBtnFlg: false,
-
-      initProjectsLoadedFlg: false,
-
       showConfirmWorkspaceDelete: false,
       deleteWorkspaceId: 0,
     }
@@ -157,156 +69,36 @@ export default {
   components: {
     'Navbar': Navbar,
     'FormWorkspaceEdit': FormWorkspaceEdit,
-    'FormProjectEdit': FormProjectEdit,
-    'FormBoardEdit': FormBoardEdit,
     'ModalWorkspaceDelete': ModalWorkspaceDelete,
-    'ModalProjectDelete': ModalProjectDelete,
-    'ModalBoardDelete': ModalBoardDelete,
     'FlashMessage': FlashMessage
   },
-  mounted: function () {
-    window.addEventListener('resize', this.handleResize)
-    this.initialize()
+  created: function() {},
+  mounted: function () {},
+  computed: {
+     ...mapGetters({
+      currentUser: 'getCurrentUser',
+      workspaces: 'getWorkspaces',
+      selectedWsId: 'getSelectedWsId',
+    }),
   },
   methods: {
-    initialize: async function() {
-      const _this = this
-      this.fetchCurrentUser()
-      this.handleResize()
-
-      await Promise.all([
-        this.fetchWorkspaces()
-      ])
-
-      switch (this.$route.name) {
-        case 'workspace-global':
-          this.selected_space_id = 0
-          await Promise.all([
-            this.fetchProjects()
-          ])
-
-          break;
-        case 'workspace':
-          
-          if (parseInt(this.$route.params.ws_id) >= 1) {
-            this.selected_space_id = parseInt(this.$route.params.ws_id)
-          } else {
-            this.selected_space_id = 0
-          }
-          await Promise.all([
-            this.fetchProjects()
-          ])
-          break;
-        default:
-          break;
-      }
-
-    },
-    fetchCurrentUser: function () {
-      axios.get('/api/users/'+this.currentUserId).then((res) => {
-        this.current_user.id = parseInt(res.data.user.id)
-        this.current_user.email = res.data.user.email 
-        this.current_user.name = res.data.user.name 
-      }, (error) => {
-        console.log(error);
-      });
-    },
-
     fetchWorkspaces: async function () {
-      await axios.get('/api/workspaces/').then((res) => {
-        this.workspaces = res.data.workspaces
-      }, (error) => {
-        console.log(error);
-      })
-    },
-    reloadWorkspace: function(target_ws_id) {
-      this.selected_space_id = target_ws_id
-      this.selected_project_id = 0
-      this.fetchProjects()
-    },
-    fetchProjects: async function () {
-      if (this.selected_space_id) {
-        await axios.get('/api/workspaces/' + this.selected_space_id + '/projects/').then((res) => {
-          this.projects = res.data.projects
-        }, (error) => {
-          console.log(error);
-        });
-
-      } else {
-        await axios.get('/api/projects/').then((res) => {
-          this.projects = res.data.projects
-        }, (error) => {
-          console.log(error);
-        });
-      }
-      this.initProjectsLoadedFlg = true
-      
-    },
-    addProject: function(obj) {
-      this.projects.push(obj)
-    },
-    addBoard: function(obj) {
-      this.fetchProjects()
+      this.$store.dispatch('fetchWorkspaces')
     },
     openFormWorkspaceEdit: function() {
       this.showFormWorkspaceEdit = true
     },
-    openFormProjectEdit: function(project_id) {
-      this.showFormProjectEdit = true
-      this.editProjectId = project_id
-    },
-    openFormBoardEdit: function(projectid, boardid = 0) {
-      this.showFormBoardEdit = true 
-      this.targetProjectIdFormBoard = projectid
-      this.targetBoardIdFormBoard = boardid
-    },
     closeModal: function() {
       this.showConfirmWorkspaceDelete = false
       this.showFormWorkspaceEdit = false
-      this.showFormProjectEdit = false
-      this.showFormBoardEdit = false
-      this.showConfirmProjectDelete = false
       this.deleteWorkspaceId = 0
-      this.editProjectId = 0
-      this.deleteProjectId = 0
-      this.deleteBoardId = 0
-      this.showConfirmBoardDelete = false
-
-    },
-    getWorkspaceIdFromUrl: function(workspaceid) {
-      if (this.selected_space_id != workspaceid || !this.initProjectsLoadedFlg) {
-        this.reloadWorkspace(workspaceid)
-      }
-    },
-    getProjectIdFromUrl: function(projectid) {
-      this.selected_project_id = projectid
     },
     updateWorkspace: function() {
       this.fetchWorkspaces()
     },
-    createWorkspace: async function(add_ws_id) {
-      await Promise.all([
-        this.fetchWorkspaces()
-      ])
-      this.$router.push({ name: 'workspace', params: { ws_id: add_ws_id }} ).catch(() => {})
-    },
-    updateProject: function() {
-      this.fetchProjects()
-    },
     openConfirmWorkspaceDelete: function(workspace_id) {
       this.showConfirmWorkspaceDelete = true
       this.deleteWorkspaceId = workspace_id
-    },
-    openConfirmProjectDelete: function(project_id) {
-      this.showConfirmProjectDelete = true
-      this.deleteProjectId = project_id
-    },
-    updateBoard: function() {
-      this.fetchProjects()
-    },
-    openConfirmBoardDelete: function(board_id) {
-      this.showConfirmBoardDelete = true
-      this.deleteBoardId = board_id
     },
     flashOn: function(msg, type) {
       this.showFlash = true
@@ -317,11 +109,6 @@ export default {
       this.showFlash = false
       this.flashMessage = ''
     },
-    handleResize: function() {
-      this.windowWidth = window.innerWidth
-      this.windowHeight = window.innerHeight
-      this.isPC = this.windowWidth >= this.breakPoint
-    },
     toggleSideMenu: function(val) {
       this.isOpenSideMenuSp = val
       this.rstGlobalMenuBtnFlg = false
@@ -330,9 +117,7 @@ export default {
       this.rstGlobalMenuBtnFlg = true
     }
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.handleResize)
-  },
+  beforeDestroy() {},
 }
 </script>
 
@@ -342,20 +127,17 @@ export default {
   font-family: 'Roboto', sans-serif;
 }
 p {
-  // font-size: 2em;
   text-align: center;
 }
 .page-container {
   width: 95%;
   margin: 10px auto;
   .page-head {
-    // margin-bottom: 20px;
     position: relative;
     padding-bottom: 20px;
     margin-top: 10px;
     @media screen and (min-width: 768px) {
       padding-bottom: 20px;
-      // margin-top: 20px;
     }
     .sw-cnt {
       position: absolute;
@@ -390,13 +172,9 @@ p {
     font-weight: 500;
     margin-bottom: 20px;
     display: inline-block;
-    
     @media screen and (min-width: 768px) {
       font-size: 28px;
-      
-      
     }
-    
   }
   .page-title-edit input {
     height: 30px;
@@ -406,9 +184,7 @@ p {
     @media screen and (min-width: 768px) {
       font-size: 28px;
     }
-    
   }
-  
   .page-desc {
     font-size: 16px;
     text-align:left;
@@ -487,16 +263,16 @@ main {
         height: 20px;
         position: relative;
         &::before, &::after {
-            content: "";
-            display: block;
-            width: 100%;
-            height: 2px;
-            background: #333;
-            transform: rotate(45deg);
-            transform-origin: 0 50%;
-            position: absolute;
-            top: calc(14% - 5px);
-            left: 14%;
+          content: "";
+          display: block;
+          width: 100%;
+          height: 2px;
+          background: #333;
+          transform: rotate(45deg);
+          transform-origin: 0 50%;
+          position: absolute;
+          top: calc(14% - 5px);
+          left: 14%;
         }
         &::after {
             transform: rotate(-45deg);
@@ -521,11 +297,6 @@ main {
   .modal_txt {
       margin-bottom: 20px;
   }
-  // input[type="text"] {
-  //   &:focus {
-  //     background: rgba(255,255,255,0.3)
-  //   }
-  // }
   .modal_message {
     margin-bottom: 20px;
     font-size: 14px;
@@ -536,8 +307,6 @@ main {
     max-width: 300px;
     border: none;
     background: #f1f1f1;
-    
-
   }
   input:focus, textarea:focus {
     background: rgba(255,255,255,0.3)

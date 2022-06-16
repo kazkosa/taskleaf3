@@ -21,10 +21,6 @@ export default {
       type: Boolean,
       require: false
     },
-    selectedSpaceId: {
-      type: Number,
-      require: false
-    },
     projectId: {
       type: Number,
       require: false
@@ -57,6 +53,9 @@ export default {
     getBtnText: function () {
       return this.projectId ? 'Update': 'Create'
     },
+    selectedWsId: function() {
+      return this.$store.getters.getSelectedWsId
+    }
   },
 
   methods: {
@@ -74,12 +73,12 @@ export default {
           console.log(error);
         });
       } else {
-        if (this.selectedSpaceId) {
-          this.project.workspace_id = this.selectedSpaceId
+        if (this.selectedWsId) {
+          this.project.workspace_id = this.selectedWsId
         }
         axios.post('/api/projects/',{ project: this.project })
         .then((res) => {
-          this.$emit('add-project', res.data.project)
+          this.$emit('update-project', res.data.project)
           this.project.name = null
           this.project.description = null
           this.project.workspace_id = null
@@ -93,7 +92,7 @@ export default {
       }
     },
     checkEnable: function() {
-      if (this.project.name /*&& this.project.description*/) {
+      if (this.project.name) {
         this.activeSubmit = true
       } else {
         this.activeSubmit = false
@@ -101,7 +100,7 @@ export default {
     },
     fetchData: function() {
       if (this.projectId) {
-        this.$emit('get-projectid-from-url', this.projectId)
+        this.$store.commit('setSelectedPjId', this.projectId)
         axios.get('/api/projects/' + this.projectId).then((res) => {
           this.project = res.data.project
           this.checkEnable()

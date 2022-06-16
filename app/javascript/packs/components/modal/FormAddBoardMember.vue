@@ -43,6 +43,7 @@
               :option-list="getAuthorityList" 
               :init-selected="2"
               @change-value="role = $event"
+              :init-event=true
             ></SelectWrapper>
           </div>
         </div>
@@ -96,11 +97,7 @@ export default {
     members: {
       type: Array,
       require: true
-    },
-    currentUser: {
-      type: Object,
-      require: false
-    },
+    }
   },
   watch: {
     "isShow": {
@@ -164,6 +161,9 @@ export default {
 
       return target_authority_list
 
+    },
+    currentUser () {
+      return this.$store.getters.getCurrentUser
     }
   },
   methods: {

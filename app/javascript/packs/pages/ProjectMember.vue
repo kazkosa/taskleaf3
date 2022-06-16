@@ -64,10 +64,6 @@ export default {
     },
   },
   props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
     project: {
       type: Object,
       require: true
@@ -90,6 +86,9 @@ export default {
       }
       // return (tmp.length && tmp[0].role_before_type_cast >= 0)? tmp[0].role_before_type_cast: 2
       return result
+    },
+    currentUser: function () {
+      return this.$store.getters.getCurrentUser
     }
   },
   data: function () {

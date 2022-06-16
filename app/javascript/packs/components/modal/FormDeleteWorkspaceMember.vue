@@ -60,10 +60,6 @@ export default {
     user: {
       type: Object,
       require: false
-    },
-    currentUser: {
-      type: Object,
-      require: false
     }
   },
   watch: {
@@ -86,7 +82,11 @@ export default {
       ownboards: []
     }
   },
-
+  computed: {
+    currentUser () {
+      return this.$store.getters.getCurrentUser
+    },
+  },
   methods: {
     initCheck: function() {
       const _this = this

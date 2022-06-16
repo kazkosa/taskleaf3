@@ -1,7 +1,7 @@
 <template>
   <div class="page-container" v-if="Object.keys(workspace).length">
     <div class="page-head">
-      <h1 v-if="workspace.role >= 2 || !selectedSpaceId" class="page-title">{{workspace.name}}</h1>
+      <h1 v-if="workspace.role >= 2 || !selectedWsId" class="page-title">{{workspace.name}}</h1>
       <h1 v-else-if="!editNameMode" class="page-title enb-edit">
         {{workspace.name}}
         <svg @click.stop="editName" style="height: 12px;width: 12px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
@@ -20,23 +20,23 @@
       <ul class="head-tab-list">
         <li class="head-tab-list__tab" :class="openTabFlg[0]? 'is-active': ''" @click="selTab(0)">
           <h2 v-if="openTabFlg[0]">Project List</h2>
-          <router-link v-else-if="selectedSpaceId" :to="{ name: 'workspace', params: { ws_id: selectedSpaceId } }" class="">Project List</router-link>
+          <router-link v-else-if="selectedWsId" :to="{ name: 'workspace', params: { ws_id: selectedWsId } }" class="">Project List</router-link>
           <router-link v-else :to="{ name: 'workspace-global' }" class="">Project List</router-link>
         </li>
-        <li v-if="selectedSpaceId" class="head-tab-list__tab" :class="openTabFlg[1]? 'is-active': ''"  @click="selTab(1)">
+        <li v-if="selectedWsId" class="head-tab-list__tab" :class="openTabFlg[1]? 'is-active': ''"  @click="selTab(1)">
           <h2 v-if="openTabFlg[1]">Member List</h2>
-          <router-link v-else :to="{ name: 'workspace-member', params: { ws_id: selectedSpaceId } }" class="">Member List</router-link>
+          <router-link v-else :to="{ name: 'workspace-member', params: { ws_id: selectedWsId } }" class="">Member List</router-link>
         </li>
-        <li v-if="selectedSpaceId" class="head-tab-list__tab" :class="openTabFlg[2]? 'is-active': ''"  @click="selTab(2)">
+        <li v-if="selectedWsId" class="head-tab-list__tab" :class="openTabFlg[2]? 'is-active': ''"  @click="selTab(2)">
           <h2 v-if="openTabFlg[2]">Other Setting</h2>
-          <router-link v-else :to="{ name: 'workspace-setting', params: { ws_id: selectedSpaceId } }" class="">Other Setting</router-link>
+          <router-link v-else :to="{ name: 'workspace-setting', params: { ws_id: selectedWsId } }" class="">Other Setting</router-link>
         </li>
       </ul>
 
       <ul class="content-list">
         <li v-if="openTabFlg[0]">
           <div class="control-header">
-            <a v-if="!selectedSpaceId || workspace.role != 2" class="addbtn" @click="openFormProjectNew">
+            <a v-if="!selectedWsId || workspace.role != 2" class="addbtn" @click="openFormProjectNew">
               <span class="icon"><i class="fas fa-plus"></i></span>
               <span class="txt2">Add Project</span>
             </a>
@@ -65,7 +65,6 @@
         <li  v-if="openTabFlg[1]">
           <WorkspaceMember
             :workspace="workspace"
-            :current-user="currentUser"
             :members="members"
             @open-form-add-workspace-member="openFormAddWorkspaceMember"
             @open-form-delete-workspace-member="openFormDeleteWorkspaceMember"
@@ -81,10 +80,8 @@
     </section>
 
     <FormAddWorkspaceMember
-      :selected-space-id="selectedSpaceId"
       :is-show="showFormAddWorkspaceMember"
       :members="members"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :workspace-id="editWorkspaceId"
       @update-workspace-member="updateWorkspaceMember"
@@ -93,7 +90,6 @@
     <FormDeleteWorkspaceMember
       :is-show="showFormDeleteWorkspaceMember"
       :user="deleteMember"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :workspace="workspace"
       @update-workspace-member="updateWorkspaceMember"
@@ -103,7 +99,6 @@
       :is-show="showModalChangeWorkspaceOrner"
       :user="targetMember"
       :current-orner="currentOrner"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :workspace="workspace"
       @update-workspace-member="updateWorkspaceMember"
@@ -117,6 +112,8 @@ import WorkspaceMember from '@/pages/WorkspaceMember'
 import FormDeleteWorkspaceMember from '@/components/modal/FormDeleteWorkspaceMember'
 import FormAddWorkspaceMember from '@/components/modal/FormAddWorkspaceMember'
 import ModalChangeWorkspaceOrner from '@/components/modal/ModalChangeWorkspaceOrner'
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
     WorkspaceMember,
@@ -133,27 +130,18 @@ export default {
       }
     }
   },
-  props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
-    workspaces: {
-      type: Array,
-      require: false
-    },
-    projects: {
-      type: Array,
-      require: false
-    },
-  },
+  props: {},
   computed: {
-  
+    ...mapGetters({
+      currentUser: 'getCurrentUser',
+      workspaces: 'getWorkspaces',
+      selectedWsId: 'getSelectedWsId',
+      projects: 'getProjects'
+    })
   },
   data: function () {
     return {
       workspace: {},
-      selectedSpaceId:  0,
       selectedCntListId: 0,
       editNameMode: false,
       openTabFlg: [false, false, false],
@@ -179,7 +167,9 @@ export default {
   },
   methods: {
     initialize: async function() {
-      this.selectedSpaceId = parseInt(this.$route.params.ws_id)
+      if (this.selectedWsId != parseInt(this.$route.params.ws_id)) {
+        this.$store.commit('setSelectedWsId', parseInt(this.$route.params.ws_id))
+      }
       this.fetchWorkspaceAndProjects()
       switch (this.$route.name) {
         case 'workspace': this.selTab(0);break;
@@ -192,10 +182,11 @@ export default {
     },
     fetchWorkspace: function() {
       this.workspace = {}
+      const _this = this
       if (this.workspaces.length) {
-        if (this.selectedSpaceId ) {
+        if (this.selectedWsId ) {
           let tmp = this.workspaces.filter((ws)=>{
-            return ws.id == this.selectedSpaceId
+            return ws.id == _this.selectedWsId
           })
           this.workspace = tmp[0]? tmp[0]: {}
         } else {
@@ -204,18 +195,21 @@ export default {
       }
     },
     fetchWorkspaceAndProjects: function() {
-      this.selectedSpaceId = parseInt(this.$route.params.ws_id)
-      if (this.selectedSpaceId) {
-        axios.get('/api/workspaces/' + this.selectedSpaceId).then((res) => {
+      if (this.selectedWsId != parseInt(this.$route.params.ws_id)) {
+        this.$store.commit('setSelectedWsId', parseInt(this.$route.params.ws_id))
+      }
+      if (this.selectedWsId) {
+        axios.get('/api/workspaces/' + this.selectedWsId).then((res) => {
           this.workspace = res.data.workspace
-          this.$emit('get-workspaceid-from-url', this.workspace.id === null? 0 : this.workspace.id)
+          this.$emit('reload-workspace', this.workspace.id === null? 0 : this.workspace.id)
         }, (error) => {
           console.log(error);
         });
       } else {
         this.workspace.id = 0
         this.workspace.name = 'General Space'
-        this.$emit('get-workspaceid-from-url', 0)
+        this.$store.commit('setSelectedWsId', 0)
+        this.$emit('reload-workspace', 0)
       }
     },
     openFormProjectNew: function() {
@@ -245,14 +239,14 @@ export default {
       }
     },
     submitEdit: function() {
-      if (this.selectedSpaceId) {
+      if (this.selectedWsId) {
         this.workspace.name = this.tmpWorkspaceName
         let params  =  {
           workspace: { name: this.workspace.name }
         }
-        axios.put('/api/workspaces/' + this.selectedSpaceId, params)
+        axios.put('/api/workspaces/' + this.selectedWsId, params)
         .then((res) => {
-          this.$emit('update-workspace', this.selectedSpaceId)
+          this.$emit('update-workspace', this.selectedWsId)
           this.closeEdit()
         }, (error) => {
           console.log(error);
@@ -263,8 +257,8 @@ export default {
       this.editNameMode = false
     },
     reloadWorkspaces: function() {
-      if (this.selectedSpaceId) {
-        this.$emit('update-workspace', this.selectedSpaceId)
+      if (this.selectedWsId) {
+        this.$emit('update-workspace', this.selectedWsId)
       }
     },
     openConfirmProjectDelete: function (project_id) {
@@ -286,7 +280,7 @@ export default {
       }
     },
     fetchMembers: function() {
-      axios.get('/api/workspaces/' + this.selectedSpaceId + '/workspace_members/').then((res) => {
+      axios.get('/api/workspaces/' + this.selectedWsId + '/workspace_members/').then((res) => {
         this.members = res.data.workspace_members
       }, (error) => {
         console.log(error);
