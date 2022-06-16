@@ -59,7 +59,7 @@ export default {
     },
     fetchData: function() {
       if (this.workspaceId) {
-        this.$emit('get-workspaceid-from-url', this.workspaceId)
+        // this.$emit('get-workspaceid-from-url', this.workspaceId)
         axios.get('/api/workspaces/' + this.workspaceId).then((res) => {
           this.workspace = res.data.workspace
         }, (error) => {

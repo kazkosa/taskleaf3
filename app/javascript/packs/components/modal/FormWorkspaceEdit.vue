@@ -19,10 +19,6 @@ export default {
     isShow: {
       type: Boolean,
       require: false
-    },
-    selectedSpaceId: {
-      type: Number,
-      require: false
     }
   },
   watch: {
@@ -49,7 +45,14 @@ export default {
     modalClose: function() {
       this.$emit('close-modal')
     },
+    fetchWorkspaces: async function (workspace_id) {
+      await Promise.all([
+        this.$store.dispatch('fetchWorkspaces')
+      ])
+      this.$router.push({ name: 'workspace', params: { ws_id: workspace_id }} ).catch(() => {})
+    },
     submitWorkspaceData: function() {
+      const _this = this
       if (this.workspaceId) {
         axios.put('/api/workspaces/' + this.workspaceId, { workspace: this.workspace })
         .then((res) => {
@@ -62,7 +65,7 @@ export default {
       } else {
         axios.post('/api/workspaces/',{ workspace: this.workspace })
         .then((res) => {
-          this.$emit('create-workspace', res.data.workspace.id)
+          this.fetchWorkspaces(res.data.workspace.id)
           this.workspace.name = null
           this.modalClose()
         }, (error) => {

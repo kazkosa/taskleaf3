@@ -32,10 +32,6 @@ export default {
     currentOrner: {
       type: Object,
       require: false
-    },
-    currentUser: {
-      type: Object,
-      require: false
     }
   },
   created: function() {

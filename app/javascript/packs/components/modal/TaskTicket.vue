@@ -138,11 +138,6 @@ export default {
       require: false,
       default: []
     },
-    currentUser: {
-      type: Object,
-      require: false,
-      default: {}
-    },
     selectedTaskId: {
       type: Number,
       require: false,

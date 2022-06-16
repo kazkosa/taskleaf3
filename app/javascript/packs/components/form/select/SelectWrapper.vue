@@ -69,6 +69,11 @@ export default {
       type: Boolean,
       require: false,
       default: false
+    },
+    initEvent: {
+      type: Boolean,
+      require: false,
+      default: false
     }
   },
   data: function () {
@@ -95,7 +100,7 @@ export default {
 
   methods: {
     initialize: function() {
-      this.changeOption(this.initSelected, true)
+      this.changeOption(this.initSelected, this.initEvent? false: true)
     },
     switchDropdown: function() {
       this.isOpen = !this.isOpen

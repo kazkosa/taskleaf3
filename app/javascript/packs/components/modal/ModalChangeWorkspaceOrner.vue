@@ -32,23 +32,9 @@ export default {
     currentOrner: {
       type: Object,
       require: false
-    },
-    currentUser: {
-      type: Object,
-      require: false
     }
   },
-  watch: {
-    // "isShow": {
-    //   handler: function(newVal, oldVal) {
-    //     if (newVal) {
-
-    //     }
-    //   },
-    //   deep: true,
-    //   immediate: true
-    // },
-  },
+  watch: {},
   created: function() {
 
   },

@@ -59,24 +59,7 @@
 </template>
 <script>
 export default {
-  props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
-    selectedSpaceId: {
-      type: Number,
-      require: false
-    },
-    workspaces: {
-      type: Array,
-      require: false
-    },
-    projects: {
-      type: Array,
-      require: false
-    }
-  },
+  props: {},
   data: function () {
     return {
       selectedCntListId: 0,
@@ -88,8 +71,11 @@ export default {
   beforeDestroy() {
     window.removeEventListener('click', this.closeCntList);
   },
-
-  
+  computed: {
+    workspaces () {
+      return this.$store.getters.getWorkspaces
+    }
+  },
   methods: {
 
     openFormProjectNew: function() {

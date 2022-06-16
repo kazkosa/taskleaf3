@@ -76,7 +76,6 @@
         <li  v-if="openTabFlg[1]">
           <ProjectMember
             :project="project"
-            :current-user="currentUser"
             :members="members"
             @open-form-add-project-member="openFormAddProjectMember"
             @open-form-delete-project-member="openFormDeleteProjectMember"
@@ -94,10 +93,8 @@
     </section>
 
     <FormAddProjectMember
-      :selected-space-id="selectedSpaceId"
       :is-show="showFormAddProjectMember"
        :members="members"
-       :current-user="currentUser"
       @close-modal="closeModal"
       :project-id="editProjectId"
       @update-project-member="updateProjectMember"
@@ -105,7 +102,6 @@
     <FormDeleteProjectMember
       :is-show="showFormDeleteProjectMember"
       :user="deleteMember"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :project="project"
       :boards="project.boards"
@@ -116,7 +112,6 @@
       :is-show="showModalChangeProjectOrner"
       :user="targetMember"
       :current-orner="currentOrner"
-      :current-user="currentUser"
       @close-modal="closeModal"
       :project="project"
       @update-project-member="updateProjectMember"
@@ -129,7 +124,8 @@ import ProjectMember from '@/pages/ProjectMember'
 import FormAddProjectMember from '@/components/modal/FormAddProjectMember'
 import FormDeleteProjectMember from '@/components/modal/FormDeleteProjectMember'
 import ModalChangeProjectOrner from '@/components/modal/ModalChangeProjectOrner'
-// import axios from 'axios';
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
     ProjectMember,
@@ -153,20 +149,7 @@ export default {
       }
     }
   },
-  props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
-    selectedSpaceId: {
-      type: Number,
-      require: false
-    },
-    projects: {
-      type: Array,
-      require: false
-    },
-  },
+  props: {},
   computed: {
     className: function () {
       return this.message.split('').reverse().join('')
@@ -176,7 +159,12 @@ export default {
         return member.user_id == this.currentUser.id
       })
       return (tmp.length && tmp[0].role_before_type_cast >= 0)? tmp[0].role_before_type_cast: 2
-    }
+    },
+    ...mapGetters({
+      currentUser: 'getCurrentUser',
+      selectedWsId: 'getSelectedWsId',
+      projects: 'getProjects'
+    }),
   },
   data: function () {
     return {
@@ -224,11 +212,13 @@ export default {
       this.$emit('open-form-board-edit', projectid, boardid)
     },
     fetchProjectAndBoards: function(project_id) {
-      this.$emit('get-projectid-from-url', project_id)
+      this.$store.commit('setSelectedPjId', project_id)
       axios.get('/api/projects/' + project_id).then((res) => {
-        // this.boards = res.data.boards
         this.project = res.data.project
-        this.$emit('get-workspaceid-from-url', this.project.workspace_id === null? 0 : this.project.workspace_id)
+        if ( (!!this.selectedWsId || !!this.project.workspace_id) && this.selectedWsId != this.project.workspace_id) {
+          this.$store.commit('setSelectedWsId', this.project.workspace_id === null? 0 : this.project.workspace_id)
+          this.$emit('reload-workspace', this.project.workspace_id === null? 0 : this.project.workspace_id)
+        }
       }, (error) => {
         console.log(error);
       });
@@ -273,18 +263,7 @@ export default {
       });
     },
     closeEdit: function() {
-      // let editFlg = false
-      // if (this.editNameMode && !this.$el.querySelector('.page-title-edit').contains(event.target)) {
-      //   editFlg = true
-        this.editNameMode = false
-      // }
-      // if (this.editDescMode && !this.$el.querySelector('.page-desc-edit').contains(event.target)) {
-      //   editFlg = true
-      //   this.editDescMode = false
-      // }
-      // if (editFlg) {
-      //   this.updateData()
-      // }
+      this.editNameMode = false
     },
     closeEditDesc: function() {
       this.editDescMode = false

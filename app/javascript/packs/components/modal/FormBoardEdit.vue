@@ -75,7 +75,7 @@ export default {
       } else {
         axios.post('/api/boards/', { board: { name: this.board.name, description: this.board.description, project_id: this.projectId } })
         .then((res) => {
-          this.$emit('add-board', { projectid: this.projectid, data: res.data.project })
+          this.$emit('update-board', { projectid: this.projectid, data: res.data.project })
           this.board_name = null
           this.board_discription = null
           this.modalClose()
@@ -85,7 +85,7 @@ export default {
       }
     },
     checkEnable: function() {
-      if (this.board.name /*&& this.board.description*/) {
+      if (this.board.name) {
         this.activeSubmit = true
       } else {
         this.activeSubmit = false
@@ -93,7 +93,6 @@ export default {
     },
     fetchData: function() {
       if (this.boardId) {
-        // this.$emit('get-projectid-from-url', this.projectId)
         axios.get('/api/boards/' + this.boardId).then((res) => {
           this.board = res.data.board
           this.checkEnable()

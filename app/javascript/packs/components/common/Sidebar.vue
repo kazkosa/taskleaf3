@@ -10,11 +10,11 @@
             <span class="user-container__avatar">{{getInitial}}</span>
             <span class="user-container__name">{{currentUser.name}}</span>
           </div>
-          <a v-if="!isPc" class="btn-logout" href="/logout" data-method="delete"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+          <a v-if="!isPC" class="btn-logout" href="/logout" data-method="delete"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
         </div>
         <ul class="menu-items">
           <li class="menu-items__item">
-            <router-link v-if="selectedSpaceId >= 1" :to="{ name: 'workspace', params: {ws_id: selectedSpaceId}}" class="menu-items__item__link" @click.native="touchLink">
+            <router-link v-if="selectedWsId >= 1" :to="{ name: 'workspace', params: {ws_id: selectedWsId}}" class="menu-items__item__link" @click.native="touchLink">
               <span class="icon"><i class="fas fa-home"></i></span>
               <span class="txt">Home</span>
             </router-link>
@@ -31,7 +31,7 @@
                   v-if="workspaces.length"
                   :init-text="'Switch Workspace'"
                   :option-list="getSpaceList"
-                  :init-selected="selectedSpaceId"
+                  :init-selected="selectedWsId"
                   @change-value="changeWorkspace($event)"
                   @open-form-workspace-edit="openFormWorkspaceEdit"
                 ></SelectWrapper>
@@ -80,7 +80,7 @@
                   </ul>
                 </transition>
               </li>
-              <li v-if="!selectedSpaceId || selectedSpaceRole != 2" class="project">
+              <li v-if="!selectedWsId || selectedWsRole != 2" class="project">
                 <a class="addbtn">
                   <span class="icon"><i class="fas fa-plus"></i></span>
                   <span class="txt2" @click="openFormProjectEdit">Add Project</span>
@@ -98,45 +98,14 @@
 <script>
 
 import SelectWrapper from '@/components/form/select/SelectWrapperWs'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
-    projects: {
-      type: Array,
-      require: false
-    },
-    targetOpenProjectid: {
-      type: Number,
-      require: false
-    },
     triggerMenuSp: {
       type: Boolean,
       require: false,
       default: false
-    },
-    isPc: {
-      type: Boolean,
-      require: false,
-      default: false
-    },
-
-    selectedSpaceId: {
-      type: Number,
-      require: false,
-      default: 0
-    },
-    selectedSpaceRole: {
-      type: Number,
-      require: false,
-      default: 0
-    },
-    workspaces: {
-      type: Array,
-      require: false
     },
   },
   watch: {
@@ -173,10 +142,6 @@ export default {
     return {
       message: "Hello Vue!",
       basicMenuOpen: false,
-      // workspaces: [
-      //   {id:1, name: 'MySpace00'},
-      //   {id:2, name: 'WorkSpace01'}
-      // ],
       isOpenProjects: [],
       isOpenSidebar: true,
       breakPoint: 768
@@ -194,13 +159,20 @@ export default {
     },
     getSpaceList: function () {
       let spaceList = [{id:0, name: 'General Space'}]
-      // let spaceList = this.workspaces//[{id:0, name: 'MySpace'}]
-      // spaceList = spaceList.unshift( {id:0, name: 'MySpace'}) 
       if (this.workspaces.length > 0) {
         spaceList = spaceList.concat(this.workspaces)
       }
       return spaceList
-    }
+    },
+    ...mapGetters({
+      currentUser: 'getCurrentUser',
+      workspaces: 'getWorkspaces',
+      selectedWsId: 'getSelectedWsId',
+      targetOpenProjectid: 'getSelectedPjId',
+      selectedWsRole: 'getSelectedWsRole',
+      isPC: 'getIsPC',
+      projects: 'getProjects'
+    }),
   },
   created: function() {
     this.initialize()
@@ -238,7 +210,7 @@ export default {
       }
     },
     touchLink: function() {
-      if (!this.isPc) {
+      if (!this.isPC) {
         this.$emit('touch-link-sp')
       }
     },
@@ -265,8 +237,9 @@ export default {
       return id === current_id
     },
     changeWorkspace: function(target_ws_id) {
-      if (this.selectedSpaceId != target_ws_id) {
+      if (this.selectedWsId != target_ws_id) {
         this.$emit('reload-workspace', target_ws_id)
+        this.$store.commit('setSelectedWsId', target_ws_id)
         if (target_ws_id) {
           this.$router.push({ name: 'workspace', params: { ws_id: target_ws_id }} )
         } else {
@@ -506,7 +479,6 @@ export default {
 }
 #sidebar.isClosed {
   width: 0;
-  // max-width: 30px;
   min-width: 0px;
   @media screen and (min-width:768px) {
     width: 30px;

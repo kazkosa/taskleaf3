@@ -77,20 +77,10 @@ export default {
       require: false,
       default: {}
     },
-    projects: {
-      type: Array,
-      require: false,
-      default: []
-    },
-    // members: {
+    // projects: {
     //   type: Array,
     //   require: false,
     //   default: []
-    // },
-    // currentUser: {
-    //   type: Object,
-    //   require: false,
-    //   default: {}
     // },
     selectedTaskId: {
       type: Number,
@@ -128,7 +118,9 @@ export default {
     }
   },
   computed: {
-
+    projects: function() {
+      return this.$store.getters.getProjects
+    }
   },
   methods: {
     modalClose: function() {
@@ -155,6 +147,7 @@ export default {
       }, (error) => {
         console.log(error);
       });
+
       if( this.selectedBoardId == this.initSelectedBoardId ) {
 
       } else {

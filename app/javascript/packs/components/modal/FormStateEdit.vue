@@ -73,7 +73,7 @@ export default {
       } else {
         axios.post('/api/states/', { state: { name: this.state.name, board_id: this.boardId } })
         .then((res) => {
-          this.$emit('add-state', { boardid: this.boardid, data: res.data.state })
+          this.$emit('update-state', { boardid: this.boardid, data: res.data.state })
           this.state.name = null
           this.modalClose()
         }, (error) => {

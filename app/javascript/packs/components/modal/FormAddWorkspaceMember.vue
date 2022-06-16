@@ -48,6 +48,7 @@
               :option-list="getAuthorityList" 
               :init-selected="2"
               @change-value="role = $event"
+              :init-event=true
             ></SelectWrapper>
           </div>
         </div>
@@ -91,10 +92,6 @@ export default {
       type: Boolean,
       require: false
     },
-    selectedSpaceId: {
-      type: Number,
-      require: false
-    },
     workspaceId: {
       type: Number,
       require: false
@@ -102,11 +99,7 @@ export default {
     members: {
       type: Array,
       require: true
-    },
-    currentUser: {
-      type: Object,
-      require: false
-    },
+    }
   },
   watch: {
     "isShow": {
@@ -169,7 +162,12 @@ export default {
       })
 
       return target_authority_list
-
+    },
+    currentUser: function() {
+      return this.$store.getters.getCurrentUser
+    },
+    selectedWsId: function() {
+      return this.$store.getters.getSelectedWsId
     }
   },
   methods: {
@@ -199,8 +197,8 @@ export default {
           type: 'workspace',
           workspace_id: this.workspaceId
         }
-        if (this.selectedSpaceId) {
-          params.workspace_id = this.selectedSpaceId
+        if (this.selectedWsId) {
+          params.workspace_id = this.selectedWsId
         }
 
         axios.get('/api/users/count', {
@@ -281,13 +279,6 @@ export default {
           sendmail_user_ids
         }
       }
-      // if (this.selectedSpaceId) {
-      //   params.project.workspace_id = this.selectedSpaceId
-      // }
-      // if (this.selectedSpaceId) {
-      //   params.workspace_id = this.selectedSpaceId
-      // }
-
       axios.put('/api/workspaces/' + this.workspaceId + '/update_members/', params)
       .then((res) => {
         this.modalClose()

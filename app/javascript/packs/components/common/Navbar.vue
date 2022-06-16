@@ -2,9 +2,9 @@
     <header id="header">
       <div class="inner">
         <div class="header-logo-container">
-          <a href="/app" class="imgBox">
+          <router-link :to="{ path: '/' }" class="imgBox">
             <img :src="require(`@images/dashboards/common/logoTop2.png`)" alt="TicketLine" width="160" height="37" class="logo-top">
-          </a>
+          </router-link>
         </div>
 
         <div>
@@ -14,7 +14,7 @@
                   v-if="workspaces.length"
                   :init-text="'Switch Workspace'"
                   :option-list="getSpaceList"
-                  :init-selected="selectedSpaceId"
+                  :init-selected="selectedWsId"
                   @change-value="changeWorkspace($event)"
                   @open-form-workspace-edit="openFormWorkspaceEdit"
                   type="noborder"
@@ -29,12 +29,9 @@
                   <transition>
                   <ul class="drop-menu basic-menu" v-show="basicMenuOpen">
                     <li class="basic-menu__item">
-                      <!-- <a class="user-container"> -->
                       <router-link :to="{ name: 'mystation' }" class="user-container">
-                        <!-- <i class="fas fa-user-circle"></i> -->
                         <span class="user-container__avatar">{{getInitial}}</span>
                         <span>{{currentUser.name}}</span>
-                      <!-- </a> -->
                       </router-link>
                     </li>
 
@@ -65,29 +62,16 @@ export default {
   },
 
   props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
     rstGlobalMenuBtnFlg: {
       type: Boolean,
       require: false,
       default: false
     },
-    isPc: {
-      type: Boolean,
-      require: false,
-      default: false
-    },
-    selectedSpaceId: {
-      type: Number,
-      require: false,
-      default: 0
-    },
-    workspaces: {
-      type: Array,
-      require: false
-    },
+    // isPc: {
+    //   type: Boolean,
+    //   require: false,
+    //   default: false
+    // }
   },
   watch: {
     'rstGlobalMenuBtnFlg': {
@@ -123,6 +107,15 @@ export default {
         spaceList = spaceList.concat(this.workspaces)
       }
       return spaceList
+    },
+    currentUser: function () {
+      return this.$store.getters.getCurrentUser
+    },
+    workspaces () {
+      return this.$store.getters.getWorkspaces
+    },
+    selectedWsId () {
+      return this.$store.getters.getSelectedWsId
     }
   },
   mounted() {
@@ -151,8 +144,9 @@ export default {
       this.$emit('toggle-sidemenu', this.openFlg)
     },
     changeWorkspace: function(target_ws_id) {
-      if (this.selectedSpaceId != target_ws_id) {
+      if (this.selectedWsId != target_ws_id) {
         this.$emit('reload-workspace', target_ws_id)
+        this.$store.commit('setSelectedWsId', target_ws_id)
         if (target_ws_id) {
           this.$router.push({ name: 'workspace', params: { ws_id: target_ws_id }} )
         } else {

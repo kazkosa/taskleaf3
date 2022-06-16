@@ -28,10 +28,6 @@ export default {
     user: {
       type: Object,
       require: false
-    },
-    currentUser: {
-      type: Object,
-      require: false
     }
   },
   watch: {
@@ -53,7 +49,11 @@ export default {
 
     }
   },
-
+  computed: {
+    currentUser () {
+      return this.$store.getters.getCurrentUser
+    },
+  },
   methods: {
     modalClose: function() {
       this.$emit('close-modal')

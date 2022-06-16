@@ -60,7 +60,8 @@ export default {
     },
     fetchData: function() {
       if (this.projectId) {
-        this.$emit('get-projectid-from-url', this.projectId)
+        // this.$emit('get-projectid-from-url', this.projectId)
+        this.$store.commit('setSelectedPjId', this.projectId)
         axios.get('/api/projects/' + this.projectId).then((res) => {
           this.project = res.data.project
         }, (error) => {

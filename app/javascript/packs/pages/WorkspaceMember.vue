@@ -65,10 +65,6 @@ export default {
     },
   },
   props: {
-    currentUser: {
-      type: Object,
-      require: false
-    },
     workspace: {
       type: Object,
       require: true
@@ -84,6 +80,9 @@ export default {
         return member.user_id == this.currentUser.id
       })
       return (tmp.length && tmp[0].role_before_type_cast >= 0)? tmp[0].role_before_type_cast: 2
+    },
+    currentUser: function () {
+      return this.$store.getters.getCurrentUser
     }
   },
   data: function () {
